@@ -1,1 +1,33 @@
-spring.application.name=Xiangxi_System
+server:
+  port: 8088
+location: D:/upload/xiangxi
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/xxtweb?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: 123456
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      min-idle: 5
+      max-active: 20
+      max-wait: 6000
+  thymeleaf:
+    prefix: classpath:/templates/xiangxi/
+    suffix: .html
+  web:
+    resources:
+      static-locations: classpath:/static/,classpath:/static/assets/,classpath:/public/,classpath:/resources/,classpath:/META-INF/resources/,file:${location}
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto
+#pagehelper:
+#  helper-dialect: mysql
