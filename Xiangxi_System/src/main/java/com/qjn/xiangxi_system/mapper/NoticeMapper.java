@@ -3,6 +3,8 @@ package com.qjn.xiangxi_system.mapper;
 import com.qjn.xiangxi_system.pojo.Notice;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import java.util.List;
+
 /**
 * @author Administrator
 * @description 针对表【notice】的数据库操作Mapper
@@ -10,7 +12,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.qjn.xiangxi_system.pojo.Notice
 */
 public interface NoticeMapper extends BaseMapper<Notice> {
-
+    void deleteBatch(List<Integer> ids);
 }
 
 

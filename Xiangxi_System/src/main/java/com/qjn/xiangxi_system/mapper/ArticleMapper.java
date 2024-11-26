@@ -2,7 +2,6 @@ package com.qjn.xiangxi_system.mapper;
 
 import com.qjn.xiangxi_system.pojo.Article;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import org.apache.hadoop.fs.VolumeId;
 
 import java.util.List;
 

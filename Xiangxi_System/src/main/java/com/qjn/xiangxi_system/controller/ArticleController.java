@@ -67,9 +67,9 @@ public class ArticleController {
     /**
      * 分页查询
      */
-    @RequestMapping("/selectPage")
-    public Result selectPage(Integer pageNum, Integer pageSize)
-    {
-        return Result.suc(articleService.selectPage(pageNum, pageSize));
-    }
+//    @RequestMapping("/selectPage")
+//    public Result selectPage(Integer pageNum, Integer pageSize)
+//    {
+//        return Result.suc(articleService.selectPage(pageNum, pageSize));
+//    }
 }

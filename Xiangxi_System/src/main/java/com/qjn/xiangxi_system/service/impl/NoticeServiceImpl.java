@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qjn.xiangxi_system.pojo.Notice;
 import com.qjn.xiangxi_system.service.NoticeService;
 import com.qjn.xiangxi_system.mapper.NoticeMapper;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
 * @author Administrator
@@ -14,7 +17,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice>
     implements NoticeService{
+    @Resource
+    private NoticeMapper noticeMapper;
 
+    @Override
+    public void deleteBatch(List<Integer> ids) {
+        noticeMapper.deleteBatch(ids);
+    }
 }
 
 
