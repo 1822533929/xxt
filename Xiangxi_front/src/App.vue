@@ -1,16 +1,19 @@
 <template>
   <div>
-    <LoginForm />
+<!--    <LoginForm />-->
+    <AdminLayout></AdminLayout>
   </div>
 </template>
 
 <script>
-import LoginForm from '@/components/LoginForm.vue'
+// import LoginForm from '@/components/LoginForm.vue'
+import AdminLayout from "@/views/admin/AdminLayout.vue";
 
 export default {
   name: 'App',
   components: {
-  LoginForm
+    AdminLayout
+    // LoginForm
   }
 }
 </script>

@@ -6,7 +6,7 @@
       <div class="user-info">
         <el-dropdown trigger="click">
           <div class="avatar-container">
-            <img src="@/assets/default-avatar.png" class="avatar" />
+            <el-avatar :size="40" icon="UserFilled" />
             <span class="username">{{ adminName }}</span>
           </div>
           <template #dropdown>

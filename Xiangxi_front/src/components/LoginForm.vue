@@ -166,7 +166,7 @@ export default {
         username: this.adminForm.username,
         password: this.adminForm.password
       })
-
+      this.$router.push('/admin/Dashboard')
     }
   }
 }
