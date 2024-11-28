@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 /**
 * @author Administrator
 * @description 针对表【admin】的数据库操作Service实现
-* @createDate 2024-11-24 21:13:32
+* @createDate 2024-11-28 20:04:56
 */
 @Service
 public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>

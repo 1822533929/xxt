@@ -10,4 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminController {
     @Resource
     private AdminService adminService;
+    @RequestMapping("/login")
+    public String login(String username,String password){
+        return "login";
+    }
 }

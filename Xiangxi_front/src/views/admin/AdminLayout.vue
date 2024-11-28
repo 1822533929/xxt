@@ -1,29 +1,31 @@
 <template>
   <div class="admin-layout">
     <!-- 顶部导航栏 -->
-    <header class="header">
-      <div class="logo">后台管理</div>
+    <el-header class="header">
+      <div class="logo">湘西旅游管理系统</div>
       <div class="user-info">
-        <el-dropdown trigger="click">
+        <el-dropdown trigger="click" @command="handleCommand">
           <div class="avatar-container">
-            <el-avatar :size="40" icon="UserFilled" />
-            <span class="username">{{ adminName }}</span>
+            <el-avatar :size="40" :src="userInfo.avatar">
+              <el-icon><UserFilled /></el-icon>
+            </el-avatar>
+            <span class="username">{{ userInfo.name }}</span>
+            <el-icon class="el-icon--right"><CaretBottom /></el-icon>
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item @click="handleCommand('profile')">个人资料</el-dropdown-item>
-              <el-dropdown-item @click="handleCommand('password')">修改密码</el-dropdown-item>
-              <el-dropdown-item divided @click="handleCommand('logout')">退出登录</el-dropdown-item>
+              <el-dropdown-item command="profile">个人资料</el-dropdown-item>
+              <el-dropdown-item command="password">修改密码</el-dropdown-item>
+              <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
         </el-dropdown>
       </div>
-    </header>
+    </el-header>
 
-    <!-- 主体内容 -->
-    <div class="main-container">
+    <el-container class="main-container">
       <!-- 左侧菜单 -->
-      <aside class="sidebar">
+      <el-aside width="210px" class="sidebar">
         <el-menu
           :default-active="activeMenu"
           background-color="#304156"
@@ -60,41 +62,125 @@
             <el-menu-item index="/admin/users">用户信息</el-menu-item>
           </el-sub-menu>
         </el-menu>
-      </aside>
+      </el-aside>
 
       <!-- 右侧内容 -->
-      <main class="content">
+      <el-main class="content">
         <router-view></router-view>
-      </main>
-    </div>
+      </el-main>
+    </el-container>
+
+    <!-- 修改密码对话框 -->
+    <el-dialog
+      title="修改密码"
+      v-model="passwordDialogVisible"
+      width="400px"
+    >
+      <el-form :model="passwordForm" :rules="passwordRules" ref="passwordFormRef" label-width="100px">
+        <el-form-item label="原密码" prop="oldPassword">
+          <el-input v-model="passwordForm.oldPassword" type="password" show-password />
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPassword">
+          <el-input v-model="passwordForm.newPassword" type="password" show-password />
+        </el-form-item>
+        <el-form-item label="确认密码" prop="confirmPassword">
+          <el-input v-model="passwordForm.confirmPassword" type="password" show-password />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="passwordDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handlePasswordSubmit">确定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
-<script>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+<script setup>
+import { ref, reactive } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { ElMessage, ElMessageBox } from 'element-plus'
+import { 
+  HomeFilled, 
+  Document, 
+  User, 
+  UserFilled,
+  CaretBottom
+} from '@element-plus/icons-vue'
 
-export default {
-  name: 'AdminLayout',
-  setup() {
-    const router = useRouter()
-    const adminName = ref('管理员')
-    const activeMenu = ref('/admin/dashboard')
+const router = useRouter()
+const route = useRoute()
 
-    const handleCommand = (command) => {
-      switch (command) {
-        case 'logout':
-          router.push('/login')
-          break
-      }
+// 用户信息
+const userInfo = reactive({
+  name: '管理员',
+  avatar: ''
+})
+
+// 当前激活的菜单
+const activeMenu = ref(route.path)
+
+// 修改密码相关
+const passwordDialogVisible = ref(false)
+const passwordFormRef = ref(null)
+const passwordForm = reactive({
+  oldPassword: '',
+  newPassword: '',
+  confirmPassword: ''
+})
+
+const passwordRules = {
+  oldPassword: [
+    { required: true, message: '请输入原密码', trigger: 'blur' }
+  ],
+  newPassword: [
+    { required: true, message: '请输入新密码', trigger: 'blur' },
+    { min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+  ],
+  confirmPassword: [
+    { required: true, message: '请确认新密码', trigger: 'blur' },
+    {
+      validator: (rule, value, callback) => {
+        if (value !== passwordForm.newPassword) {
+          callback(new Error('两次输入的密码不一致'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'blur'
     }
+  ]
+}
 
-    return {
-      adminName,
-      activeMenu,
-      handleCommand
-    }
+// 方法
+const handleCommand = (command) => {
+  switch (command) {
+    case 'profile':
+      ElMessage.info('个人资料功能开发中')
+      break
+    case 'password':
+      passwordDialogVisible.value = true
+      break
+    case 'logout':
+      ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+        type: 'warning'
+      }).then(() => {
+        router.push('/login')
+      })
+      break
   }
+}
+
+const handlePasswordSubmit = () => {
+  passwordFormRef.value?.validate((valid) => {
+    if (valid) {
+      ElMessage.success('密码修改成功')
+      passwordDialogVisible.value = false
+      // 重置表单
+      passwordForm.oldPassword = ''
+      passwordForm.newPassword = ''
+      passwordForm.confirmPassword = ''
+    }
+  })
 }
 </script>
 
@@ -136,26 +222,18 @@ export default {
   cursor: pointer;
 }
 
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  margin-right: 8px;
-}
-
 .username {
+  margin: 0 8px;
   font-size: 14px;
   color: #606266;
 }
 
 .main-container {
-  display: flex;
   margin-top: 60px;
   height: calc(100vh - 60px);
 }
 
 .sidebar {
-  width: 210px;
   background-color: #304156;
   height: 100%;
   position: fixed;
@@ -166,9 +244,19 @@ export default {
 
 .content {
   margin-left: 210px;
-  padding: 20px;
-  flex: 1;
-  overflow-y: auto;
   background-color: #f0f2f5;
+  min-height: calc(100vh - 60px);
+}
+
+:deep(.el-menu) {
+  border-right: none;
+}
+
+:deep(.el-menu-item:hover) {
+  background-color: #263445 !important;
+}
+
+:deep(.el-sub-menu__title:hover) {
+  background-color: #263445 !important;
 }
 </style> 

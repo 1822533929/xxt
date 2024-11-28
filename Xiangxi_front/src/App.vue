@@ -1,30 +1,15 @@
 <template>
-  <div>
-<!--    <LoginForm />-->
-    <AdminLayout></AdminLayout>
+  <div id="app">
+    <router-view></router-view>
   </div>
 </template>
 
-<script>
-// import LoginForm from '@/components/LoginForm.vue'
-import AdminLayout from "@/views/admin/AdminLayout.vue";
-
-export default {
-  name: 'App',
-  components: {
-    AdminLayout
-    // LoginForm
-  }
-}
+<script setup>
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  width: 100%;
+  height: 100%;
 }
 </style>
