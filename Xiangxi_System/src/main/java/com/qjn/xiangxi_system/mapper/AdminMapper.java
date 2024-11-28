@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.qjn.xiangxi_system.pojo.Admin
 */
 public interface AdminMapper extends BaseMapper<Admin> {
+    Admin isExist(String username);
 
 }
 

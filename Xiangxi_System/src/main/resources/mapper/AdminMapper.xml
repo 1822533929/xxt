@@ -20,4 +20,10 @@
         name,avatar,role,
         phone,email
     </sql>
+    <!-- 根据账号查询管理员在 -->
+    <select id="isExist" parameterType="string" resultType="com.qjn.xiangxi_system.pojo.Admin">
+        SELECT *
+        FROM admin
+        WHERE username = #{username}
+    </select>
 </mapper>

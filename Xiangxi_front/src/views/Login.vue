@@ -3,72 +3,30 @@
     <div class="login-box">
       <div class="title">旅游管理系统</div>
       <!-- 用户登录表单 -->
-      <el-form
-        v-if="!isAdminLogin && !isRegister"
-        ref="userLoginFormRef"
-        :model="userLoginForm"
-        :rules="loginRules"
-        class="login-form"
-      >
+      <el-form v-if="!isAdminLogin && !isRegister" ref="userLoginFormRef" :model="userLoginForm" :rules="loginRules" class="login-form">
         <el-form-item prop="username">
-          <el-input
-            v-model="userLoginForm.username"
-            placeholder="用户名"
-            prefix-icon="User"
-          />
+          <el-input v-model="userLoginForm.username" placeholder="用户名" prefix-icon="User"/>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input
-            v-model="userLoginForm.password"
-            type="password"
-            placeholder="密码"
-            prefix-icon="Lock"
-            show-password
-          />
+          <el-input v-model="userLoginForm.password" type="password" placeholder="密码" prefix-icon="Lock" show-password/>
         </el-form-item>
         <el-form-item>
-          <el-button
-            type="primary"
-            :loading="loading"
-            class="login-button"
-            @click="handleUserLogin"
-          >
+          <el-button type="primary" :loading="loading" class="login-button" @click="handleUserLogin">
             登录
           </el-button>
         </el-form-item>
       </el-form>
 
       <!-- 管理员登录表单 -->
-      <el-form
-        v-else-if="isAdminLogin && !isRegister"
-        ref="adminLoginFormRef"
-        :model="adminLoginForm"
-        :rules="loginRules"
-        class="login-form"
-      >
+      <el-form v-else-if="isAdminLogin && !isRegister" ref="adminLoginFormRef" :model="adminLoginForm" :rules="adminRules" class="login-form">
         <el-form-item prop="username">
-          <el-input
-            v-model="adminLoginForm.username"
-            placeholder="管理员账号"
-            prefix-icon="User"
-          />
+          <el-input v-model="adminLoginForm.username" placeholder="管理员账号" prefix-icon="User"/>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input
-            v-model="adminLoginForm.password"
-            type="password"
-            placeholder="密码"
-            prefix-icon="Lock"
-            show-password
-          />
+          <el-input v-model="adminLoginForm.password" type="password" placeholder="密码" prefix-icon="Lock" show-password/>
         </el-form-item>
         <el-form-item>
-          <el-button
-            type="primary"
-            :loading="loading"
-            class="login-button"
-            @click="handleAdminLogin"
-          >
+          <el-button type="primary" :loading="loading" class="login-button" @click="adminLogin">
             管理员登录
           </el-button>
         </el-form-item>
@@ -145,6 +103,7 @@
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import axios from 'axios'
 
 const router = useRouter()
 const loading = ref(false)
@@ -172,9 +131,19 @@ const loginRules = {
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+    { min: 3, message: '密码长度不能小于3位', trigger: 'blur' }
   ]
 }
+const adminRules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '请输入密码', trigger: 'blur' },
+    { min: 3, message: '密码长度不能小于3位', trigger: 'blur' }
+  ]
+}
+
 
 // 添加注册表单
 const registerFormRef = ref(null)
@@ -257,23 +226,28 @@ const handleUserLogin = () => {
 }
 
 // 管理员登录
-const handleAdminLogin = () => {
-  adminLoginFormRef.value.validate((valid) => {
-    if (valid) {
-      loading.value = true
-      // 这里模拟管理员登录请求
-      setTimeout(() => {
-        if (adminLoginForm.username === 'admin' && adminLoginForm.password === '123456') {
-          ElMessage.success('登录成功')
-          router.push('/admin')
-        } else {
-          ElMessage.error('用户名或密码错误')
-        }
-        loading.value = false
-      }, 1000)
-    }
-  })
-}
+const adminLogin = () => {
+  // console.log("管理员登录")
+  if (adminLoginForm.username && adminLoginForm.password) {
+    // 创建表单数据
+    console.log("管理员登录")
+    let admin = new FormData();
+    admin.append("username", adminLoginForm.username);
+    admin.append("password", adminLoginForm.password);
+
+    // 使用 axios.post 而不是直接使用 post
+    axios.post("/admin/login", admin).then(result => {
+      if (result.data.code==200) {
+        ElMessage.success('登录成功')
+        router.push('/admin');
+      }else {
+        ElMessage.error('登录失败')
+      }
+    }).catch(error => {
+      ElMessage.error('登录失败，服务器爆了(')
+    });
+  }
+};
 </script>
 
 <style scoped>
