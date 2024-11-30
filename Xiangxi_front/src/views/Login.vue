@@ -33,52 +33,27 @@
       </el-form>
 
       <!-- 注册表单 -->
-      <el-form
-        v-else
-        ref="registerFormRef"
-        :model="registerForm"
-        :rules="registerRules"
-        class="login-form"
-      >
+      <el-form v-else ref="registerFormRef" :model="registerForm" :rules="registerRules" class="login-form">
         <el-form-item prop="username">
-          <el-input
-            v-model="registerForm.username"
-            placeholder="请输入用户名"
-            prefix-icon="User"
-          />
+          <el-input v-model="registerForm.username" placeholder="请输入用户名" prefix-icon="User"/>
+        </el-form-item>
+        <el-form-item prop="name">
+          <el-input v-model="registerForm.name" placeholder="请输入姓名" prefix-icon="User"/>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input
-            v-model="registerForm.password"
-            type="password"
-            placeholder="请输入密码"
-            prefix-icon="Lock"
-            show-password
-          />
+          <el-input v-model="registerForm.password" type="password" placeholder="请输入密码" prefix-icon="Lock" show-password/>
         </el-form-item>
         <el-form-item prop="confirmPassword">
-          <el-input
-            v-model="registerForm.confirmPassword"
-            type="password"
-            placeholder="请确认密码"
-            prefix-icon="Lock"
-            show-password
-          />
+          <el-input v-model="registerForm.confirmPassword" type="password" placeholder="请确认密码" prefix-icon="Lock" show-password/>
         </el-form-item>
         <el-form-item prop="phone">
-          <el-input
-            v-model="registerForm.phone"
-            placeholder="请输入手机号"
-            prefix-icon="Phone"
-          />
+          <el-input v-model="registerForm.phone" placeholder="请输入手机号" prefix-icon="Phone"/>
+        </el-form-item>
+        <el-form-item prop="email">
+          <el-input v-model="registerForm.email" placeholder="请输入邮箱" prefix-icon="Message"/>
         </el-form-item>
         <el-form-item>
-          <el-button
-            type="primary"
-            :loading="loading"
-            class="login-button"
-            @click="handleRegister"
-          >
+          <el-button type="primary" :loading="loading" class="login-button" @click="handleRegister">
             注册
           </el-button>
         </el-form-item>
@@ -149,9 +124,11 @@ const adminRules = {
 const registerFormRef = ref(null)
 const registerForm = reactive({
   username: '',
+  name: '',
   password: '',
   confirmPassword: '',
-  phone: ''
+  phone: '',
+  email: ''
 })
 
 // 注册表单验证规则
@@ -180,6 +157,14 @@ const registerRules = {
   phone: [
     { required: true, message: '请输入手机号', trigger: 'blur' },
     { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' }
+  ],
+  email: [
+    { required: true, message: '请输入邮箱', trigger: 'blur' },
+    { type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }
+  ],
+  name: [
+    { required: true, message: '请输入姓名', trigger: 'blur' },
+    { min: 2, max: 20, message: '姓名长度在 2 到 20 个字符', trigger: 'blur' }
   ]
 }
 
@@ -193,17 +178,25 @@ const toggleRegister = () => {
 
 // 处理注册
 const handleRegister = () => {
-  registerFormRef.value.validate((valid) => {
-    if (valid) {
-      loading.value = true
-      // 这里模拟注册请求
-      setTimeout(() => {
-        ElMessage.success('注册成功，请登录')
-        isRegister.value = false
-        loading.value = false
-      }, 1000)
+  console.log("用户注册...")
+  let user = new FormData();
+  user.append("username", registerForm.username)
+  user.append("name", registerForm.name)
+  user.append("password", registerForm.password)
+  user.append("phone", registerForm.phone)
+  user.append("email", registerForm.email)
+
+  // 使用 axios.post 发送消息
+  axios.post("/user/register", user).then(result => {
+    if (result.data.code==200) {
+      ElMessage.success('注册成功!')
+      toggleRegister()
+    }else {
+      ElMessage.error('注册失败，账号已存在!')
     }
-  })
+  }).catch(error => {
+    ElMessage.error('注册失败，服务器爆了(')
+  });
 }
 
 // 切换登录类型
