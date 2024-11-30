@@ -213,29 +213,37 @@ const toggleLoginType = () => {
 
 // 用户登录
 const handleUserLogin = () => {
-  userLoginFormRef.value.validate((valid) => {
-    if (valid) {
-      loading.value = true
-      // 这里模拟用户登录请求
-      setTimeout(() => {
-        ElMessage.error('普通用户暂未开放')
-        loading.value = false
-      }, 1000)
-    }
-  })
+  if (userLoginForm.username && userLoginForm.password){
+    // 创建表单数据
+    console.log("用户登录...")
+    let user = new FormData();
+    user.append("username", userLoginForm.username);
+    user.append("password", userLoginForm.password);
+
+    // 使用 axios.post 发送消息
+    axios.post("/user/login", user).then(result => {
+      if (result.data.code==200) {
+        ElMessage.success('登录成功')
+        router.push('/user/home');
+      }else {
+        ElMessage.error('登录失败')
+      }
+    }).catch(error => {
+      ElMessage.error('登录失败，服务器爆了(')
+    });
+  }
 }
 
 // 管理员登录
 const adminLogin = () => {
-  // console.log("管理员登录")
   if (adminLoginForm.username && adminLoginForm.password) {
     // 创建表单数据
-    console.log("管理员登录")
+    console.log("管理员登录...")
     let admin = new FormData();
     admin.append("username", adminLoginForm.username);
     admin.append("password", adminLoginForm.password);
 
-    // 使用 axios.post 而不是直接使用 post
+    // 使用 axios.post 发送消息
     axios.post("/admin/login", admin).then(result => {
       if (result.data.code==200) {
         ElMessage.success('登录成功')

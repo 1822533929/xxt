@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import AdminLayout from '../views/admin/AdminLayout.vue'
+import Home from "@/views/user/Home.vue";
 
 const routes = [
   //默认路由定位到登录页面
@@ -12,6 +13,11 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: Login
+  },
+  {
+    path:'/user/home',
+    name:'User',
+    component: Home,
   },
   {
     path: '/admin',
