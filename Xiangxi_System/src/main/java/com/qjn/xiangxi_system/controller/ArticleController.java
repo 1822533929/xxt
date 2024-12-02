@@ -20,13 +20,13 @@ public class ArticleController {
     public Result add(Article article)
     {
         articleService.save(article);
-        return Result.suc();
+        return Result.success();
     }
     @RequestMapping("/update")
     public Result update(Article article)
     {
         articleService.updateById(article);
-        return Result.suc();
+        return Result.success();
     }
     /**
     单个删除
@@ -35,7 +35,7 @@ public class ArticleController {
     public Result delete(Integer id)
     {
         articleService.removeById(id);
-        return Result.suc();
+        return Result.success();
     }
     /**
     批量删除
@@ -44,7 +44,7 @@ public class ArticleController {
     public Result batchDelete(List<Integer> ids)
     {
         articleService.deleteBatch(ids);
-        return Result.suc();
+        return Result.success();
     }
     /**
      * 单个查询
@@ -53,7 +53,7 @@ public class ArticleController {
     public Result selectById(Integer id)
     {
         Article article = articleService.getById(id);
-        return Result.suc(article);
+        return Result.success(article);
     }
     /**
      * 全部查询
@@ -62,7 +62,7 @@ public class ArticleController {
     public Result selectAll()
     {
         List<Article> list = articleService.list();
-        return Result.suc(list);
+        return Result.success(list);
     }
     /**
      * 分页查询

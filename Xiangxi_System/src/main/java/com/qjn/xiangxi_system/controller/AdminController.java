@@ -18,9 +18,9 @@ public class AdminController {
     public Result login(Admin admin){
         System.out.println("AdminLogin:"+admin.getUsername()+","+admin.getPassword());
         if(adminService.login(admin)==1){//账号密码正确，进入管理员后台
-            return Result.suc();
+            return Result.success();
         }else{
-            return Result.fail();
+            return Result.error();
         }
 
 

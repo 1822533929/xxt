@@ -1,32 +1,78 @@
 package com.qjn.xiangxi_system.utils;
 
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+
+/***
+ * vo
+ */
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
-public class Result {
-        private int code;//200成功，其他失败
-        private String message;//成功或失败
-        private Long total;//总记录数
-        private Object data;//数据
-        public static Result result(int code, String message, Long total, Object data) {
-            Result res= new Result();
-            res.setCode(code);
-            res.setMessage(message);
-            res.setTotal(total);
-            res.setData(data);
-            return res;
-        }
-        public static Result fail(){//失败
-            return result(400,"失败",0L,null);
-        }
-        public static Result suc(Object data) {//成功后传参
-            return result(200,"成功",0L,data);
-        }
-        public static Result suc() {//成功不传参
-             return result(200, "成功", 0L, null);
-        }
-        public static Result suc(Object data, Long total) {//成功后传参和total
-            return result(200,"成功",total,data);
-        }
+public class Result<T>  implements Serializable {
+    private Integer code;
+    private String msg;
+    private T data;
 
+
+    public static Result success(){
+        return Result.builder()
+                .code(CodeEnum.SUCCESS.getCode())
+                .msg(CodeEnum.SUCCESS.getMsg())
+                .build();
+    }
+
+    public static Result success(String msg){
+        return Result.builder()
+                .code(CodeEnum.SUCCESS.getCode())
+                .msg(msg)
+                .build();
+    }
+
+
+    public static <T> Result<T> success(T data){
+
+        return new Result<>(
+                CodeEnum.SUCCESS.getCode(),
+                CodeEnum.SUCCESS.getMsg(),
+                data);
+    }
+
+    public static<T> Result<T> success(T data, String msg){
+        return new Result<>(CodeEnum.SUCCESS.getCode(), msg, data);
+    }
+
+
+    public static  Result success(CodeEnum codeEnum){
+        return Result.builder()
+                .code(codeEnum.getCode())
+                .msg(codeEnum.getMsg())
+                .build();
+    }
+
+    public static Result error(){
+        return Result.builder()
+                .code(CodeEnum.ERROR.getCode())
+                .msg(CodeEnum.ERROR.getMsg())
+                .build();
+    }
+
+    public static Result error(String msg){
+        return Result.builder()
+                .code(CodeEnum.ERROR.getCode())
+                .msg(msg)
+                .build();
+    }
+    public static Result error(CodeEnum codeEnum){
+        return Result.builder()
+                .code(codeEnum.getCode())
+                .msg(codeEnum.getMsg())
+                .build();
+    }
 }

@@ -13,7 +13,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-// 配置 axios 默认值（可选）
+// 配置 axios 默认值
 axios.defaults.baseURL = 'http://localhost:8080/xxt/api'
 
 app.use(router)

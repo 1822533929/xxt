@@ -10,6 +10,23 @@
         <el-form-item prop="password">
           <el-input v-model="userLoginForm.password" type="password" placeholder="密码" prefix-icon="Lock" show-password/>
         </el-form-item>
+        <!--验证码输入框-->
+        <el-form-item prop="verifyCode">
+          <div class="verify-code-container">
+            <el-input
+                v-model="userLoginForm.verifyCode"
+                placeholder="请输入验证码"
+                prefix-icon="Key"
+                style="width: 200px"
+            />
+            <img
+                :src="verifyCodeUrl"
+                alt="验证码"
+                class="verify-code-img"
+                @click="refreshVerifyCode"
+            />
+          </div>
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" :loading="loading" class="login-button" @click="handleUserLogin">
             登录
@@ -79,6 +96,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
+import {setLocalToken} from "@/common/token.js";
 
 const router = useRouter()
 const loading = ref(false)
@@ -216,6 +234,8 @@ const handleUserLogin = () => {
     // 使用 axios.post 发送消息
     axios.post("/user/login", user).then(result => {
       if (result.data.code==200) {
+        // 从回送结果中取出令牌，并将令牌存于客户端
+        setLocalToken(result.data)
         ElMessage.success('登录成功')
         router.push('/user/home');
       }else {

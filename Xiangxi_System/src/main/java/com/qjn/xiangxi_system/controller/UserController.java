@@ -16,18 +16,20 @@ public class UserController {
     public Result login(User user){
         System.out.println("UserLogin:"+user.getUsername()+","+user.getPassword());
         if(userService.login(user)==1){//账号密码正确，进入用户后台
-            return Result.suc();
+            System.out.println("用户登录成功");
+            return Result.success();
         }else{
-            return Result.fail();
+            System.out.println("用户登录失败");
+            return Result.error();
         }
     }
     @RequestMapping("/register")
     public Result register(User user){
         System.out.println("UserRegister:"+user.getUsername()+","+user.getPassword());
         if(userService.register(user)==1){//注册成功
-            return Result.suc();
+            return Result.success();
         }else{
-            return Result.fail();
+            return Result.error();
         }
     }
 

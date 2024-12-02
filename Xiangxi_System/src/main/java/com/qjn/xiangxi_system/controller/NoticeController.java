@@ -20,14 +20,14 @@ public class NoticeController {
     @RequestMapping("/add")
     public Result add(Notice notice){
         noticeService.save(notice);
-        return Result.suc();
+        return Result.success();
     }
 
     @RequestMapping("/update")
     public Result update(Notice notice)
     {
         noticeService.updateById(notice);
-        return Result.suc();
+        return Result.success();
     }
     /**
      单个删除
@@ -36,7 +36,7 @@ public class NoticeController {
     public Result delete(Integer id)
     {
         noticeService.removeById(id);
-        return Result.suc();
+        return Result.success();
     }
     /**
      批量删除
@@ -45,7 +45,7 @@ public class NoticeController {
     public Result batchDelete(List<Integer> ids)
     {
         noticeService.deleteBatch(ids);
-        return Result.suc();
+        return Result.success();
     }
     /**
      * 单个查询
@@ -54,7 +54,7 @@ public class NoticeController {
     public Result selectById(Integer id)
     {
         Notice notice = noticeService.getById(id);
-        return Result.suc(notice);
+        return Result.success(notice);
     }
     /**
      * 全部查询
@@ -63,6 +63,6 @@ public class NoticeController {
     public Result selectAll()
     {
         List<Notice> noticeList = noticeService.list();
-        return Result.suc(noticeList);
+        return Result.success(noticeList);
     }
 }
