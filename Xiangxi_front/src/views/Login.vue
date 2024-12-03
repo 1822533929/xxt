@@ -13,18 +13,8 @@
         <!--验证码输入框-->
         <el-form-item prop="verifyCode">
           <div class="verify-code-container">
-            <el-input
-                v-model="userLoginForm.verifyCode"
-                placeholder="请输入验证码"
-                prefix-icon="Key"
-                style="width: 200px"
-            />
-            <img
-                :src="verifyCodeUrl"
-                alt="验证码"
-                class="verify-code-img"
-                @click="refreshVerifyCode"
-            />
+            <el-input v-model="userLoginForm.verifyCode" placeholder="请输入验证码" prefix-icon="Key" style="width: 200px"/>
+            <img :src="codeSrc" alt="验证码" class="verify-code-img" @click="getCode">
           </div>
         </el-form-item>
         <el-form-item>
@@ -107,7 +97,8 @@ const isRegister = ref(false)
 const userLoginFormRef = ref(null)
 const userLoginForm = reactive({
   username: '',
-  password: ''
+  password: '',
+  verifyCode:''
 })
 
 // 管理员登录表单
@@ -136,6 +127,17 @@ const adminRules = {
     { min: 3, message: '密码长度不能小于3位', trigger: 'blur' }
   ]
 }
+const verificationRule = {
+  verificationCode: [
+    {
+      min: 4,
+      max: 4,
+      required: true,
+      message: "请输入正确的验证码！",
+      trigger: "blur"
+    }
+  ]
+};
 
 
 // 添加注册表单
@@ -185,6 +187,25 @@ const registerRules = {
     { min: 2, max: 20, message: '姓名长度在 2 到 20 个字符', trigger: 'blur' }
   ]
 }
+// 获取验证码
+const codeSrc = ref(); // 验证码图片url
+const getCode = () => {
+  axios.get('/captcha/captchaImage', {
+    withCredentials: true
+  }).then(res => {
+    console.log("验证码响应：", res.data);
+    if (res.data.code === 200) {
+      codeSrc.value = res.data.data.img;
+    } else {
+      ElMessage.error('获取验证码失败');
+    }
+  }).catch(err => {
+    console.error("获取验证码错误：", err);
+    ElMessage.error('获取验证码失败');
+  });
+}
+getCode();
+
 
 // 切换注册状态
 const toggleRegister = () => {
@@ -224,25 +245,35 @@ const toggleLoginType = () => {
 
 // 用户登录
 const handleUserLogin = () => {
-  if (userLoginForm.username && userLoginForm.password){
-    // 创建表单数据
-    console.log("用户登录...")
+  if (userLoginForm.username && userLoginForm.password && userLoginForm.verifyCode) {
     let user = new FormData();
     user.append("username", userLoginForm.username);
     user.append("password", userLoginForm.password);
+    user.append("captcha", userLoginForm.verifyCode);
 
-    // 使用 axios.post 发送消息
-    axios.post("/user/login", user).then(result => {
-      if (result.data.code==200) {
-        // 从回送结果中取出令牌，并将令牌存于客户端
-        setLocalToken(result.data)
-        ElMessage.success('登录成功')
-        router.push('/user/home');
-      }else {
-        ElMessage.error('登录失败')
+    // 先验证验证码
+    axios.post("/captcha/check", user, {
+      withCredentials: true
+    }).then(checkResult => {
+      if (checkResult.data.code === 200) {
+        // 验证码正确，继续登录流程
+        axios.post("/user/login", user).then(result => {
+          if (result.data.code === 200) {
+            setLocalToken(result.data);
+            ElMessage.success('登录成功');
+            router.push('/user/home');
+          } else {
+            ElMessage.error('登录失败');
+            getCode(); // 刷新验证码
+          }
+        });
+      } else {
+        ElMessage.error(checkResult.data.msg || '验证码错误');
+        getCode(); // 刷新验证码
       }
     }).catch(error => {
-      ElMessage.error('登录失败，服务器爆了(')
+      ElMessage.error('服务器错误');
+      getCode(); // 刷新验证码
     });
   }
 }
@@ -269,6 +300,7 @@ const adminLogin = () => {
     });
   }
 };
+
 </script>
 
 <style scoped>
@@ -323,5 +355,16 @@ const adminLogin = () => {
 
 .action-links span:hover {
   text-decoration: underline;
+}
+
+.verify-code-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.verify-code-img {
+  height: 40px;
+  cursor: pointer;
 }
 </style>

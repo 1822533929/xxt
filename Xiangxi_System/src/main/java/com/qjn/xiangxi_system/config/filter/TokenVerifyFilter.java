@@ -50,7 +50,7 @@ public class TokenVerifyFilter extends OncePerRequestFilter {
             }
 
             User user = JWTUtils.parseUserFromJWT(token);
-
+            System.out.println("user："+user);
             //在SecurityContextHolder中设置认证信息，认证处理中
             UsernamePasswordAuthenticationToken authenticationToken =
                     new UsernamePasswordAuthenticationToken(user,user.getPassword(),user.getAuthorities());

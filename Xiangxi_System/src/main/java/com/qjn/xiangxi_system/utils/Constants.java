@@ -13,9 +13,9 @@ public class Constants {
     public static final String TOKEN_NAME = "Authorization";
 
 
-    public static final String CAPTCHA_URI = "/wms/api/captcha/captchaImage";
-    public static final String CAPTCHA_CHECK_URI = "/wms/api/captcha/check";
-    public static final String STATIC_RESOURCES_URL = "/wms/static/**";
+    public static final String CAPTCHA_URI = "/xxt/api/captcha/captchaImage";
+    public static final String CAPTCHA_CHECK_URI = "/xxt/api/captcha/check";
+    public static final String STATIC_RESOURCES_URL = "/xxt/static/**";
     public static final List<String> WHITE_URL_LIST = List.of(
             LOGIN_URI,
             LOGOUT_URI,
