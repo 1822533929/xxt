@@ -1,8 +1,5 @@
 package com.qjn.xiangxi_system.config;
 
-
-
-
 import com.qjn.xiangxi_system.config.Handler.MyAccessDeniedHandler;
 import com.qjn.xiangxi_system.config.Handler.MyAuthenticationFailureHandler;
 import com.qjn.xiangxi_system.config.Handler.MyAuthenticationSuccessHandler;
@@ -15,6 +12,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -48,6 +47,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> {
                     //配置请求权限
                     authorizeRequests
+                            .requestMatchers(Constants.REGISTER_URI)
+                            .permitAll()
                             .requestMatchers(Constants.CAPTCHA_URI)
                             .permitAll()
                             .requestMatchers(Constants.CAPTCHA_CHECK_URI)
@@ -63,6 +64,7 @@ public class SecurityConfig {
                             .successHandler(authenticationSuccessHandler) //登录成功
                             .failureHandler(authenticationFailureHandler);//登录失败
                 })
+
                 .csrf(csrf -> {
                     csrf.disable();
                 })
@@ -94,7 +96,9 @@ public class SecurityConfig {
         return url;
     }
 
-
-
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
 }

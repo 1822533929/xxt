@@ -11,8 +11,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
@@ -59,12 +57,6 @@ public class ConfigBean {
         converter.setSupportedMediaTypes(Collections.singletonList(MediaType.APPLICATION_JSON));
 
         return converter;
-    }
-
-
-    @Bean//加密
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
     }
 
     @Bean(name = "captchaProducer")

@@ -227,6 +227,7 @@ const handleRegister = () => {
 
   // 使用 axios.post 发送消息
   axios.post("/user/register", user).then(result => {
+    console.log(result.data);
     if (result.data.code==200) {
       ElMessage.success('注册成功!')
       toggleRegister()
@@ -258,6 +259,7 @@ const handleUserLogin = () => {
       if (checkResult.data.code === 200) {
         // 验证码正确，继续登录流程
         axios.post("/user/login", user).then(result => {
+          console.log(result.data);
           if (result.data.code === 200) {
             setLocalToken(result.data);
             ElMessage.success('登录成功');
@@ -296,7 +298,7 @@ const adminLogin = () => {
         ElMessage.error('登录失败')
       }
     }).catch(error => {
-      ElMessage.error('登录失败，服务器爆了(')
+      ElMessage.error('登录失败，服务器报错')
     });
   }
 };
