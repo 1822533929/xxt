@@ -15,9 +15,39 @@ const routes = [
     component: Login
   },
   {
-    path:'/user/home',
-    name:'User',
+    path: '/user',
     component: Home,
+    children: [
+      {
+        path: '',
+        redirect: 'home'
+      },
+      {
+        path: 'home',
+        name: 'UserHome',
+        component: () => import('../views/user/UserHome.vue')  // 首页内容组件
+      },
+      {
+        path: 'guides',
+        name: 'UserGuides',
+        component: () => import('../views/user/TravelGuides.vue')
+      },
+      {
+        path: 'routes',
+        name: 'UserRoutes',
+        component: () => import('../views/user/TravelRoutes.vue')
+      },
+      {
+        path: 'travel',
+        name: 'UserTravel',
+        component: () => import('../views/user/Travel.vue')
+      },
+      {
+        path: 'feedback',
+        name: 'UserFeedback',
+        component: () => import('../views/user/Feedback.vue')
+      }
+    ]
   },
   {
     path: '/admin',
