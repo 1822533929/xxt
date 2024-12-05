@@ -25,4 +25,12 @@
         FROM user
         WHERE username = #{username}
     </select>
+    <select id="getUserByUsername" resultType="com.qjn.xiangxi_system.pojo.User">
+        SELECT *
+        FROM user
+        WHERE username = #{username}
+    </select>
+    <select id="selectByUsername" resultType="com.qjn.xiangxi_system.pojo.User">
+        SELECT * FROM user WHERE username = #{username}
+    </select>
 </mapper>

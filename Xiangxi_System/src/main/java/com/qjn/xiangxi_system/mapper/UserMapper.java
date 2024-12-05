@@ -11,6 +11,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface UserMapper extends BaseMapper<User> {
     User isExist(String username);
+    User getUserByUsername(String username);
+
+    User selectByUsername(String username);
 }
 
 

@@ -19,19 +19,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private UserMapper userMapper;
 
-    @Override
-    public int login(User user) {
-        User user1 = userMapper.isExist(user.getUsername());
-        if (user1 == null) {
-            System.out.println("登录失败：用户不存在");
-            return 0;
-        } else if (!user.getPassword().equals(user1.getPassword())) {
-            System.out.println("登录失败：密码错误");
-            return 0;
-        }
-        System.out.println("登录成功");
-        return 1;
-    }
+//    @Override
+//    public int login(User user) {
+//        User user1 = userMapper.isExist(user.getUsername());
+//        if (user1 == null) {
+//            System.out.println("登录失败：用户不存在");
+//            return 0;
+//        } else if (!user.getPassword().equals(user1.getPassword())) {
+//            System.out.println("登录失败：密码错误");
+//            return 0;
+//        }
+//        System.out.println("登录成功");
+//        return 1;
+//    }
 
     @Override
     public int register(User user) {
