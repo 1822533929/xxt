@@ -14,6 +14,9 @@
 </template>
 
 <script>
+import fenghuangImage from '@/images/carousel/fenghuang.jpg'
+import dehangImage from '@/images/carousel/dehang.jpg'
+import zhangjiajieImage from '@/images/carousel/zhangjiajie.jpg'
 export default {
   name: 'UserHome',
   data() {
@@ -23,19 +26,19 @@ export default {
           id: 1,
           title: '凤凰古城',
           description: '湘西最著名的旅游景点',
-          imageUrl: '/images/carousel/fenghuang.jpg'  // 需要替换为实际图片路径
+          imageUrl: fenghuangImage  // 需要替换为实际图片路径
         },
         {
           id: 2,
           title: '德夯苗寨',
           description: '体验原真的苗族文化',
-          imageUrl: '/images/carousel/dehang.jpg'  // 需要替换为实际图片路径
+          imageUrl: dehangImage  // 需要替换为实际图片路径
         },
         {
           id: 3,
           title: '张家界',
           description: '世界自然遗产',
-          imageUrl: '/images/carousel/zhangjiajie.jpg'  // 需要替换为实际图片路径
+          imageUrl: zhangjiajieImage  // 需要替换为实际图片路径
         }
       ]
     }

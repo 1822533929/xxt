@@ -64,8 +64,8 @@
         </div>
         <div class="footer-section">
           <h3>联系方式</h3>
-          <p>电话：0743-xxxxxxx</p>
-          <p>邮箱：contact@xiangxi.com</p>
+          <p>电话：1760-3221897</p>
+          <p>邮箱：1822533929@qq.com</p>
         </div>
         <div class="footer-section">
           <h3>快速链接</h3>
@@ -74,7 +74,7 @@
         </div>
       </div>
       <div class="copyright">
-        <p>© 2024 湘西旅游网 版权所有</p>
+        <p>© 2024 吉首大学 版权所有</p>
       </div>
     </div>
   </div>

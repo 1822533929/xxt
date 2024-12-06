@@ -9,6 +9,9 @@ spring:
   mvc:
     servlet:
       path: /xxt/api
+      multipart:
+        max-file-size: 10MB
+        max-request-size: 10MB
 #server:
 #  port: 8080
 
@@ -19,7 +22,7 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
     cache-enabled: true
-
-file:
-  upload-path: classpath:static/img/upload
-  access-path: /img/upload/
+#
+#file:
+#  upload-path: classpath:static/img/upload
+#  access-path: /img/upload/
