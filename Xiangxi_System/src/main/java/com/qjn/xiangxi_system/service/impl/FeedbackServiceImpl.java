@@ -5,7 +5,7 @@ import com.qjn.xiangxi_system.pojo.Feedback;
 import com.qjn.xiangxi_system.service.FeedbackService;
 import com.qjn.xiangxi_system.mapper.FeedbackMapper;
 import org.springframework.stereotype.Service;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 /**
 * @author Administrator
@@ -19,7 +19,7 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback>
     @Override
     public boolean addFeedback(Feedback feedback) {
         // 设置创建时间
-        feedback.setCreateTime(LocalDateTime.now());
+        feedback.setCreateTime(new Date());
         // 设置初始状态为"待处理"
         feedback.setStatus("待处理");
         // 保存反馈信息

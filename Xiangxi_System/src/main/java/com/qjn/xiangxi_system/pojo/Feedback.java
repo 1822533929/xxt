@@ -1,7 +1,6 @@
 package com.qjn.xiangxi_system.pojo;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -197,7 +196,7 @@ public class Feedback implements Serializable {
     /**
      * 创建时间
      */
-    public void setCreateTime(LocalDateTime createTime) {
+    public void setCreateTime(Date createTime) {
         this.createTime = createTime;
     }
 
