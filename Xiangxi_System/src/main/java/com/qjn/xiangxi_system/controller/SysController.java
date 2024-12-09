@@ -97,20 +97,4 @@ public class SysController {
         return Result.success();
     }
 
-//    @GetMapping("/allAuth")
-//    public Result<List<AuthTree>> authList() {
-//        return Result.success(authInfoService.getAuthTreeByUserId(null));
-//    }
-//
-//    @GetMapping("/permission/check")
-//    public Result Permission(@RequestParam("permission") String permission) {
-//        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        List<String> roleList = user.getPermissionList();
-//        log.info("当前用户权限列表：{}",roleList);
-//        if(roleList.contains(permission)){
-//            return Result.success(true);
-//        }
-//        return Result.success(false);
-//    }
-
 }

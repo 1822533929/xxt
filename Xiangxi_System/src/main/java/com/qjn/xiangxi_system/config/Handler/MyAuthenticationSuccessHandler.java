@@ -30,13 +30,10 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
         User user = (User) authentication.getPrincipal();
 
 
-
-
         //1、生成jwt
         //把tUser对象转成json作为负载数据放入jwt
         String userJSON = JSONUtils.toJSON(user);
         String jwt = JWTUtils.createJWT(userJSON);
-
 
 
 //        System.out.println(rememberMe);

@@ -16,7 +16,7 @@ public class Feedback implements Serializable {
     /**
      * 用户ID
      */
-    private Long userId;
+    private Integer userId;
 
     /**
      * 反馈类型：suggestion-功能建议，bug-问题报告，complaint-投诉，other-其他
@@ -77,14 +77,14 @@ public class Feedback implements Serializable {
     /**
      * 用户ID
      */
-    public Long getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
     /**
      * 用户ID
      */
-    public void setUserId(Long userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 

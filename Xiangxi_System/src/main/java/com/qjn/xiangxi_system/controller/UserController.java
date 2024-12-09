@@ -17,14 +17,6 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-//    @RequestMapping("/login")
-//    public Result login(User user) {
-//        if(userService.login(user)==1){
-//            return Result.success();
-//        }else{
-//            return Result.error();
-//        }
-//    }
 
     @RequestMapping("/register")
     public Result register(User user){

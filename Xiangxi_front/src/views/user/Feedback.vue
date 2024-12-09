@@ -73,14 +73,24 @@
 
 <script>
 import { Plus } from '@element-plus/icons-vue'
+import { ElMessage } from "element-plus";
+import { get, post } from "@/common"
+
 
 export default {
+
   name: 'Feedback',
   components: {
     Plus
   },
   data() {
     return {
+      // @RequestParam("image") MultipartFile image,
+      // @RequestParam("userId") Integer userId,
+      // @RequestParam("type") String type,
+      // @RequestParam("title") String title,
+      // @RequestParam("content") String content,
+      // @RequestParam(value = "contact", required = false) String contact
       feedbackForm: {
         type: '',
         title: '',
@@ -106,6 +116,7 @@ export default {
       ]
     }
   },
+
   methods: {
     handleImageChange(file) {
       console.log('选择图片:', file)
@@ -113,9 +124,33 @@ export default {
     submitFeedback() {
       this.$refs.feedbackFormRef.validate((valid) => {
         if (valid) {
-          console.log('提交反馈:', this.feedbackForm)
-          this.$message.success('反馈提交成功')
-          this.resetForm()
+          const formData = new FormData()
+          formData.append('type', this.feedbackForm.type)
+          formData.append('title', this.feedbackForm.title)
+          formData.append('content', this.feedbackForm.content)
+          formData.append('contact', this.feedbackForm.contact)
+          
+          // 如果有图片，添加图片
+          if (this.feedbackForm.images.length > 0) {
+            this.feedbackForm.images.forEach(image => {
+              formData.append('image', image.raw)
+            })
+          }
+          post('/feedback/add', formData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }).then(result => {
+            if (result.code === 200) {
+              ElMessage.success('提交反馈成功!')
+              this.resetForm()
+              this.getFeedbackList() // 刷新列表
+            } else {
+              ElMessage.error(result.msg || '提交失败!')
+            }
+          }).catch(() => {
+            ElMessage.error('提交失败，请稍后重试')
+          })
         }
       })
     },
@@ -143,9 +178,21 @@ export default {
     },
     getStatusType(status) {
       return status === '待处理' ? 'warning' : 'success'
+    },
+    getFeedbackList() {
+      get('/feedback/list').then(result => {
+        if (result.code === 200) {
+          this.myFeedbacks = result.data
+        }
+      })
+    },
+    created() {
+      this.getFeedbackList()
     }
   }
+
 }
+
 </script>
 
 <style scoped>

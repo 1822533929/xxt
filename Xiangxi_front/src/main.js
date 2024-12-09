@@ -5,7 +5,7 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import axios from 'axios'
-
+import { get, put, del, tip } from "./common/index";
 const app = createApp(App)
 
 // 注册所有图标

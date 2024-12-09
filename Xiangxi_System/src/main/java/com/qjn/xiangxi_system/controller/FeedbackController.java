@@ -23,7 +23,7 @@ public class FeedbackController {
     @PostMapping("/add")
     public ResponseEntity<?> addFeedback(
             @RequestParam("image") MultipartFile image,
-            @RequestParam("userId") Long userId,
+            @RequestParam("userId") Integer userId,
             @RequestParam("type") String type,
             @RequestParam("title") String title,
             @RequestParam("content") String content,

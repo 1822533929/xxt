@@ -20,7 +20,7 @@ import java.util.Map;
 public class JWTUtils<T> {
 
 
-    public static final String SECRET = "114adadadasdasda";
+    public static final String SECRET = "asddas1123gwegqwd112";
 
     public static final Algorithm ALGORITHM_METHOD = Algorithm.HMAC256(SECRET);
     /**

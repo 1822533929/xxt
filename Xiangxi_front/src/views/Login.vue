@@ -86,7 +86,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
-import {setLocalToken} from "@/common/token.js";
+import {setLocalToken} from "@/common/index.js";
 
 const router = useRouter()
 const loading = ref(false)
