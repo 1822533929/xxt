@@ -23,4 +23,9 @@
         contact,status,reply,
         create_time
     </sql>
+    <select id="getFeedbacksByUserId" resultType="com.qjn.xiangxi_system.pojo.Feedback">
+        SELECT *
+        FROM feedback
+        WHERE user_id = #{userId}
+    </select>
 </mapper>

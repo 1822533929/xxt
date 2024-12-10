@@ -62,10 +62,12 @@
           </template>
         </el-table-column>
         <el-table-column prop="title" label="标题" />
-        <el-table-column prop="status" label="状态" width="120">
+        <el-table-column prop="status" label="状态" width="100">
           <template #default="scope">
             <el-tag :type="getStatusType(scope.row.status)">{{ scope.row.status }}</el-tag>
           </template>
+        </el-table-column>
+        <el-table-column prop="reply" label="回复" width="150">
         </el-table-column>
         <el-table-column prop="createTime" label="提交时间" width="180" />
       </el-table>
@@ -87,12 +89,6 @@ export default {
   },
   data() {
     return {
-      // @RequestParam("image") MultipartFile image,
-      // @RequestParam("userId") Integer userId,
-      // @RequestParam("type") String type,
-      // @RequestParam("title") String title,
-      // @RequestParam("content") String content,
-      // @RequestParam(value = "contact", required = false) String contact
       feedbackForm: {
         type: '',
         title: '',
@@ -110,9 +106,10 @@ export default {
         {
           id: 1,
           type: 'suggestion',
-          title: '关于网站功能的建���',
+          title: '关于网站功能的建议',
           status: '待处理',
-          createTime: '2024-03-20 14:30:00'
+          createTime: '2024-03-20 14:30:00',
+          reply:''
         },
         // 更多反馈数据...
       ]
@@ -130,18 +127,18 @@ export default {
       this.$refs.feedbackFormRef.validate((valid) => {
         if (valid) {
           const token = getLocalToken();
-          console.log('Submit feedback token:', token, typeof token);
-          if (!token) {
-            ElMessage.error('请先登录');
-            return;
-          }
-          const tokenParts = token.split('.');
-          console.log('Token parts:', tokenParts);
-          if (tokenParts.length !== 3) {
-            ElMessage.error('登录已过期，请重新登录');
-            return;
-          }
-          
+          // console.log('Submit feedback token:', token, typeof token);
+          // if (!token) {
+          //   ElMessage.error('请先登录');
+          //   return;
+          // }
+          // const tokenParts = token.split('.');
+          // console.log('Token parts:', tokenParts);
+          // if (tokenParts.length !== 3) {
+          //   ElMessage.error('登录已过期，请重新登录');
+          //   return;
+          // }
+          // 获取用户信息:localStorage.setItem('userInfo', JSON.stringify(userInfo));
           const formData = new FormData()
           formData.append('type', this.feedbackForm.type)
           formData.append('title', this.feedbackForm.title)
@@ -205,18 +202,29 @@ export default {
     getStatusType(status) {
       return status === '待处理' ? 'warning' : 'success'
     },
+    //获取用户反馈
     getFeedbackList() {
-      get('/feedback/list').then(result => {
+      const token = getLocalToken();
+      if (!token) {
+        ElMessage.error('请先登录');
+        return;
+      }
+      
+      get('/feedback/getUserFeedback', null).then(result => {
         if (result.code === 200) {
           this.myFeedbacks = result.data
+        } else {
+          ElMessage.error(result.msg || '获取反馈列表失败');
         }
+      }).catch(error => {
+        ElMessage.error('获取反馈列表失败');
       })
     },
-    created() {
-      this.getFeedbackList()
-    }
-  }
 
+  },
+  created() {
+    this.getFeedbackList()
+  }
 }
 
 </script>

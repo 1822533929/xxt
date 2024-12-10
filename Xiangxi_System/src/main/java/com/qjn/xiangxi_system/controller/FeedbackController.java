@@ -1,11 +1,12 @@
 package com.qjn.xiangxi_system.controller;
 
 import com.qjn.xiangxi_system.pojo.Feedback;
+import com.qjn.xiangxi_system.pojo.User;
 import com.qjn.xiangxi_system.service.FeedbackService;
 import com.qjn.xiangxi_system.utils.FileUploadUtil;
+import com.qjn.xiangxi_system.utils.JWTUtils;
 import com.qjn.xiangxi_system.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,6 +57,32 @@ public class FeedbackController {
             }
         } catch (IOException e) {
             return Result.error("图片上传失败");
+        }
+    }
+    @GetMapping("/getUserFeedback")
+    public Result getUserFeedback(@RequestHeader("Authorization") String token) {
+        try {
+            // 移除 Bearer 前缀
+            if (token != null && token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            
+            // 验证 token
+            if (!JWTUtils.verifyJWT(token)) {
+                return Result.error("无效的token");
+            }
+            
+            // 解析 token 获取用户信息
+            User user = JWTUtils.parseUserFromJWT(token);
+            if (user == null || user.getId() == null) {
+                return Result.error("无法获取用户信息");
+            }
+            System.out.println("用户ID：" + user.getId());
+            // 查询该用户的反馈
+            return Result.success(feedbackService.getUserFeedback(user.getId()));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("获取反馈失败：" + e.getMessage());
         }
     }
 } 

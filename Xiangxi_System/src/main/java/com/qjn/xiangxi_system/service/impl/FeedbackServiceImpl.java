@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qjn.xiangxi_system.pojo.Feedback;
 import com.qjn.xiangxi_system.service.FeedbackService;
 import com.qjn.xiangxi_system.mapper.FeedbackMapper;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import java.util.Date;
+import java.util.List;
 
 /**
 * @author Administrator
@@ -15,6 +17,8 @@ import java.util.Date;
 @Service
 public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback>
     implements FeedbackService{
+    @Resource
+    private FeedbackMapper feedbackMapper;
 
     @Override
     public boolean addFeedback(Feedback feedback) {
@@ -24,6 +28,11 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback>
         feedback.setStatus("待处理");
         // 保存反馈信息
         return this.save(feedback);
+    }
+
+    @Override
+    public List<Feedback> getUserFeedback(Integer userId) {
+        return feedbackMapper.getFeedbacksByUserId(userId);
     }
 }
 
