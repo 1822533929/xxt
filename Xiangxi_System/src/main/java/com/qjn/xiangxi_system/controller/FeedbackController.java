@@ -3,6 +3,7 @@ package com.qjn.xiangxi_system.controller;
 import com.qjn.xiangxi_system.pojo.Feedback;
 import com.qjn.xiangxi_system.service.FeedbackService;
 import com.qjn.xiangxi_system.utils.FileUploadUtil;
+import com.qjn.xiangxi_system.utils.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +22,8 @@ public class FeedbackController {
     private FileUploadUtil fileUploadUtil;
 
     @PostMapping("/add")
-    public ResponseEntity<?> addFeedback(
-            @RequestParam("image") MultipartFile image,
+    public Result addFeedback(
+            @RequestParam(value = "image", required = false) MultipartFile image,
             @RequestParam("userId") Integer userId,
             @RequestParam("type") String type,
             @RequestParam("title") String title,
@@ -30,8 +31,11 @@ public class FeedbackController {
             @RequestParam(value = "contact", required = false) String contact
     ) {
         try {
-            // 上传图片
-            String imageUrl = fileUploadUtil.uploadImage(image);
+            String imageUrl = null;
+            // 只在有图片且不是空文件时处理图片上传
+            if (image != null && !image.isEmpty() && image.getSize() > 0) {
+                imageUrl = fileUploadUtil.uploadImage(image);
+            }
             
             // 创建反馈对象
             Feedback feedback = new Feedback();
@@ -46,12 +50,12 @@ public class FeedbackController {
             boolean success = feedbackService.addFeedback(feedback);
             
             if (success) {
-                return ResponseEntity.ok().body("反馈提交成功");
+                return Result.success("反馈上传成功");
             } else {
-                return ResponseEntity.badRequest().body("反馈提交失败");
+                return Result.error("反馈上传失败");
             }
         } catch (IOException e) {
-            return ResponseEntity.badRequest().body("图片上传失败：" + e.getMessage());
+            return Result.error("图片上传失败");
         }
     }
 } 

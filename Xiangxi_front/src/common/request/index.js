@@ -51,7 +51,7 @@ class RequestInfoPool {
 	}
 
 	/**
-	 * 处理请求信息，如果请求信息池中不存在相同的请求信息，则将请求信息放入请求信息池中, 并返回true,否则发返回false
+	 * 处理请求信息，如果请求信息池中不存在相同的���求信息，则将请求信息放入请求信息池中, 并返回true,否则发返回false
 	 */
 	putRequstInfo = (requestConfig, maxDuration = 5000) => {
 		const {
@@ -151,7 +151,7 @@ class RequestInfoPool {
 	isEmpty = () => this.pool.length === 0
 
 	/**
-	 * 请求信息池为是否仅有一个请求信息
+	 * 请��信息池为是否仅有一个请求信息
 	 */
 	hasOnlyOne = () => this.pool.length === 1
 
@@ -208,7 +208,7 @@ const CODE_MAP = {
 	[CODE_500]: "操作失败",
 	[CODE_510]: "无访问授权",
 	[CODE_INVALID_TOKEN]: "身份令牌失效或者账号异地登录",
-	[CODE_SYS_ERROR]: "系统错误，请与管理员联系",
+	[CODE_SYS_ERROR]: "系统错误，请管理员联系",
 	[CODE_SUCCESS_0]: "操作成功",
 	[CODE_201]: "请求成功创建资源",
 	[CODE_204]: "请求成功无返回内容",
@@ -313,7 +313,21 @@ instance.interceptors.request.use(
 		config.servMsg = config.servMsg === true // 是否显示服务端发来的成功消息
 		config.servMsgSync = config.servMsgSync === true //服务端成功消息是否同步显示
 
-		config['headers'][HEADER_TOKEN] = getToken(); // 请求时带上token
+		const token = getToken();
+		console.log('Request interceptor - raw token:', token);
+		
+		if (token) {
+			try {
+				const cleanToken = token.trim();
+				const encodedToken = cleanToken.replace(/\s+/g, '');
+				console.log('Request interceptor - clean token:', encodedToken);
+				config.headers[HEADER_TOKEN] = `Bearer ${encodedToken}`;
+				console.log('Request interceptor - authorization header:', config.headers[HEADER_TOKEN]);
+			} catch (e) {
+				console.error('Error processing token:', e);
+				removeLocalToken();
+			}
+		}
 
 		const source = CancelToken.source();// 创建一个取消令牌资源
 		config['cancelToken'] = source.token;// 从资源中获得取消令牌，并在请求的cancelToken配置项上配置取消令牌
@@ -402,7 +416,7 @@ instance.interceptors.response.use(function (response) {
 			console.error("-令牌失效-")
 			if (getLocalToken()) {
 				removeLocalToken();
-				message.error('登录令牌失效！请重新登录。');
+				message.error('登录失效！请重新登录。');
 			}
 			router.replace({
 				name: LOGIN_ROUTE_NAME

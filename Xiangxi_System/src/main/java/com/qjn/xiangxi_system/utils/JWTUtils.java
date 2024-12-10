@@ -51,6 +51,16 @@ public class JWTUtils<T> {
      */
     public static Boolean verifyJWT(String jwt) {
         try {
+            // 移除可能的 Bearer 前缀
+            if (jwt.startsWith("Bearer ")) {
+                jwt = jwt.substring(7);
+            }
+            
+            // 移除所有空白字符
+            jwt = jwt.replaceAll("\\s+", "");
+            
+            System.out.println("Verifying JWT: " + jwt);
+            
             // 使用秘钥创建一个JWT验证器对象
             JWTVerifier jwtVerifier = JWT.require(ALGORITHM_METHOD).build();
 
@@ -59,6 +69,7 @@ public class JWTUtils<T> {
 
             return true;
         } catch (Exception e) {
+            System.out.println("JWT verification failed: " + e.getMessage());
             e.printStackTrace();
         }
         return false;
@@ -68,8 +79,16 @@ public class JWTUtils<T> {
      * 解析JWT的数据
      *
      */
-    public static <T> T parseJWT(String jwt,String key,Class<T> clazz) {
+    public static <T> T parseJWT(String jwt, String key, Class<T> clazz) {
         try {
+            // 移除可能的 Bearer 前缀
+            if (jwt.startsWith("Bearer ")) {
+                jwt = jwt.substring(7);
+            }
+            
+            // 移除所有空白字符
+            jwt = jwt.replaceAll("\\s+", "");
+            
             // 使用秘钥创建一个验证器对象
             JWTVerifier jwtVerifier = JWT.require(ALGORITHM_METHOD).build();
 
@@ -79,12 +98,12 @@ public class JWTUtils<T> {
             Claim claim = claims.get(key);
 
             return JSONUtils.toBean(claim.asString(), clazz);
-            //通过解码后的jwt对象，就可以获取里面的负载数据
-//            for (String key : decodedJWT.getClaims().keySet()){
-//                System.out.println(key + " : " + decodedJWT.getClaim(key).asString());
-//            }
-
         } catch (TokenExpiredException e) {
+            System.out.println("Token expired: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        } catch (Exception e) {
+            System.out.println("Error parsing JWT: " + e.getMessage());
             e.printStackTrace();
             throw new RuntimeException(e);
         }

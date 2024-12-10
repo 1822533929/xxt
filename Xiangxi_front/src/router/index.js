@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import AdminLayout from '../views/admin/AdminLayout.vue'
 import Home from "@/views/user/Home.vue";
+import { BASE_URL, LOGIN_ROUTE_NAME } from '@/common/constants';
 
 const routes = [
   //默认路由定位到登录页面
@@ -121,9 +122,14 @@ const routes = [
   }
 ]
 
+// const router = createRouter({
+//   history: createWebHistory(),
+//   routes
+// })
+
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(BASE_URL),
   routes
-})
+});
 
 export default router 

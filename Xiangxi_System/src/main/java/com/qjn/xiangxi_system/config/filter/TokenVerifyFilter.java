@@ -33,22 +33,20 @@ public class TokenVerifyFilter extends OncePerRequestFilter {
         }
 
         String token = request.getHeader(Constants.TOKEN_NAME);
-        if(!StringUtils.hasText(token)){
-            Result result = Result.error(CodeEnum.NO_LOGIN);
-            ResponseUtils.write(response,JSONUtils.toJSON(result));
-            return;
-        }
 
-        if(!JWTUtils.verifyJWT(token)){
-            Result result = Result.error(CodeEnum.TOKEN_ERROR);
-            ResponseUtils.write(response,JSONUtils.toJSON(result));
-            return;
-        }
+        if (token != null) {
+            if (token.startsWith("Bearer ")) {
+                token = token.substring(7);
+            }
+            token = token.replaceAll("\\s+", "");
 
-        User user = JWTUtils.parseUserFromJWT(token);
-        UsernamePasswordAuthenticationToken authenticationToken =
-                new UsernamePasswordAuthenticationToken(user,user.getPassword(),user.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            if (JWTUtils.verifyJWT(token)) {
+                User user = JWTUtils.parseUserFromJWT(token);
+                UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(user,user.getPassword(),user.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+            }
+        }
 
         filterChain.doFilter(request,response);
     }

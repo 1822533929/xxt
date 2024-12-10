@@ -34,6 +34,8 @@
             list-type="picture-card"
             :auto-upload="false"
             :on-change="handleImageChange"
+            :on-remove="handleImageRemove"
+            :multiple="false"
           >
             <el-icon><Plus /></el-icon>
           </el-upload>
@@ -74,7 +76,7 @@
 <script>
 import { Plus } from '@element-plus/icons-vue'
 import { ElMessage } from "element-plus";
-import { get, post } from "@/common"
+import { get, post, getLocalToken } from "@/common"
 
 
 export default {
@@ -108,7 +110,7 @@ export default {
         {
           id: 1,
           type: 'suggestion',
-          title: '关于网站功能的建议',
+          title: '关于网站功能的建���',
           status: '待处理',
           createTime: '2024-03-20 14:30:00'
         },
@@ -119,23 +121,46 @@ export default {
 
   methods: {
     handleImageChange(file) {
-      console.log('选择图片:', file)
+      this.feedbackForm.images = [file.raw]
+    },
+    handleImageRemove(file) {
+      this.feedbackForm.images = []
     },
     submitFeedback() {
       this.$refs.feedbackFormRef.validate((valid) => {
         if (valid) {
+          const token = getLocalToken();
+          console.log('Submit feedback token:', token, typeof token);
+          if (!token) {
+            ElMessage.error('请先登录');
+            return;
+          }
+          const tokenParts = token.split('.');
+          console.log('Token parts:', tokenParts);
+          if (tokenParts.length !== 3) {
+            ElMessage.error('登录已过期，请重新登录');
+            return;
+          }
+          
           const formData = new FormData()
           formData.append('type', this.feedbackForm.type)
           formData.append('title', this.feedbackForm.title)
           formData.append('content', this.feedbackForm.content)
           formData.append('contact', this.feedbackForm.contact)
+          formData.append('userId', 1)
           
-          // 如果有图片，添加图片
-          if (this.feedbackForm.images.length > 0) {
-            this.feedbackForm.images.forEach(image => {
-              formData.append('image', image.raw)
-            })
+          if (this.feedbackForm.images && this.feedbackForm.images.length > 0) {
+            formData.append('image', this.feedbackForm.images[0])
+          } else {
+            const emptyBlob = new Blob([''], { type: 'application/octet-stream' })
+            const emptyFile = new File([emptyBlob], 'empty.txt', { type: 'application/octet-stream' })
+            formData.append('image', emptyFile)
           }
+          
+          for (let pair of formData.entries()) {
+            console.log(pair[0] + ': ' + pair[1])
+          }
+          
           post('/feedback/add', formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
@@ -157,6 +182,7 @@ export default {
     resetForm() {
       this.$refs.feedbackFormRef.resetFields()
       this.feedbackForm.images = []
+      this.$refs.upload && this.$refs.upload.clearFiles()
     },
     getTagType(type) {
       const types = {

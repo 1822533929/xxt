@@ -1,8 +1,9 @@
 package com.qjn.xiangxi_system.utils;
 
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.util.ResourceUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import jakarta.annotation.PostConstruct;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,6 +11,23 @@ import java.util.UUID;
 
 @Component
 public class FileUploadUtil {
+    
+    @Value("${file.upload-path}")
+    private String uploadPath;
+    
+    @PostConstruct
+    public void init() {
+        // 确保上传目录存在
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            boolean created = uploadDir.mkdirs();
+            if (created) {
+                System.out.println("Created upload directory: " + uploadDir.getAbsolutePath());
+            } else {
+                System.err.println("Failed to create upload directory: " + uploadDir.getAbsolutePath());
+            }
+        }
+    }
     
     /**
      * 上传图片文件
@@ -27,24 +45,31 @@ public class FileUploadUtil {
             throw new IOException("只能上传图片文件");
         }
 
-        // 获取项目中static目录的绝对路径
-        String projectPath = ResourceUtils.getURL("classpath:").getPath();
-        String uploadPath = projectPath + "static/img/upload";
-        
-        // 确保目录存在
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists()) {
-            uploadDir.mkdirs();
-        }
-
         // 生成新的文件名
         String originalFilename = file.getOriginalFilename();
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
         String newFileName = UUID.randomUUID().toString() + extension;
         
         // 保存文件
-        File destFile = new File(uploadPath + File.separator + newFileName);
-        file.transferTo(destFile);
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            boolean created = uploadDir.mkdirs();
+            if (!created) {
+                throw new IOException("无法创建上传目录：" + uploadDir.getAbsolutePath());
+            }
+        }
+        
+        // 使用绝对路径创建目标文件
+        File destFile = new File(uploadDir, newFileName);
+        
+        System.out.println("Uploading file to: " + destFile.getAbsolutePath());
+        try {
+            file.transferTo(destFile);
+            System.out.println("File uploaded successfully to: " + destFile.getAbsolutePath());
+        } catch (IOException e) {
+            System.err.println("Failed to upload file: " + e.getMessage());
+            throw e;
+        }
 
         // 返回可访问的URL路径
         return "/img/upload/" + newFileName;

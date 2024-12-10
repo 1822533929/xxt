@@ -87,6 +87,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import {setLocalToken} from "@/common/index.js";
+import {LOCAL_TOKEN} from "@/common/constants.js";
 
 const router = useRouter()
 const loading = ref(false)
@@ -259,9 +260,8 @@ const handleUserLogin = () => {
       if (checkResult.data.code === 200) {
         // 验证码正确，继续登录流程
         axios.post("/user/login", user).then(result => {
-          console.log(result.data);
           if (result.data.code === 200) {
-            setLocalToken(result.data);
+            setLocalToken(result.data.data);
             ElMessage.success('登录成功');
             router.push('/user/home');
           } else {
@@ -292,6 +292,7 @@ const adminLogin = () => {
     // 使用 axios.post 发送消息
     axios.post("/admin/login", admin).then(result => {
       if (result.data.code==200) {
+        setLocalToken(result.data.data);
         ElMessage.success('登录成功')
         router.push('/admin');
       }else {
