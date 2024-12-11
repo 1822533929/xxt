@@ -144,7 +144,7 @@ export default {
           formData.append('title', this.feedbackForm.title)
           formData.append('content', this.feedbackForm.content)
           formData.append('contact', this.feedbackForm.contact)
-          formData.append('userId', 1)
+          // formData.append('userId', 1)
           
           if (this.feedbackForm.images && this.feedbackForm.images.length > 0) {
             formData.append('image', this.feedbackForm.images[0])
@@ -212,6 +212,7 @@ export default {
       
       get('/feedback/getUserFeedback', null).then(result => {
         if (result.code === 200) {
+          console.log(result.data)
           this.myFeedbacks = result.data
         } else {
           ElMessage.error(result.msg || '获取反馈列表失败');
