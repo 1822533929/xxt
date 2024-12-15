@@ -243,7 +243,7 @@ const handlePasswordSubmit = () => {
 }
 
 .content {
-  margin-left: 210px;
+  margin-left: 170px;/*210*/
   background-color: #f0f2f5;
   min-height: calc(100vh - 60px);
 }

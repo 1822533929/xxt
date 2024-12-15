@@ -290,16 +290,22 @@ const adminLogin = () => {
     admin.append("password", adminLoginForm.password);
 
     // 使用 axios.post 发送消息
-    axios.post("/admin/login", admin).then(result => {
-      if (result.data.code==200) {
+    axios.post("/user/adminLogin", admin).then(result => {
+      if (result.data.code === 200) {
+        // 存储 token
         setLocalToken(result.data.data);
+        // 存储用户信息
+        localStorage.setItem('userInfo', JSON.stringify({
+          isAdmin: true,
+          ...result.data.data
+        }));
         ElMessage.success('登录成功')
         router.push('/admin');
-      }else {
-        ElMessage.error('登录失败')
+      } else {
+        ElMessage.error(result.data.msg || '登录失败')
       }
     }).catch(error => {
-      ElMessage.error('登录失败，服务器报错')
+      ElMessage.error('登录失败，服务器错误')
     });
   }
 };

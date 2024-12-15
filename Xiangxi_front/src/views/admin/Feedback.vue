@@ -1,19 +1,16 @@
 <template>
-  <div class="feedback">
+  <div class="feedback-container">
     <div class="header">
-      <h2>用户反馈管理</h2>
       <div class="header-right">
         <el-select v-model="filterStatus" placeholder="状态筛选" class="filter-select">
           <el-option label="全部" value="" />
           <el-option label="待处理" :value="0" />
-          <el-option label="处理中" :value="1" />
-          <el-option label="已处理" :value="2" />
+          <el-option label="已处理" :value="1" />
         </el-select>
       </div>
     </div>
 
     <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="id" label="ID" width="80" />
       <el-table-column prop="userName" label="用户名" width="120" />
       <el-table-column prop="type" label="反馈类型" width="120">
         <template #default="{ row }">
@@ -22,7 +19,8 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="content" label="反馈内容" show-overflow-tooltip />
+      <el-table-column prop="title" label="标题" min-width="150" show-overflow-tooltip />
+      <el-table-column prop="content" label="反馈内容" min-width="200" show-overflow-tooltip />
       <el-table-column prop="createTime" label="提交时间" width="180" />
       <el-table-column prop="status" label="状态" width="100">
         <template #default="{ row }">
@@ -31,7 +29,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200" fixed="right">
+      <el-table-column label="操作" width="250" fixed="right">
         <template #default="{ row }">
           <el-button type="primary" link @click="handleDetail(row)">查看</el-button>
           <el-button 
@@ -42,6 +40,13 @@
           >
             回复
           </el-button>
+          <el-button 
+            type="danger" 
+            link 
+            @click="handleDelete(row)"
+          >
+            删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -49,8 +54,8 @@
     <el-pagination
       class="pagination"
       :total="total"
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
+      v-model="currentPage"
+      :page-size="pageSize"
       @current-change="handlePageChange"
     />
 
@@ -72,8 +77,25 @@
           </el-tag>
         </div>
         <div class="detail-item">
+          <span class="label">标题：</span>
+          <span>{{ currentFeedback.title }}</span>
+        </div>
+        <div class="detail-item">
           <span class="label">反馈内容：</span>
           <span>{{ currentFeedback.content }}</span>
+        </div>
+        <div class="detail-item" v-if="currentFeedback.imageUrl">
+          <span class="label">图片：</span>
+          <el-image
+            :src="currentFeedback.imageUrl"
+            :preview-src-list="[currentFeedback.imageUrl]"
+            fit="cover"
+            class="detail-image"
+          />
+        </div>
+        <div class="detail-item">
+          <span class="label">联系方式：</span>
+          <span>{{ currentFeedback.contact }}</span>
         </div>
         <div class="detail-item">
           <span class="label">提交时间：</span>
@@ -112,15 +134,17 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
+import { Picture } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 // 表格数据
 const tableData = ref([
   {
-    id: 1,
     userName: '张三',
     type: 1,
+    title: '商品质量问题',
     content: '订单商品质量有问题',
+    imageUrl: '/img/upload/example.jpg',
     createTime: '2024-03-15 10:00:00',
     status: 0,
     reply: ''
@@ -143,18 +167,20 @@ const replyForm = reactive({
 // 工具方法
 const getFeedbackTypeTag = (type) => {
   const tags = {
-    1: 'danger',   // 商品问题
-    2: 'warning',  // 服务问题
-    3: 'info'      // 其他问题
+    1: 'success',   // 功能建议success
+    2: 'warning',  // 问题报告warning
+    3: 'danger',      // 投诉danger
+    4: 'info' //其他info
   }
   return tags[type] || ''
 }
 
 const getFeedbackTypeText = (type) => {
   const texts = {
-    1: '商品问题',
-    2: '服务问题',
-    3: '其他问题'
+    1: '功能建议',
+    2: '问题报告',
+    3: '投诉',
+    4: '其他'
   }
   return texts[type] || '未知'
 }
@@ -162,8 +188,7 @@ const getFeedbackTypeText = (type) => {
 const getStatusType = (status) => {
   const types = {
     0: 'info',     // 待处理
-    1: 'warning',  // 处理中
-    2: 'success'   // 已处理
+    1: 'success'   // 已处理
   }
   return types[status] || ''
 }
@@ -171,8 +196,7 @@ const getStatusType = (status) => {
 const getStatusText = (status) => {
   const texts = {
     0: '待处理',
-    1: '处理中',
-    2: '已处理'
+    1: '已处理'
   }
   return texts[status] || '未知'
 }
@@ -202,11 +226,38 @@ const handlePageChange = (page) => {
   currentPage.value = page
   // 这里添加获取数据的逻辑
 }
+
+// 添加删除方法
+const handleDelete = (row) => {
+  ElMessageBox.confirm(
+    '确定要删除这条反馈吗？',
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    }
+  )
+    .then(() => {
+      // TODO: 调用删除接口
+      // deleteFeedback(row.id).then(() => {
+      //   ElMessage.success('删除成功');
+      //   // 重新加载数据
+      //   loadFeedbackList();
+      // });
+      ElMessage.success('删除成功');
+    })
+    .catch(() => {
+      // 取消删除
+    });
+};
 </script>
 
 <style scoped>
-.feedback {
-  padding: 20px;
+.feedback-container {
+  padding: 24px;/*24*/
+  height: 100%;
+  box-sizing: border-box;
 }
 
 .header {
@@ -244,5 +295,11 @@ const handlePageChange = (page) => {
 .detail-item .label {
   width: 100px;
   color: #606266;
+}
+
+.detail-image {
+  max-width: 300px;
+  max-height: 300px;
+  border-radius: 4px;
 }
 </style> 

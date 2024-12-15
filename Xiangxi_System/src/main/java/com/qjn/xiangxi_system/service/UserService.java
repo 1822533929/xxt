@@ -13,4 +13,9 @@ public interface UserService extends IService<User> {
 //    int login(User user);
 
     int register(User user);
+
+    /**
+     * 根据用户名查找用户
+     */
+    User findByUsername(String username);
 }

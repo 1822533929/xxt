@@ -2,6 +2,7 @@ package com.qjn.xiangxi_system.mapper;
 
 import com.qjn.xiangxi_system.pojo.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author Administrator
@@ -9,11 +10,17 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2024-11-30 19:29:37
 * @Entity com.qjn.xiangxi_system.pojo.User
 */
+@Mapper
 public interface UserMapper extends BaseMapper<User> {
     User isExist(String username);
     User getUserByUsername(String username);
 
     User selectByUsername(String username);
+
+    /**
+     * 根据用户名查找用户
+     */
+    User findByUsername(String username);
 }
 
 

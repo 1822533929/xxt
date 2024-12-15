@@ -6,6 +6,7 @@ import com.qjn.xiangxi_system.pojo.User;
 import com.qjn.xiangxi_system.service.UserService;
 import com.qjn.xiangxi_system.mapper.UserMapper;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,22 +17,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     implements UserService{
-    @Resource
+    @Autowired
     private UserMapper userMapper;
 
-//    @Override
-//    public int login(User user) {
-//        User user1 = userMapper.isExist(user.getUsername());
-//        if (user1 == null) {
-//            System.out.println("登录失败：用户不存在");
-//            return 0;
-//        } else if (!user.getPassword().equals(user1.getPassword())) {
-//            System.out.println("登录失败：密码错误");
-//            return 0;
-//        }
-//        System.out.println("登录成功");
-//        return 1;
-//    }
+    @Override
+    public User findByUsername(String username) {
+        return userMapper.findByUsername(username);
+    }
 
     @Override
     public int register(User user) {
