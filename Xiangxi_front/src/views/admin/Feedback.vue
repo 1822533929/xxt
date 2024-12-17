@@ -2,7 +2,7 @@
   <div class="feedback-container">
     <div class="header">
       <div class="header-right">
-        <el-select v-model="filterStatus" placeholder="状态筛选" class="filter-select">
+        <el-select v-model="filterStatus" placeholder="状态筛选" class="filter-select" @change="handleFilterChange">
           <el-option label="全部" value="" />
           <el-option label="待处理" :value="0" />
           <el-option label="已处理" :value="1" />
@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    <el-table :data="tableData" style="width: 100%" v-loading="loading">
+    <el-table :data="tableData" style="width: 100%" v-loading="loading" :empty-text="loading ? '加载中...' : '暂无数据'">
       <el-table-column prop="userName" label="用户名" width="120" />
       <el-table-column prop="type" label="反馈类型" width="120">
         <template #default="{ row }">
@@ -35,7 +35,7 @@
           <el-button 
             type="success" 
             link 
-            v-if="row.status !== 2"
+            v-if="row.status === '待处理'"
             @click="handleReply(row)"
           >
             回复
@@ -44,6 +44,7 @@
             type="danger" 
             link 
             @click="handleDelete(row)"
+            :loading="row.deleting"
           >
             删除
           </el-button>
@@ -54,9 +55,14 @@
     <el-pagination
       class="pagination"
       :total="total"
-      v-model="currentPage"
+      v-model:current-page="currentPage"
       :page-size="pageSize"
+      :page-sizes="[5, 10, 20]"
+      v-model:page-size="pageSize"
       @current-change="handlePageChange"
+      @size-change="handlePageChange"
+      layout="total, sizes, prev, pager, next"
+      background
     />
 
     <!-- 反馈详情对话框 -->
@@ -114,6 +120,10 @@
       v-model="replyDialogVisible"
       width="500px"
     >
+      <div class="feedback-info">
+        <p><strong>用户名：</strong>{{ currentFeedback.userName }}</p>
+        <p><strong>反馈内容：</strong>{{ currentFeedback.content }}</p>
+      </div>
       <el-form :model="replyForm" label-width="80px">
         <el-form-item label="回复内容">
           <el-input
@@ -133,27 +143,16 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
-import { Picture } from '@element-plus/icons-vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { get, post, del } from '@/common'
 
 // 表格数据
-const tableData = ref([
-  {
-    userName: '张三',
-    type: 1,
-    title: '商品质量问题',
-    content: '订单商品质量有问题',
-    imageUrl: '/img/upload/example.jpg',
-    createTime: '2024-03-15 10:00:00',
-    status: 0,
-    reply: ''
-  }
-])
+const tableData = ref([])
 const loading = ref(false)
-const total = ref(100)
+const total = ref(0)
 const currentPage = ref(1)
-const pageSize = ref(10)
+const pageSize = ref(5)
 const filterStatus = ref('')
 
 // 对话框相关
@@ -167,36 +166,36 @@ const replyForm = reactive({
 // 工具方法
 const getFeedbackTypeTag = (type) => {
   const tags = {
-    1: 'success',   // 功能建议success
-    2: 'warning',  // 问题报告warning
-    3: 'danger',      // 投诉danger
-    4: 'info' //其他info
+    'suggestion': 'success',   // 功能建议success
+    'bug': 'warning',  // 问题报告warning
+    'complaint': 'danger',      // 投诉danger
+    'other': 'info' //其他info
   }
   return tags[type] || ''
 }
 
 const getFeedbackTypeText = (type) => {
   const texts = {
-    1: '功能建议',
-    2: '问题报告',
-    3: '投诉',
-    4: '其他'
+    'suggestion': '功能建议',
+    'bug': '问题报告',
+    'complaint': '投诉',
+    'other': '其他'
   }
   return texts[type] || '未知'
 }
 
 const getStatusType = (status) => {
   const types = {
-    0: 'info',     // 待处理
-    1: 'success'   // 已处理
+    '待处理': 'info',     // 待处理
+    '已处理': 'success'   // 已处理
   }
   return types[status] || ''
 }
 
 const getStatusText = (status) => {
   const texts = {
-    0: '待处理',
-    1: '已处理'
+    '待处理': '待处理',
+    '已处理': '已处理'
   }
   return texts[status] || '未知'
 }
@@ -210,6 +209,9 @@ const handleDetail = (row) => {
 const handleReply = (row) => {
   Object.assign(currentFeedback, row)
   replyForm.content = ''
+  if (row.reply) {
+    replyForm.content = row.reply
+  }
   replyDialogVisible.value = true
 }
 
@@ -218,16 +220,62 @@ const submitReply = () => {
     ElMessage.warning('请输入回复内容')
     return
   }
-  ElMessage.success('回复成功')
-  replyDialogVisible.value = false
+  // 调用回复接口
+  const params = new FormData()
+  params.append('id', currentFeedback.id)
+  params.append('reply', replyForm.content.trim())
+  
+  post('/feedback/reply', params)
+    .then(result => {
+      if (result.code === 200) {
+        ElMessage.success('回复成功')
+        replyDialogVisible.value = false
+        getFeedbackList() // 刷新列表
+      } else {
+        ElMessage.error(result.msg || '回复失败')
+      }
+    })
+    .catch(() => {
+      ElMessage.error('回复失败，请稍后重试')
+    })
 }
 
+// 获取反馈列表
+const getFeedbackList = async () => {
+  loading.value = true
+  try {
+    const params = {
+      currentPage: currentPage.value,
+      pageSize: pageSize.value,
+      status: filterStatus.value
+    }
+    const result = await get('/feedback/getFeedbackList', params)
+    if (result.code === 200) {
+      tableData.value = result.data.list
+      total.value = result.data.total
+    } else {
+      ElMessage.error(result.msg || '获取反馈列表失败')
+    }
+  } catch (error) {
+    ElMessage.error('获取反馈列表失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 修改分页处理方法
 const handlePageChange = (page) => {
   currentPage.value = page
-  // 这里添加获取数据的逻辑
+  getFeedbackList()
 }
 
-// 添加删除方法
+// 监听状态筛选变化
+const handleFilterChange = () => {
+  currentPage.value = 1 // 重置到第一页
+  getFeedbackList()
+}
+
+// 删除方法
 const handleDelete = (row) => {
   ElMessageBox.confirm(
     '确定要删除这条反馈吗？',
@@ -239,18 +287,30 @@ const handleDelete = (row) => {
     }
   )
     .then(() => {
-      // TODO: 调用删除接口
-      // deleteFeedback(row.id).then(() => {
-      //   ElMessage.success('删除成功');
-      //   // 重新加载数据
-      //   loadFeedbackList();
-      // });
-      ElMessage.success('删除成功');
+      // 调用删除接口
+      const params = new FormData()
+      params.append('id', row.id)
+      post('/feedback/deleteFeedback', params)
+        .then(result => {
+          if (result.code === 200) {
+            ElMessage.success('删除成功')
+            getFeedbackList() // 重新加载数据
+          } else {
+            ElMessage.error(result.msg || '删除失败')
+          }
+        }).catch(() => {
+          ElMessage.error('删除失败')
+        })
     })
     .catch(() => {
       // 取消删除
-    });
-};
+    })
+}
+
+// 页面加载时获取数据
+onMounted(() => {
+  getFeedbackList()
+})
 </script>
 
 <style scoped>
@@ -301,5 +361,22 @@ const handleDelete = (row) => {
   max-width: 300px;
   max-height: 300px;
   border-radius: 4px;
+}
+
+.feedback-info {
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+}
+
+.feedback-info p {
+  margin: 8px 0;
+  color: #606266;
+}
+
+.feedback-info strong {
+  color: #303133;
+  margin-right: 8px;
 }
 </style> 

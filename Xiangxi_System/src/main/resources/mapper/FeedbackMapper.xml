@@ -28,4 +28,7 @@
         FROM feedback
         WHERE user_id = #{userId}
     </select>
+    <select id="getAllFeedback" resultType="com.qjn.xiangxi_system.pojo.Feedback">
+        select * from feedback
+    </select>
 </mapper>

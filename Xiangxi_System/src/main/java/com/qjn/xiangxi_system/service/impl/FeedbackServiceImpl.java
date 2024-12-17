@@ -34,6 +34,11 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback>
     public List<Feedback> getUserFeedback(Integer userId) {
         return feedbackMapper.getFeedbacksByUserId(userId);
     }
+
+    @Override
+    public List<Feedback> getAllFeedback() {
+        return feedbackMapper.getAllFeedback();
+    }
 }
 
 

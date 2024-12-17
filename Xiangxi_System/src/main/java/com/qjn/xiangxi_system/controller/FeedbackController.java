@@ -1,7 +1,10 @@
 package com.qjn.xiangxi_system.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.Feedback;
 import com.qjn.xiangxi_system.pojo.User;
+import com.qjn.xiangxi_system.pojo.query.FeedBackQuery;
 import com.qjn.xiangxi_system.service.FeedbackService;
 import com.qjn.xiangxi_system.utils.FileUploadUtil;
 import com.qjn.xiangxi_system.utils.JWTUtils;
@@ -76,6 +79,49 @@ public class FeedbackController {
         } catch (Exception e) {
             e.printStackTrace();
             return Result.error("获取反馈失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 分页查询所有反馈
+     * @param query
+     * @return
+     */
+    @GetMapping("/getFeedbackList")
+    public Result<PageInfo<Feedback>> getFeedbackList(FeedBackQuery query) {
+        PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
+        PageInfo<Feedback> pageInfo = new PageInfo<>(feedbackService.getAllFeedback());
+        return Result.success(pageInfo);
+    }
+    /**
+     * 回复反馈
+     */
+    @PostMapping("/reply")
+    public Result replyFeedback(@RequestParam("id") Integer id,
+                                @RequestParam("reply") String reply) {
+        Feedback feedback = feedbackService.getById(id);
+        if (feedback == null) {
+            return Result.error("反馈不存在");
+        }
+        feedback.setReply(reply);
+        feedback.setStatus("已处理");
+        boolean success = feedbackService.updateById(feedback);
+        if (success) {
+            return Result.success("回复成功");
+        } else {
+            return Result.error("回复失败");
+        }
+    }
+    /**
+     * 删除反馈
+     */
+    @PostMapping("/deleteFeedback")
+    public Result deleteFeedback(@RequestParam("id") Integer id) {
+        boolean success = feedbackService.removeById(id);
+        if (success) {
+            return Result.success("删除成功");
+        } else {
+            return Result.error("删除失败");
         }
     }
 } 

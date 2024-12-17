@@ -15,4 +15,6 @@ public interface FeedbackService extends IService<Feedback> {
     boolean addFeedback(Feedback feedback);
 
     List<Feedback> getUserFeedback(Integer userId);
+
+    List<Feedback> getAllFeedback();
 }

@@ -13,6 +13,7 @@ import java.util.List;
 */
 public interface FeedbackMapper extends BaseMapper<Feedback> {
     List<Feedback> getFeedbacksByUserId(Integer userId);
+    List<Feedback> getAllFeedback();
 }
 
 
