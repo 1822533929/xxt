@@ -12,7 +12,9 @@ spring:
       multipart:
         max-file-size: 10MB
         max-request-size: 10MB
-#server:
+
+#  main:
+#    allow-bean-definition-overriding=true:#server:
 #  port: 8080
 
 mybatis-plus:

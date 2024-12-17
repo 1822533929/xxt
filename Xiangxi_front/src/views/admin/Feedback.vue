@@ -4,14 +4,14 @@
       <div class="header-right">
         <el-select v-model="filterStatus" placeholder="状态筛选" class="filter-select" @change="handleFilterChange">
           <el-option label="全部" value="" />
-          <el-option label="待处理" :value="0" />
-          <el-option label="已处理" :value="1" />
+          <el-option label="待处理" value="待处理" />
+          <el-option label="已处理" value="已处理" />
         </el-select>
       </div>
     </div>
 
     <el-table :data="tableData" style="width: 100%" v-loading="loading" :empty-text="loading ? '加载中...' : '暂无数据'">
-      <el-table-column prop="userName" label="用户名" width="120" />
+      <el-table-column prop="username" label="用户名" width="120" />
       <el-table-column prop="type" label="反馈类型" width="120">
         <template #default="{ row }">
           <el-tag :type="getFeedbackTypeTag(row.type)">
@@ -74,7 +74,7 @@
       <div class="feedback-detail">
         <div class="detail-item">
           <span class="label">用户名：</span>
-          <span>{{ currentFeedback.userName }}</span>
+          <span>{{ currentFeedback.username }}</span>
         </div>
         <div class="detail-item">
           <span class="label">反馈类型：</span>
@@ -93,11 +93,19 @@
         <div class="detail-item" v-if="currentFeedback.imageUrl">
           <span class="label">图片：</span>
           <el-image
-            :src="currentFeedback.imageUrl"
-            :preview-src-list="[currentFeedback.imageUrl]"
+            :src="getImageUrl(currentFeedback.imageUrl)"
+            :preview-src-list="[getImageUrl(currentFeedback.imageUrl)]"
             fit="cover"
             class="detail-image"
-          />
+            @error="handleImageError"
+          >
+            <template #error>
+              <div class="image-error">
+                <el-icon><Picture /></el-icon>
+                <span>加载失败</span>
+              </div>
+            </template>
+          </el-image>
         </div>
         <div class="detail-item">
           <span class="label">联系方式：</span>
@@ -121,7 +129,7 @@
       width="500px"
     >
       <div class="feedback-info">
-        <p><strong>用户名：</strong>{{ currentFeedback.userName }}</p>
+        <p><strong>用户名：</strong>{{ currentFeedback.username }}</p>
         <p><strong>反馈内容：</strong>{{ currentFeedback.content }}</p>
       </div>
       <el-form :model="replyForm" label-width="80px">
@@ -146,6 +154,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { get, post, del } from '@/common'
+import { Picture } from '@element-plus/icons-vue'
 
 // 表格数据
 const tableData = ref([])
@@ -249,7 +258,15 @@ const getFeedbackList = async () => {
       pageSize: pageSize.value,
       status: filterStatus.value
     }
-    const result = await get('/feedback/getFeedbackList', params)
+    const url = filterStatus.value 
+      ? '/feedback/filterFeedback' 
+      : '/feedback/getFeedbackList'
+    
+    if (filterStatus.value) {
+      params.status = filterStatus.value
+    }
+    
+    const result = await get(url, params)
     if (result.code === 200) {
       tableData.value = result.data.list
       total.value = result.data.total
@@ -257,6 +274,7 @@ const getFeedbackList = async () => {
       ElMessage.error(result.msg || '获取反馈列表失败')
     }
   } catch (error) {
+    console.error("获取反馈列表错误:", error)
     ElMessage.error('获取反馈列表失败')
   } finally {
     loading.value = false
@@ -272,6 +290,7 @@ const handlePageChange = (page) => {
 // 监听状态筛选变化
 const handleFilterChange = () => {
   currentPage.value = 1 // 重置到第一页
+  console.log('筛选状态:', filterStatus.value)
   getFeedbackList()
 }
 
@@ -311,6 +330,20 @@ const handleDelete = (row) => {
 onMounted(() => {
   getFeedbackList()
 })
+
+// 处理图片URL
+const getImageUrl = (url) => {
+  if (!url) return ''
+  // 如果是完整URL则直接返回
+  if (url.startsWith('http')) return url
+  // 否则拼接API基础路径
+  return import.meta.env.VITE_API_BASE_URL + url
+}
+
+// 处理图片加载错误
+const handleImageError = () => {
+  console.error('图片加载失败')
+}
 </script>
 
 <style scoped>
@@ -378,5 +411,21 @@ onMounted(() => {
 .feedback-info strong {
   color: #303133;
   margin-right: 8px;
+}
+
+.image-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 300px;
+  height: 200px;
+  background-color: #f5f7fa;
+  color: #909399;
+}
+
+.image-error .el-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
 }
 </style> 

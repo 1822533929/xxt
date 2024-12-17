@@ -6,7 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.qjn.xiangxi_system.pojo.Feedback">
             <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
             <result property="type" column="type" jdbcType="VARCHAR"/>
             <result property="title" column="title" jdbcType="VARCHAR"/>
             <result property="imageUrl" column="image_url" jdbcType="VARCHAR"/>
@@ -15,6 +15,19 @@
             <result property="status" column="status" jdbcType="VARCHAR"/>
             <result property="reply" column="reply" jdbcType="VARCHAR"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+    <resultMap id="FeedbackVO" type="com.qjn.xiangxi_system.pojo.vo.FeedbackVO">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="userId" column="user_id" jdbcType="INTEGER"/>
+        <result property="type" column="type" jdbcType="VARCHAR"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="imageUrl" column="image_url" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="contact" column="contact" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="VARCHAR"/>
+        <result property="reply" column="reply" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -28,7 +41,42 @@
         FROM feedback
         WHERE user_id = #{userId}
     </select>
-    <select id="getAllFeedback" resultType="com.qjn.xiangxi_system.pojo.Feedback">
-        select * from feedback
+    <select id="getAllFeedback" resultMap="FeedbackVO">
+--         select feedback.*,user.username from feedback join user on feedback.user_id=user.id
+        SELECT
+            feedback.id AS id,
+            feedback.user_id AS user_id,
+            feedback.type AS type,
+            feedback.title AS title,
+            feedback.image_url AS image_url,
+            feedback.content AS content,
+            feedback.contact AS contact,
+            feedback.status AS status,
+            feedback.reply AS reply,
+            feedback.create_time AS create_time,
+            user.username AS username
+        FROM
+            feedback
+                JOIN
+            user ON feedback.user_id = user.id
+    </select>
+    <select id="getFeebackdByStatus" resultType="com.qjn.xiangxi_system.pojo.vo.FeedbackVO">
+        SELECT
+            feedback.id AS id,
+            feedback.user_id AS user_id,
+            feedback.type AS type,
+            feedback.title AS title,
+            feedback.image_url AS image_url,
+            feedback.content AS content,
+            feedback.contact AS contact,
+            feedback.status AS status,
+            feedback.reply AS reply,
+            feedback.create_time AS create_time,
+            user.username AS username
+        FROM
+            feedback
+                JOIN
+            user ON feedback.user_id = user.id
+        where feedback.status = #{status}
     </select>
 </mapper>

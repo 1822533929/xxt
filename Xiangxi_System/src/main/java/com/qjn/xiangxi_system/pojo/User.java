@@ -42,7 +42,7 @@ public class User implements Serializable, UserDetails {
     /**
      * 角色
      */
-    private String role;
+    private Integer role;
 
     /**
      * 电话
@@ -129,14 +129,14 @@ public class User implements Serializable, UserDetails {
     /**
      * 角色
      */
-    public String getRole() {
+    public Integer getRole() {
         return role;
     }
 
     /**
      * 角色
      */
-    public void setRole(String role) {
+    public void setRole(Integer role) {
         this.role = role;
     }
 

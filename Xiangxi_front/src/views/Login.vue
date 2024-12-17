@@ -236,7 +236,7 @@ const handleRegister = () => {
       ElMessage.error('注册失败，账号已存在!')
     }
   }).catch(error => {
-    ElMessage.error('注册失败，服务器爆了(')
+    ElMessage.error('注册失败，服务器错误')
   });
 }
 

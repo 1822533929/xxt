@@ -5,10 +5,7 @@ import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.qjn.xiangxi_system.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.qjn.xiangxi_system.utils.JSONUtils;
@@ -18,6 +15,8 @@ import com.qjn.xiangxi_system.utils.JWTUtils;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/adminLogin")
     public Result adminLogin(@RequestParam("username") String username, 
@@ -49,5 +48,23 @@ public class UserController {
             e.printStackTrace();
             return Result.error("登录失败：" + e.getMessage());
         }
+    }
+    /**
+     * 用户注册
+     */
+    @PostMapping("/register")
+    public Result register(@RequestParam("username") String username,
+                           @RequestParam("password") String password,
+                           @RequestParam("name") String name,
+                           @RequestParam("email") String email,
+                           @RequestParam("phone") String phone)
+    {
+        User user = new User();
+        user.setUsername(username);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setName(name);
+        user.setEmail(email);
+        user.setPhone(phone);
+           return Result.success(userService.register(user));
     }
 }

@@ -1,10 +1,10 @@
-package com.qjn.xiangxi_system.pojo.query;
-
-import lombok.Data;
+package com.qjn.xiangxi_system.pojo.vo;
 
 import java.util.Date;
+import lombok.Data;
+
 @Data
-public class FeedBackQuery extends BaseQuery{
+public class FeedbackVO {
     /**
      * 反馈ID
      */
@@ -54,6 +54,8 @@ public class FeedBackQuery extends BaseQuery{
      * 创建时间
      */
     private Date createTime;
-
-
+    /**
+     * 用户名
+     */
+    private String username;
 }

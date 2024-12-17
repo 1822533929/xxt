@@ -2,6 +2,7 @@ package com.qjn.xiangxi_system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qjn.xiangxi_system.pojo.Feedback;
+import com.qjn.xiangxi_system.pojo.vo.FeedbackVO;
 import com.qjn.xiangxi_system.service.FeedbackService;
 import com.qjn.xiangxi_system.mapper.FeedbackMapper;
 import jakarta.annotation.Resource;
@@ -36,8 +37,13 @@ public class FeedbackServiceImpl extends ServiceImpl<FeedbackMapper, Feedback>
     }
 
     @Override
-    public List<Feedback> getAllFeedback() {
+    public List<FeedbackVO> getAllFeedback() {
         return feedbackMapper.getAllFeedback();
+    }
+
+    @Override
+    public List<FeedbackVO> getFeebackdByStatus(String status) {
+        return feedbackMapper.getFeebackdByStatus(status);
     }
 }
 

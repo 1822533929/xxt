@@ -1,10 +1,12 @@
 package com.qjn.xiangxi_system.controller;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.Feedback;
 import com.qjn.xiangxi_system.pojo.User;
 import com.qjn.xiangxi_system.pojo.query.FeedBackQuery;
+import com.qjn.xiangxi_system.pojo.vo.FeedbackVO;
 import com.qjn.xiangxi_system.service.FeedbackService;
 import com.qjn.xiangxi_system.utils.FileUploadUtil;
 import com.qjn.xiangxi_system.utils.JWTUtils;
@@ -88,9 +90,9 @@ public class FeedbackController {
      * @return
      */
     @GetMapping("/getFeedbackList")
-    public Result<PageInfo<Feedback>> getFeedbackList(FeedBackQuery query) {
+    public Result<PageInfo<FeedbackVO>> getFeedbackList(FeedBackQuery query) {
         PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
-        PageInfo<Feedback> pageInfo = new PageInfo<>(feedbackService.getAllFeedback());
+        PageInfo<FeedbackVO> pageInfo = new PageInfo<>(feedbackService.getAllFeedback());
         return Result.success(pageInfo);
     }
     /**
@@ -123,5 +125,14 @@ public class FeedbackController {
         } else {
             return Result.error("删除失败");
         }
+    }
+    /**
+     * 根据是否处理筛选反馈
+     */
+    @GetMapping("/filterFeedback")
+    public Result<PageInfo<FeedbackVO>> filterFeedback(@RequestParam("status") String status,FeedBackQuery query) {
+        PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
+        PageInfo<FeedbackVO> pageInfo = new PageInfo<>(feedbackService.getFeebackdByStatus(status));
+        return Result.success(pageInfo);
     }
 } 

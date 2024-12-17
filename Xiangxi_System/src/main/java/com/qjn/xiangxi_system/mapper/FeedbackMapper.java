@@ -2,6 +2,7 @@ package com.qjn.xiangxi_system.mapper;
 
 import com.qjn.xiangxi_system.pojo.Feedback;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.qjn.xiangxi_system.pojo.vo.FeedbackVO;
 
 import java.util.List;
 
@@ -13,7 +14,9 @@ import java.util.List;
 */
 public interface FeedbackMapper extends BaseMapper<Feedback> {
     List<Feedback> getFeedbacksByUserId(Integer userId);
-    List<Feedback> getAllFeedback();
+    List<FeedbackVO> getAllFeedback();
+
+    List<FeedbackVO> getFeebackdByStatus(String status);
 }
 
 

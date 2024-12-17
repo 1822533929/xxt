@@ -2,6 +2,7 @@ package com.qjn.xiangxi_system.service;
 
 import com.qjn.xiangxi_system.pojo.Feedback;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.qjn.xiangxi_system.pojo.vo.FeedbackVO;
 
 import java.util.List;
 
@@ -16,5 +17,7 @@ public interface FeedbackService extends IService<Feedback> {
 
     List<Feedback> getUserFeedback(Integer userId);
 
-    List<Feedback> getAllFeedback();
+    List<FeedbackVO> getAllFeedback();
+
+    List<FeedbackVO> getFeebackdByStatus(String status);
 }
