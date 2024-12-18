@@ -47,6 +47,11 @@ const routes = [
         path: 'feedback',
         name: 'UserFeedback',
         component: () => import('../views/user/Feedback.vue')
+      },
+      {
+        path: 'article-detail/:id',
+        name: 'ArticleDetail',
+        component: () => import('../views/user/ArticleDetail.vue')
       }
     ]
   },

@@ -1,6 +1,9 @@
 package com.qjn.xiangxi_system.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.Article;
+import com.qjn.xiangxi_system.pojo.query.ArticleQuery;
 import com.qjn.xiangxi_system.service.ArticleService;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
@@ -67,9 +70,11 @@ public class ArticleController {
     /**
      * 分页查询
      */
-//    @RequestMapping("/selectPage")
-//    public Result selectPage(Integer pageNum, Integer pageSize)
-//    {
-//        return Result.suc(articleService.selectPage(pageNum, pageSize));
-//    }
+    @RequestMapping("/selectPage")
+    public Result<PageInfo<Article>> selectPage(ArticleQuery query)
+    {
+        PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
+        PageInfo<Article> pageInfo = new PageInfo<>(articleService.list());
+        return Result.success(pageInfo);
+    }
 }
