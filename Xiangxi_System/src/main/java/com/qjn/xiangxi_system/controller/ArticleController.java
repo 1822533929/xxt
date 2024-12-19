@@ -7,9 +7,7 @@ import com.qjn.xiangxi_system.pojo.query.ArticleQuery;
 import com.qjn.xiangxi_system.service.ArticleService;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -53,9 +51,11 @@ public class ArticleController {
      * 单个查询
      */
     @RequestMapping("/selectById/{id}")
-    public Result selectById(Integer id)
+    public Result selectById(@PathVariable("id") Integer id)
     {
+        System.out.println("接收到查询请求，id: " + id);
         Article article = articleService.getById(id);
+        System.out.println("查询结果: " + article);
         return Result.success(article);
     }
     /**
@@ -76,5 +76,18 @@ public class ArticleController {
         PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
         PageInfo<Article> pageInfo = new PageInfo<>(articleService.list());
         return Result.success(pageInfo);
+    }
+    /**
+     * 点赞文章
+     */
+    @PostMapping("/like/{id}")
+    public Result likeArticle(@PathVariable Integer id) {
+        Article article = articleService.getById(id);
+        if (article == null) {
+            return Result.error("文章不存在");
+        }
+        article.setLikes(article.getLikes() + 1);
+        articleService.updateById(article);
+        return Result.success();
     }
 }

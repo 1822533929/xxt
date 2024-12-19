@@ -31,9 +31,9 @@ public class ArticleQuery extends BaseQuery{
     private String content;
 
     /**
-     * 阅读量
+     * 点赞量
      */
-    private Integer readCount;
+    private Integer likes;
 
     /**
      * 发布日期
@@ -113,17 +113,17 @@ public class ArticleQuery extends BaseQuery{
     }
 
     /**
-     * 阅读量
+     * 点赞量
      */
-    public Integer getReadCount() {
-        return readCount;
+    public Integer getLikes() {
+        return likes;
     }
 
     /**
-     * 阅读量
+     * 点赞量
      */
-    public void setReadCount(Integer readCount) {
-        this.readCount = readCount;
+    public void setLikes(Integer likes) {
+        this.likes = likes;
     }
 
     /**

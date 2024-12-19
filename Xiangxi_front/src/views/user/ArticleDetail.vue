@@ -4,13 +4,28 @@
       <div class="article-header">
         <h1>{{ article.title }}</h1>
         <div class="article-meta">
-          <span class="time">发布时间：{{ article.createTime }}</span>
-          <span class="author">作者：{{ article.author }}</span>
+          <span class="time">发布时间：{{ formatDate(article.date) }}</span>
+          <div class="likes">
+            <span class="like-count">{{ article.likes || 0 }}点赞</span>
+            <el-button 
+              type="primary" 
+              :icon="Star" 
+              circle 
+              size="small"
+              :class="{ 'liked': isLiked }"
+              @click="handleLike"
+            />
+          </div>
         </div>
       </div>
       
       <div class="article-content">
-        <img v-if="article.coverImage" :src="article.coverImage" class="cover-image">
+        <img 
+          v-if="article.cover" 
+          :src="getImageUrl(article.cover)" 
+          class="cover-image"
+          @error="handleImageError"
+        >
         <div class="content" v-html="article.content"></div>
       </div>
       
@@ -24,25 +39,78 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { get, post } from '@/common'
+import { ElMessage } from 'element-plus'
+import { Star } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
 
-const article = ref({
-  title: '凤凰古城一日游攻略',
-  author: '管理员',
-  createTime: '2024-03-20',
-  coverImage: 'path/to/image.jpg',
-  content: `
-    <p>凤凰古城位于湖南省湘西土家族苗族自治州...</p>
-    <p>这里��详细内容...</p>
-  `
-})
+const article = ref({})
+const isLiked = ref(false)
+
+const formatDate = (date) => {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('zh-CN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
+const getImageUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return import.meta.env.VITE_API_BASE_URL + url
+}
+
+const handleImageError = (e) => {
+  e.target.src = '/default-image.jpg'
+}
+
+const getArticleDetail = async (id) => {
+  try {
+    const result = await get('/article/selectById/' + id)
+    if (result.code === 200) {
+      article.value = result.data
+      console.log('获取到的文章数据:', result.data)
+    } else {
+      ElMessage.error(result.msg || '获取文章详情失败')
+    }
+  } catch (error) {
+    console.error('获取文章详情错误:', error)
+    console.error('请求URL:', '/article/selectById/' + id)
+    ElMessage.error('获取文章详情失败')
+  }
+}
+
+const handleLike = async () => {
+  if (isLiked.value) {
+    ElMessage.warning('您已经点赞过了')
+    return
+  }
+  
+  try {
+    const result = await post(`/article/like/${article.value.id}`)
+    if (result.code === 200) {
+      isLiked.value = true
+      article.value.likes = (article.value.likes || 0) + 1
+      ElMessage.success('点赞成功')
+    } else {
+      ElMessage.error(result.msg || '点赞失败')
+    }
+  } catch (error) {
+    ElMessage.error('点赞失败')
+  }
+}
 
 onMounted(() => {
   const articleId = route.params.id
-  // TODO: 根据 ID 获取文章详情
-  console.log('获取文章ID:', articleId)
+  if (articleId) {
+    getArticleDetail(articleId)
+  }
 })
 
 const goBack = () => {
@@ -80,6 +148,10 @@ const goBack = () => {
 .article-meta {
   color: #909399;
   font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 15px 0;
 }
 
 .article-meta span {
@@ -93,7 +165,7 @@ const goBack = () => {
 
 .cover-image {
   width: 100%;
-  max-height: 400px;
+  max-height: 700px;
   object-fit: cover;
   margin-bottom: 20px;
   border-radius: 4px;
@@ -101,10 +173,33 @@ const goBack = () => {
 
 .content {
   font-size: 16px;
+  line-height: 1.8;
+  color: #303133;
+  padding: 20px 0;
 }
 
 .article-footer {
   margin-top: 30px;
   text-align: center;
+}
+
+.likes {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.like-count {
+  color: #606266;
+}
+
+.liked {
+  background-color: #f56c6c;
+  border-color: #f56c6c;
+}
+
+.liked:hover {
+  background-color: #f78989;
+  border-color: #f78989;
 }
 </style> 
