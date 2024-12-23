@@ -1,14 +1,19 @@
 package com.qjn.xiangxi_system.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.Article;
 import com.qjn.xiangxi_system.pojo.query.ArticleQuery;
 import com.qjn.xiangxi_system.service.ArticleService;
+import com.qjn.xiangxi_system.utils.FileUploadUtil;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -16,12 +21,32 @@ import java.util.List;
 public class ArticleController {
     @Resource
     private ArticleService articleService;
+    @Autowired
+    private FileUploadUtil fileUploadUtil;
 
     @RequestMapping("/add")
-    public Result add(Article article)
-    {
+    public Result add( @RequestParam(value = "image", required = false) MultipartFile image,
+                       @RequestParam("descr") String descr,
+                       @RequestParam("title") String title,
+                       @RequestParam("content") String content){
+       try{
+        String cover = null;
+        // 只在有图片且不是空文件时处理图片上传
+        if (image != null && !image.isEmpty() && image.getSize() > 0) {
+            cover = fileUploadUtil.uploadImage(image);
+        }
+        Article article=new Article();
+        article.setTitle(title);
+        article.setDescr(descr);
+        article.setCover(cover);
+        article.setContent(content);
+        article.setLikes(0);
+        article.setDate(java.time.LocalDate.now().toString());
         articleService.save(article);
         return Result.success();
+    } catch (IOException e) {
+        return Result.error("图片上传失败");
+        }
     }
     @RequestMapping("/update")
     public Result update(Article article)
@@ -89,5 +114,13 @@ public class ArticleController {
         article.setLikes(article.getLikes() + 1);
         articleService.updateById(article);
         return Result.success();
+    }
+    /**
+     * 模糊查询
+     */
+    @RequestMapping("/search")
+    public Result search(@RequestParam("keyword") String keyword) {
+        List<Article> list = articleService.list(new QueryWrapper<Article>().like("title", keyword));
+        return Result.success(list);
     }
 }

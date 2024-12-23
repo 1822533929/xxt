@@ -10,6 +10,7 @@
         </div>
       </el-carousel-item>
     </el-carousel>
+<!--  <img src="./src/images/module/route.png" alt="">-->
   </div>
 </template>
 
