@@ -77,12 +77,20 @@ const getArticleList = async () => {
     const params = {
       currentPage: currentPage.value,
       pageSize: pageSize.value,
-      keyword: searchQuery.value
     }
-    const result = await get('/article/selectPage', params)
+    const url = searchQuery.value ? '/article/search' : '/article/selectPage'
+    if (searchQuery.value) {
+      params.keyword = searchQuery.value
+    }
+    const result = await get(url, params)
     if (result.code === 200) {
-      articleList.value = result.data.list
-      total.value = result.data.total
+      if (searchQuery.value) {
+        articleList.value = result.data
+        total.value = result.data.length
+      } else {
+        articleList.value = result.data.list
+        total.value = result.data.total
+      }
     } else {
       ElMessage.error(result.msg || '获取攻略列表失败')
     }

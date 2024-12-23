@@ -58,7 +58,7 @@ public class ArticleController {
     单个删除
      */
     @RequestMapping("/delete/{id}")
-    public Result delete(Integer id)
+    public Result delete(@PathVariable Integer id)
     {
         articleService.removeById(id);
         return Result.success();
@@ -66,9 +66,12 @@ public class ArticleController {
     /**
     批量删除
      */
-    @DeleteMapping("/delete/batch")
-    public Result batchDelete(List<Integer> ids)
+    @RequestMapping ("/delete/batch")
+    public Result batchDelete(@RequestBody List<Integer> ids)
     {
+        if (ids == null || ids.isEmpty()) {
+            return Result.error("未选择要删除的数据");
+        }
         articleService.deleteBatch(ids);
         return Result.success();
     }
@@ -78,9 +81,7 @@ public class ArticleController {
     @RequestMapping("/selectById/{id}")
     public Result selectById(@PathVariable("id") Integer id)
     {
-        System.out.println("接收到查询请求，id: " + id);
         Article article = articleService.getById(id);
-        System.out.println("查询结果: " + article);
         return Result.success(article);
     }
     /**

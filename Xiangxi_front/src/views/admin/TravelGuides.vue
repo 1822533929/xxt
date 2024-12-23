@@ -239,12 +239,7 @@ const handleBatchDelete = () => {
   ElMessageBox.confirm('确定要删除选中的攻略吗？', '提示', {
     type: 'warning'
   }).then(() => {
-    const formData = new FormData()
-    selectedIds.value.forEach(id => {
-      formData.append('ids', id)
-    })
-    
-    post('/article/delete/batch', formData)
+    post('/article/delete/batch', selectedIds.value)
       .then(result => {
         if (result.code === 200) {
           ElMessage.success('删除成功')
@@ -261,9 +256,7 @@ const handleDelete = (row) => {
   ElMessageBox.confirm('确定要删除该攻略吗？', '提示', {
     type: 'warning'
   }).then(() => {
-    const formData = new FormData()
-    formData.append('id', row.id)
-    post('/article/delete/' + row.id, formData)
+    post('/article/delete/' + row.id, null)
       .then(result => {
         if (result.code === 200) {
           ElMessage.success('删除成功')
