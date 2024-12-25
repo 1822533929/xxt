@@ -29,7 +29,7 @@ public class UserController {
             }
             
             // 验证是否是管理员
-            if (!"0".equals(user.getRole())) {
+            if (user.getRole()!=0) {
                 return Result.error("非管理员账号");
             }
             

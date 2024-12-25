@@ -1,7 +1,7 @@
 <template>
   <div class="travel-guides">
     <div class="page-header">
-      <h2>旅游攻略</h2>
+      <h2>推荐旅游攻略</h2>
       <div class="header-right">
         <el-input
           v-model="searchQuery"

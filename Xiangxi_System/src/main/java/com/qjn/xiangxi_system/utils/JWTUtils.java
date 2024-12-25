@@ -59,7 +59,7 @@ public class JWTUtils<T> {
             // 移除所有空白字符
             jwt = jwt.replaceAll("\\s+", "");
             
-            System.out.println("Verifying JWT: " + jwt);
+
             
             // 使用秘钥创建一个JWT验证器对象
             JWTVerifier jwtVerifier = JWT.require(ALGORITHM_METHOD).build();
