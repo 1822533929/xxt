@@ -22,6 +22,13 @@
         descr,content,time,
         read_count,start_date,money,inventory,
     </sql>
+    <!-- 批量删除 -->
+    <delete id="deleteBatch" parameterType="java.util.List">
+        DELETE FROM travels WHERE id IN
+        <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
     <select id="selectAllByRead" resultType="com.qjn.xiangxi_system.pojo.Travels">
         SELECT id,title,cover,descr,inventory,content,time,read_count AS readCount,start_date AS startDate,money
         FROM travels

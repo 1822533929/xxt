@@ -13,4 +13,6 @@ import java.util.List;
 public interface TravelsService extends IService<Travels> {
 
     List<Travels> selectAllByRead();
+
+    void deleteBatch(List<Integer> ids);
 }

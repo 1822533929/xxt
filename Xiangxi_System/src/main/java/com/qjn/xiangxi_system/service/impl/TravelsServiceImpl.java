@@ -25,6 +25,11 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
     public List<Travels> selectAllByRead() {
         return travelsMapper.selectAllByRead();
     }
+
+    @Override
+    public void deleteBatch(List<Integer> ids) {
+        travelsMapper.deleteBatch(ids);
+    }
 }
 
 

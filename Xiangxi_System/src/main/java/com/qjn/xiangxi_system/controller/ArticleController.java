@@ -118,6 +118,7 @@ public class ArticleController {
     }
     /**
      * 模糊查询
+     * 好像得分页
      */
     @RequestMapping("/search")
     public Result search(@RequestParam("keyword") String keyword) {
