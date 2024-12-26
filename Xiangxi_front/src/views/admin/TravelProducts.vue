@@ -1,36 +1,85 @@
 <template>
   <div class="travel-products">
-    <div class="header">
-      <h2>旅游商品管理</h2>
-      <el-button type="primary" @click="handleAdd">新增商品</el-button>
+    <!-- 搜索栏 -->
+    <div class="search-bar">
+      <el-input
+        v-model="searchForm.keyword"
+        placeholder="请输入商品名称"
+        class="search-input"
+      />
+      <div class="search-buttons">
+        <el-button type="primary" @click="handleSearch">查询</el-button>
+        <el-button @click="resetSearch">重置</el-button>
+      </div>
     </div>
 
-    <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="id" label="ID" width="80" />
-      <el-table-column prop="name" label="商品名称" />
-      <el-table-column prop="category" label="分类" width="120">
+    <!-- 操作栏 -->
+    <div class="operation-bar">
+      <div class="left-buttons">
+        <el-button type="primary" @click="handleAdd">新增商品</el-button>
+        <el-button type="danger" @click="handleBatchDelete" :disabled="!selectedRows.length">
+          批量删除
+        </el-button>
+      </div>
+    </div>
+
+    <!-- 表格 -->
+    <el-table 
+      :data="tableData" 
+      style="width: 100%" 
+      v-loading="loading"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="55" />
+      <el-table-column prop="title" label="名称" min-width="120" />
+      <el-table-column label="图片" width="120">
         <template #default="{ row }">
-          <el-tag>{{ row.category }}</el-tag>
+          <el-image 
+            :src="getImageUrl(row.cover)" 
+            fit="cover"
+            style="width: 80px; height: 60px; border-radius: 4px;"
+          >
+            <template #error>
+              <div class="image-slot">
+                <el-icon><Picture /></el-icon>
+              </div>
+            </template>
+          </el-image>
         </template>
       </el-table-column>
-      <el-table-column prop="price" label="价格" width="120">
+      <el-table-column prop="descr" label="描述" min-width="200" show-overflow-tooltip />
+      <el-table-column prop="money" label="价格" width="100">
         <template #default="{ row }">
-          <span>¥{{ row.price }}</span>
+          <span class="price">¥{{ row.money }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="stock" label="库存" width="100" />
-      <el-table-column prop="sales" label="销量" width="100" />
-      <el-table-column prop="status" label="状态" width="100">
+      <el-table-column prop="inventory" label="库存" width="80" />
+      <el-table-column prop="time" label="发布日期" width="120" />
+      <el-table-column label="特色" width="120">
         <template #default="{ row }">
-          <el-tag :type="row.status === 1 ? 'success' : 'info'">
-            {{ row.status === 1 ? '在售' : '下架' }}
-          </el-tag>
+          <div class="tags-column">
+            <el-tag 
+              v-for="tag in row.tags" 
+              :key="tag"
+              size="small"
+              class="tag-item"
+            >
+              {{ tag }}
+            </el-tag>
+          </div>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200" fixed="right">
+      <el-table-column label="详细" width="80">
         <template #default="{ row }">
-          <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
-          <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
+          <el-button link type="primary" @click="viewDetail(row)">
+            查看
+          </el-button>
+        </template>
+      </el-table-column>
+      <el-table-column label="操作" width="120" fixed="right">
+        <template #default="{ row }">
+          <el-button link type="primary" @click="handleEdit(row)">编辑</el-button>
+          <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -40,14 +89,17 @@
       :total="total"
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
-      @current-change="handlePageChange"
+      :page-sizes="[10, 20, 50]"
+      layout="total, sizes, prev, pager, next"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
     />
 
     <!-- 新增/编辑对话框 -->
     <el-dialog
       :title="dialogTitle"
       v-model="dialogVisible"
-      width="600px"
+      width="700px"
     >
       <el-form :model="form" label-width="100px">
         <el-form-item label="商品名称">
@@ -104,24 +156,58 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Plus } from '@element-plus/icons-vue'
+import { Picture, Plus } from '@element-plus/icons-vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const searchForm = reactive({
+  keyword: ''
+})
 
 // 表格数据
-const tableData = ref([
-  {
-    id: 1,
-    name: '三亚椰子',
-    category: '特产',
-    price: 29.90,
-    stock: 100,
-    sales: 50,
-    status: 1
-  }
-])
+const tableData = ref([])
 const loading = ref(false)
-const total = ref(100)
+const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
+const selectedRows = ref([])
+
+// 获取图片URL
+const getImageUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return import.meta.env.VITE_API_BASE_URL + url
+}
+
+// 搜索方法
+const handleSearch = () => {
+  // 实现搜索逻辑
+}
+
+const resetSearch = () => {
+  searchForm.keyword = ''
+  // 重置后刷新数据
+}
+
+// 选择行
+const handleSelectionChange = (rows) => {
+  selectedRows.value = rows
+}
+
+// 批量删除
+const handleBatchDelete = () => {
+  if (!selectedRows.value.length) return
+  ElMessageBox.confirm('确定要删除选中的商品吗？', '提示', {
+    type: 'warning'
+  }).then(() => {
+    // 实现批量删除逻辑
+  })
+}
+
+// 查看详情
+const viewDetail = (row) => {
+  router.push(`/user/travel-detail/${row.id}`)
+}
 
 // 对话框相关
 const dialogVisible = ref(false)
@@ -187,48 +273,77 @@ const handlePageChange = (page) => {
 <style scoped>
 .travel-products {
   padding: 20px;
+  background-color: #f5f7fa;
 }
 
-.header {
+.search-bar {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+}
+
+.search-input {
+  width: 300px;
+}
+
+.search-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.operation-bar {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.left-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+:deep(.el-table) {
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.tags-column {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tag-item {
+  margin: 2px 0;
+}
+
+.price {
+  color: #f56c6c;
+  font-weight: bold;
 }
 
 .pagination {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+  background-color: #fff;
+  padding: 15px 20px;
+  border-radius: 8px;
 }
 
-.product-uploader {
-  border: 1px dashed #d9d9d9;
-  border-radius: 6px;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  width: 178px;
-  height: 178px;
-}
-
-.product-uploader:hover {
-  border-color: #409EFF;
-}
-
-.product-uploader-icon {
-  font-size: 28px;
-  color: #8c939d;
-  width: 178px;
-  height: 178px;
-  text-align: center;
-  line-height: 178px;
-}
-
-.preview-image {
-  width: 178px;
-  height: 178px;
-  display: block;
-  object-fit: cover;
+.image-slot {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: #f5f7fa;
+  color: #909399;
 }
 </style> 

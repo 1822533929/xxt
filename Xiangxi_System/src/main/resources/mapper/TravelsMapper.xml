@@ -23,15 +23,17 @@
         read_count,start_date,money,inventory,
     </sql>
     <!-- 批量删除 -->
-    <delete id="deleteBatch" parameterType="java.util.List">
+    <delete id="deleteBatch">
         DELETE FROM travels WHERE id IN
-        <foreach item="id" index="index" collection="list" open="(" separator="," close=")">
+        <foreach collection="list" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>
     <select id="selectAllByRead" resultType="com.qjn.xiangxi_system.pojo.Travels">
-        SELECT id,title,cover,descr,inventory,content,time,read_count AS readCount,start_date AS startDate,money
-        FROM travels
-        ORDER BY read_count DESC
+        SELECT * FROM travels ORDER BY read_count DESC
+    </select>
+    <!--多表查询旅游商品标签-->
+    <select id="selectTags" resultType="string">
+        select tag_name from tags,travels,travels_tags where travels.id = travels_tags.travel_id and tags.tag_id = travels_tags.tag_id and travels.id = #{id}
     </select>
 </mapper>

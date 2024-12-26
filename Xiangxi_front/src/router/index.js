@@ -44,6 +44,11 @@ const routes = [
         component: () => import('../views/user/Travel.vue')
       },
       {
+        path: 'travel-detail/:id',
+        name: 'TravelDetail',
+        component: () => import('../views/user/TravelDetail.vue')
+      },
+      {
         path: 'feedback',
         name: 'UserFeedback',
         component: () => import('../views/user/Feedback.vue')

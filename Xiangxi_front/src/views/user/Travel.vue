@@ -16,8 +16,13 @@
             </template>
           </el-skeleton>
           
-          <el-card v-for="item in hotSpots" :key="item.id" class="hot-item">
-            <img :src="getImageUrl(item.image)" class="hot-image" />
+          <el-card 
+            v-for="item in hotSpots" 
+            :key="item.id" 
+            class="hot-item"
+            @click="goToDetail(item.id)"
+          >
+            <img :src="getImageUrl(item.cover)" class="hot-image" />
             <div class="hot-info">
               <h3>{{ item.title }}</h3>
             </div>
@@ -33,8 +38,12 @@
         
         <el-row :gutter="20">
           <el-col :span="8" v-for="item in allSpots" :key="item.id">
-            <el-card class="spot-card" :body-style="{ padding: '0px' }">
-              <img :src="getImageUrl(item.image)" class="spot-image" />
+            <el-card 
+              class="spot-card" 
+              :body-style="{ padding: '0px' }"
+              @click="goToDetail(item.id)"
+            >
+              <img :src="getImageUrl(item.cover)" class="spot-image" />
               <div class="spot-info">
                 <h3>{{ item.title }}</h3>
                 <div class="spot-footer">
@@ -67,6 +76,9 @@
 import { ref, onMounted } from 'vue'
 import { get } from '@/common'
 import { ElMessage } from 'element-plus'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 // 数据定义
 const hotSpots = ref([])
@@ -130,6 +142,11 @@ const handleSizeChange = (val) => {
 const handleCurrentChange = (val) => {
   currentPage.value = val
   getAllSpots()
+}
+
+// 跳转到详情页
+const goToDetail = (id) => {
+  router.push(`/user/travel-detail/${id}`)
 }
 
 // 页面加载时获取数据

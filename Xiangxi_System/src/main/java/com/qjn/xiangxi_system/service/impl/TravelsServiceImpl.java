@@ -1,13 +1,14 @@
 package com.qjn.xiangxi_system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.qjn.xiangxi_system.mapper.TravelsMapper;
 import com.qjn.xiangxi_system.pojo.Travels;
 import com.qjn.xiangxi_system.service.TravelsService;
-import com.qjn.xiangxi_system.mapper.TravelsMapper;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -17,7 +18,8 @@ import java.util.List;
 */
 @Service
 public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
-    implements TravelsService{
+    implements TravelsService {
+    
     @Resource
     private TravelsMapper travelsMapper;
 
@@ -29,6 +31,17 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
     @Override
     public void deleteBatch(List<Integer> ids) {
         travelsMapper.deleteBatch(ids);
+    }
+
+    @Override
+    public List<String> selectTags(Integer id) {
+        try {
+            List<String> tags = travelsMapper.selectTags(id);
+            return tags != null ? tags : new ArrayList<>();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
     }
 }
 

@@ -15,4 +15,6 @@ public interface TravelsService extends IService<Travels> {
     List<Travels> selectAllByRead();
 
     void deleteBatch(List<Integer> ids);
+
+    List<String> selectTags(Integer id);
 }

@@ -49,7 +49,7 @@ public class TravelsController {
         return Result.success(pageInfo);
     }
     /**
-     * 增添旅游商品
+     * 增添旅游商品，附带标签
      */
     @RequestMapping("/add")
     public Result add(Travels travels) {
@@ -109,6 +109,14 @@ public class TravelsController {
         travels.setReadCount(travels.getReadCount() + 1);
         travelsService.updateById(travels);
         return Result.success();
+    }
+    /**
+     * 查询某个商品的所有标签
+     */
+    @RequestMapping("/selectTags/{id}")
+    public Result selectTags(@PathVariable Integer id) {
+        List<String> tags = travelsService.selectTags(id);
+        return Result.success(tags);
     }
 
 
