@@ -3,7 +3,9 @@ package com.qjn.xiangxi_system.controller;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.Travels;
+import com.qjn.xiangxi_system.pojo.query.BaseQuery;
 import com.qjn.xiangxi_system.pojo.query.TravelsQuery;
+import com.qjn.xiangxi_system.pojo.vo.TravelsVO;
 import com.qjn.xiangxi_system.service.TravelsService;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
@@ -48,16 +50,7 @@ public class TravelsController {
         PageInfo<Travels> pageInfo = new PageInfo<>(travelsService.list());
         return Result.success(pageInfo);
     }
-    /**
-     * 增添旅游商品，附带标签
-     */
-    @RequestMapping("/add")
-    public Result add(Travels travels) {
-        if (travelsService.save(travels)) {
-            return Result.success("添加成功");
-        }
-        return Result.error("添加失败");
-    }
+
     /**
      * 修改旅游商品
      */
@@ -118,6 +111,28 @@ public class TravelsController {
         List<String> tags = travelsService.selectTags(id);
         return Result.success(tags);
     }
+    /**
+     * 后台查询所有旅游商品及附带标签
+     */
+    @RequestMapping("/admin/selectAll")
+    public Result<PageInfo<TravelsVO>> adminSelectAll(BaseQuery query) {
+        PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
+        PageInfo<TravelsVO> pageInfo = new PageInfo<>(travelsService.SelectAll());
+        return Result.success(pageInfo);
+    }
+    /**
+     * 后台添加商品
+     */
+    @RequestMapping("/admin/add")
+    public Result add(@RequestBody TravelsVO travelsVO) {
+        if (travelsService.saveWithTags(travelsVO)) {
+            return Result.success("添加成功");
+        }
+        return Result.error("添加失败");
+    }
+    /**
+     * 后台修改商品信息
+     */
 
 
 

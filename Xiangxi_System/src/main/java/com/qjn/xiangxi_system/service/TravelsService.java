@@ -2,7 +2,7 @@ package com.qjn.xiangxi_system.service;
 
 import com.qjn.xiangxi_system.pojo.Travels;
 import com.baomidou.mybatisplus.extension.service.IService;
-
+import com.qjn.xiangxi_system.pojo.vo.TravelsVO;
 import java.util.List;
 
 /**
@@ -17,4 +17,8 @@ public interface TravelsService extends IService<Travels> {
     void deleteBatch(List<Integer> ids);
 
     List<String> selectTags(Integer id);
+
+    List<TravelsVO> SelectAll();
+
+    boolean saveWithTags(TravelsVO travelsVO);
 }

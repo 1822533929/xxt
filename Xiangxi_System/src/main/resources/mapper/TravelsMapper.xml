@@ -5,23 +5,39 @@
 <mapper namespace="com.qjn.xiangxi_system.mapper.TravelsMapper">
 
     <resultMap id="BaseResultMap" type="com.qjn.xiangxi_system.pojo.Travels">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="title" column="title" jdbcType="VARCHAR"/>
-            <result property="cover" column="cover" jdbcType="VARCHAR"/>
-            <result property="descr" column="descr" jdbcType="VARCHAR"/>
-            <result property="content" column="content" jdbcType="VARCHAR"/>
-            <result property="time" column="time" jdbcType="VARCHAR"/>
-            <result property="readCount" column="read_count" jdbcType="INTEGER"/>
-            <result property="startDate" column="start_date" jdbcType="VARCHAR"/>
-            <result property="money" column="money" jdbcType="VARCHAR"/>
-            <result property="inventory" column="inventory" jdbcType="VARCHAR"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="cover" column="cover" jdbcType="VARCHAR"/>
+        <result property="descr" column="descr" jdbcType="VARCHAR"/>
+        <result property="content" column="content" jdbcType="VARCHAR"/>
+        <result property="time" column="time" jdbcType="VARCHAR"/>
+        <result property="readCount" column="read_count" jdbcType="INTEGER"/>
+        <result property="startDate" column="start_date" jdbcType="VARCHAR"/>
+        <result property="money" column="money" jdbcType="VARCHAR"/>
+        <result property="inventory" column="inventory" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <!-- 查询所有景点及其标签的结果映射 -->
+    <resultMap id="TravelsVOMap" type="com.qjn.xiangxi_system.pojo.vo.TravelsVO">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="cover" column="cover"/>
+        <result property="descr" column="descr"/>
+        <result property="content" column="content"/>
+        <result property="time" column="time"/>
+        <result property="readCount" column="read_count"/>
+        <result property="startDate" column="start_date"/>
+        <result property="money" column="money"/>
+        <result property="inventory" column="inventory"/>
+        <result property="tags" column="tags" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,title,cover,
         descr,content,time,
-        read_count,start_date,money,inventory,
+        read_count,start_date,money,inventory
     </sql>
+
     <!-- 批量删除 -->
     <delete id="deleteBatch">
         DELETE FROM travels WHERE id IN
@@ -29,11 +45,51 @@
             #{id}
         </foreach>
     </delete>
+
+    <!-- 按阅读量排序查询所有景点 -->
     <select id="selectAllByRead" resultType="com.qjn.xiangxi_system.pojo.Travels">
         SELECT * FROM travels ORDER BY read_count DESC
     </select>
-    <!--多表查询旅游商品标签-->
+
+    <!-- 查询景点的标签 -->
     <select id="selectTags" resultType="string">
-        select tag_name from tags,travels,travels_tags where travels.id = travels_tags.travel_id and tags.tag_id = travels_tags.tag_id and travels.id = #{id}
+        SELECT tag_name 
+        FROM tags t 
+        JOIN travels_tags tt ON t.tag_id = tt.tag_id 
+        WHERE tt.travel_id = #{id}
     </select>
+
+    <!-- 查询所有景点及其标签 -->
+    <select id="SelectAll" resultMap="TravelsVOMap">
+        SELECT 
+            t.*,
+            GROUP_CONCAT(tag.tag_name) as tags
+        FROM 
+            travels t
+        LEFT JOIN 
+            travels_tags tt ON t.id = tt.travel_id
+        LEFT JOIN 
+            tags tag ON tt.tag_id = tag.tag_id
+        GROUP BY 
+            t.id
+    </select>
+
+    <!-- 插入旅游商品和标签的关联关系 -->
+    <insert id="insertTravelTags">
+        INSERT INTO travels_tags (travel_id, tag_id) VALUES
+        <foreach collection="tagIds" item="tagId" separator=",">
+            (#{travelId}, #{tagId})
+        </foreach>
+    </insert>
+
+    <!-- 根据标签名称查询标签ID -->
+    <select id="getTagIdByName" resultType="java.lang.Integer">
+        SELECT tag_id FROM tags WHERE tag_name = #{tagName}
+    </select>
+
+    <!-- 插入新标签 -->
+    <insert id="insertTag" useGeneratedKeys="true" keyProperty="tagId">
+        INSERT INTO tags (tag_name) VALUES (#{tagName})
+    </insert>
+
 </mapper>
