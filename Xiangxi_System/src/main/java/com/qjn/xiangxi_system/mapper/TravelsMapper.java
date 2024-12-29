@@ -11,6 +11,7 @@ import java.util.List;
 @Mapper
 public interface TravelsMapper extends BaseMapper<Travels> {
 
+
     List<Travels> selectAllByRead();
 
     void deleteBatch(List<Integer> ids);
@@ -24,6 +25,10 @@ public interface TravelsMapper extends BaseMapper<Travels> {
     Integer getTagIdByName(@Param("tagName") String tagName);
 
     void insertTag(@Param("tagName") String tagName);
+
+    void deleteTravelTags(@Param("travelId") Integer travelId);
+
+    void deleteBatchTravelTags(@Param("travelIds") List<Integer> travelIds);
 }
 
 

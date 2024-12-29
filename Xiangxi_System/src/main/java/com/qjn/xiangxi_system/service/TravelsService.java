@@ -21,4 +21,7 @@ public interface TravelsService extends IService<Travels> {
     List<TravelsVO> SelectAll();
 
     boolean saveWithTags(TravelsVO travelsVO);
+    boolean removeWithTags(Integer id);
+    boolean updateWithTags(TravelsVO travelsVO);
+
 }

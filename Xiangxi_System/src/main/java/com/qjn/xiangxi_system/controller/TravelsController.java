@@ -6,6 +6,7 @@ import com.qjn.xiangxi_system.pojo.Travels;
 import com.qjn.xiangxi_system.pojo.query.BaseQuery;
 import com.qjn.xiangxi_system.pojo.query.TravelsQuery;
 import com.qjn.xiangxi_system.pojo.vo.TravelsVO;
+import com.qjn.xiangxi_system.service.TagsService;
 import com.qjn.xiangxi_system.service.TravelsService;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
@@ -18,6 +19,8 @@ import java.util.List;
 public class TravelsController {
     @Resource
     private TravelsService travelsService;
+    @Resource
+    private TagsService tagsService;
     /**
      * 热门景点
      * 根据阅读量从高到低查询旅游信息
@@ -52,38 +55,6 @@ public class TravelsController {
     }
 
     /**
-     * 修改旅游商品
-     */
-    @RequestMapping("/update")
-    public Result update(Travels travels) {
-        if (travelsService.updateById(travels)) {
-            return Result.success("修改成功");
-        }
-        return Result.error("修改失败");
-    }
-    /**
-     * 删除旅游商品
-     */
-    @RequestMapping("/delete/{id}")
-    public Result delete(@PathVariable Integer id) {
-        if (travelsService.removeById(id)) {
-            return Result.success("删除成功");
-        }
-        return Result.error("删除失败");
-    }
-    /**
-     * 批量删除旅游商品
-     */
-    @RequestMapping ("/delete/batch")
-    public Result batchDelete(@RequestBody List<Integer> ids)
-    {
-        if (ids == null || ids.isEmpty()) {
-            return Result.error("未选择要删除的数据");
-        }
-        travelsService.deleteBatch(ids);
-        return Result.success();
-    }
-    /**
      * 根据id查询旅游商品
      */
     @RequestMapping("/selectById/{id}")
@@ -115,8 +86,11 @@ public class TravelsController {
      * 后台查询所有旅游商品及附带标签
      */
     @RequestMapping("/admin/selectAll")
-    public Result<PageInfo<TravelsVO>> adminSelectAll(BaseQuery query) {
-        PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
+    public Result<PageInfo<TravelsVO>> adminSelectAll(
+        @RequestParam(defaultValue = "1") Integer currentPage,
+        @RequestParam(defaultValue = "10") Integer pageSize
+    ) {
+        PageHelper.startPage(currentPage, pageSize);
         PageInfo<TravelsVO> pageInfo = new PageInfo<>(travelsService.SelectAll());
         return Result.success(pageInfo);
     }
@@ -131,11 +105,42 @@ public class TravelsController {
         return Result.error("添加失败");
     }
     /**
-     * 后台修改商品信息
+     * 后台修改商品
      */
-
-
-
-
-
+    @RequestMapping("/admin/update")
+    public Result update(@RequestBody TravelsVO travelsVO) {
+        if (travelsService.updateWithTags(travelsVO)) {
+            return Result.success("修改成功");
+        }
+        return Result.error("修改失败");
+    }
+    /**
+     * 后台删除商品
+     */
+    @RequestMapping("/admin/delete/{id}")
+    public Result delete(@PathVariable Integer id) {
+        if (travelsService.removeWithTags(id)) {
+            return Result.success("删除成功");
+        }
+        return Result.error("删除失败");
+    }
+    /**
+     * 后台批量删除商品
+     */
+    @RequestMapping("/admin/delete/batch")
+    public Result batchDelete(@RequestBody List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Result.error("未选择要删除的数据");
+        }
+        travelsService.deleteBatch(ids);
+        return Result.success("批量删除成功");
+    }
+    /**
+     * 获取所有标签信息
+     */
+    @RequestMapping("/getAllTags")
+    public Result getTags() {
+        return Result.success(tagsService.list());
+    }
+   
 }

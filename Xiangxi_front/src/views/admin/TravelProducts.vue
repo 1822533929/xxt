@@ -2,12 +2,12 @@
   <div class="travel-products">
     <!-- 搜索栏 -->
     <div class="search-bar">
-      <el-input
-        v-model="searchForm.keyword"
-        placeholder="请输入商品名称"
-        class="search-input"
-      />
-      <div class="search-buttons">
+      <div class="search-input-group">
+        <el-input
+          v-model="searchForm.keyword"
+          placeholder="请输入商品名称"
+          class="search-input"
+        />
         <el-button type="primary" @click="handleSearch">查询</el-button>
         <el-button @click="resetSearch">重置</el-button>
       </div>
@@ -59,10 +59,11 @@
         <template #default="{ row }">
           <div class="tags-column">
             <el-tag 
-              v-for="tag in row.tags" 
+              v-for="tag in row.tags?.split(',').filter(Boolean)"
               :key="tag"
               size="small"
               class="tag-item"
+              type="success"
             >
               {{ tag }}
             </el-tag>
@@ -101,48 +102,52 @@
       v-model="dialogVisible"
       width="700px"
     >
-      <el-form :model="form" label-width="100px">
-        <el-form-item label="商品名称">
-          <el-input v-model="form.name" />
+      <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
+        <el-form-item label="商品名称" prop="title">
+          <el-input v-model="form.title" />
         </el-form-item>
-        <el-form-item label="分类">
-          <el-select v-model="form.category">
-            <el-option label="纪念品" value="纪念品" />
-            <el-option label="特产" value="特产" />
-            <el-option label="工艺品" value="工艺品" />
-            <el-option label="其他" value="其他" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="价格">
-          <el-input-number 
-            v-model="form.price" 
-            :min="0" 
-            :precision="2" 
-            :step="10"
-          />
-        </el-form-item>
-        <el-form-item label="库存">
-          <el-input-number v-model="form.stock" :min="0" />
-        </el-form-item>
-        <el-form-item label="商品图片">
+        <el-form-item label="商品图片" prop="cover">
           <el-upload
             class="product-uploader"
-            action="#"
-            :auto-upload="false"
+            :action="`${apiBaseUrl}/upload/image`"
+            :headers="uploadHeaders"
             :show-file-list="false"
+            :on-success="handleUploadSuccess"
+            :before-upload="beforeUpload"
           >
-            <img v-if="form.imageUrl" :src="form.imageUrl" class="preview-image" />
+            <img v-if="form.cover" :src="getImageUrl(form.cover)" class="preview-image" />
             <el-icon v-else class="product-uploader-icon"><Plus /></el-icon>
           </el-upload>
         </el-form-item>
-        <el-form-item label="商品描述">
-          <el-input type="textarea" v-model="form.description" rows="4" />
+        <el-form-item label="商品描述" prop="descr">
+          <el-input type="textarea" v-model="form.descr" rows="3" />
         </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="form.status">
-            <el-option label="在售" :value="1" />
-            <el-option label="下架" :value="0" />
+        <el-form-item label="商品价格" prop="money">
+          <el-input-number v-model="form.money" :min="0" :precision="2" :step="10" />
+        </el-form-item>
+        <el-form-item label="库存数量" prop="inventory">
+          <el-input-number v-model="form.inventory" :min="0" :step="1" />
+        </el-form-item>
+        <el-form-item label="标签" prop="tags">
+          <el-select
+            v-model="form.selectedTags"
+            multiple
+            filterable
+            allow-create
+            default-first-option
+            placeholder="请选择或创建标签"
+            @change="handleTagsChange"
+          >
+            <el-option
+              v-for="tag in availableTags"
+              :key="tag"
+              :label="tag"
+              :value="tag"
+            />
           </el-select>
+        </el-form-item>
+        <el-form-item label="详细内容" prop="content">
+          <el-input type="textarea" v-model="form.content" rows="6" />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -154,12 +159,16 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Picture, Plus } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
+import { get, post, del } from '@/common'
+import { API_BASE_URL } from '@/common/constants'
 
 const router = useRouter()
+const apiBaseUrl = API_BASE_URL
+const formRef = ref(null)
 const searchForm = reactive({
   keyword: ''
 })
@@ -171,103 +180,233 @@ const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
 const selectedRows = ref([])
+const availableTags = ref([])
+
+// 表单数据
+const dialogVisible = ref(false)
+const dialogTitle = ref('新增商品')
+const form = reactive({
+  id: null,
+  title: '',
+  cover: '',
+  descr: '',
+  money: 0,
+  inventory: 0,
+  content: '',
+  selectedTags: [],
+  tags: ''
+})
+
+// 表单验证规则
+const rules = {
+  title: [{ required: true, message: '请输入商品名称', trigger: 'blur' }],
+  descr: [{ required: true, message: '请输入商品描述', trigger: 'blur' }],
+  money: [{ required: true, message: '请输入商品价格', trigger: 'blur' }],
+  inventory: [{ required: true, message: '请输入库存数量', trigger: 'blur' }]
+}
+
+// 上传相关
+const uploadHeaders = {
+  Authorization: 'Bearer ' + localStorage.getItem('token')
+}
 
 // 获取图片URL
 const getImageUrl = (url) => {
   if (!url) return ''
   if (url.startsWith('http')) return url
-  return import.meta.env.VITE_API_BASE_URL + url
+  return apiBaseUrl + url
 }
 
-// 搜索方法
+// 获取所有标签
+const getAllTags = async () => {
+  try {
+    const result = await get('/travels/getAllTags')
+    if (result.code === 200) {
+      availableTags.value = result.data.map(tag => tag.tagName)
+    }
+  } catch (error) {
+    console.error('获取标签失败:', error)
+  }
+}
+
+// 获取表格数据
+const getTableData = async () => {
+  loading.value = true
+  try {
+    const result = await get('/travels/admin/selectAll', {
+      currentPage: currentPage.value,
+      pageSize: pageSize.value,
+    })
+    if (result.code === 200) {
+      tableData.value = result.data.list
+      total.value = result.data.total
+    }
+  } catch (error) {
+    console.error('获取数据失败:', error)
+    ElMessage.error('获取数据失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 处理标签变化
+const handleTagsChange = (value) => {
+  form.tags = value.join(',')
+}
+
+// 上传相关方法
+const beforeUpload = (file) => {
+  const isImage = file.type.startsWith('image/')
+  if (!isImage) {
+    ElMessage.error('只能上传图片文件!')
+    return false
+  }
+  return true
+}
+
+const handleUploadSuccess = (response) => {
+  if (response.code === 200) {
+    form.cover = response.data
+    ElMessage.success('上传成功')
+  } else {
+    ElMessage.error('上传失败')
+  }
+}
+
+// 其他方法实现...
 const handleSearch = () => {
-  // 实现搜索逻辑
+  currentPage.value = 1
+  getTableData()
 }
 
 const resetSearch = () => {
   searchForm.keyword = ''
-  // 重置后刷新数据
+  handleSearch()
 }
 
-// 选择行
+const handleAdd = () => {
+  dialogTitle.value = '新增商品'
+  Object.assign(form, {
+    id: null,
+    title: '',
+    cover: '',
+    descr: '',
+    money: 0,
+    inventory: 0,
+    content: '',
+    selectedTags: [],
+    tags: ''
+  })
+  dialogVisible.value = true
+}
+
+const handleSubmit = async () => {
+  if (!formRef.value) return
+  await formRef.value.validate(async (valid) => {
+    if (valid) {
+      try {
+        const url = form.id ? '/travels/admin/update' : '/travels/admin/add'
+        const result = await post(url, form)
+        if (result.code === 200) {
+          ElMessage.success(result.msg)
+          dialogVisible.value = false
+          getTableData()
+        } else {
+          ElMessage.error(result.msg)
+        }
+      } catch (error) {
+        console.error('提交失败:', error)
+        ElMessage.error('提交失败')
+      }
+    }
+  })
+}
+
+// 添加分页方法
+const handleSizeChange = (val) => {
+  pageSize.value = val
+  getTableData()
+}
+
+const handleCurrentChange = (val) => {
+  currentPage.value = val
+  getTableData()
+}
+
+// 添加选择行方法
 const handleSelectionChange = (rows) => {
   selectedRows.value = rows
 }
 
-// 批量删除
-const handleBatchDelete = () => {
-  if (!selectedRows.value.length) return
-  ElMessageBox.confirm('确定要删除选中的商品吗？', '提示', {
-    type: 'warning'
-  }).then(() => {
-    // 实现批量删除逻辑
-  })
-}
-
-// 查看详情
+// 添加查看详情方法
 const viewDetail = (row) => {
   router.push(`/user/travel-detail/${row.id}`)
 }
 
-// 对话框相关
-const dialogVisible = ref(false)
-const dialogTitle = ref('新增商品')
-const form = reactive({
-  name: '',
-  category: '',
-  price: 0,
-  stock: 0,
-  imageUrl: '',
-  description: '',
-  status: 1
-})
-
-// 方法
-const handleAdd = () => {
-  dialogTitle.value = '新增商品'
-  Object.assign(form, {
-    name: '',
-    category: '',
-    price: 0,
-    stock: 0,
-    imageUrl: '',
-    description: '',
-    status: 1
-  })
-  dialogVisible.value = true
-}
-
+// 添加编辑方法
 const handleEdit = (row) => {
   dialogTitle.value = '编辑商品'
   Object.assign(form, {
-    name: row.name,
-    category: row.category,
-    price: row.price,
-    stock: row.stock,
-    imageUrl: row.imageUrl || '',
-    description: row.description || '',
-    status: row.status
+    id: row.id,
+    title: row.title,
+    cover: row.cover,
+    descr: row.descr,
+    money: Number(row.money),
+    inventory: Number(row.inventory),
+    content: row.content,
+    selectedTags: row.tags ? row.tags.split(',') : [],
+    tags: row.tags || ''
   })
   dialogVisible.value = true
 }
 
+// 添加删除方法
 const handleDelete = (row) => {
   ElMessageBox.confirm('确定要删除该商品吗？', '提示', {
     type: 'warning'
-  }).then(() => {
-    ElMessage.success('删除成功')
+  }).then(async () => {
+    try {
+      const result = await del(`/travels/admin/delete/${row.id}`)
+      if (result.code === 200) {
+        ElMessage.success(result.msg)
+        getTableData()
+      } else {
+        ElMessage.error(result.msg)
+      }
+    } catch (error) {
+      console.error('删除失败:', error)
+      ElMessage.error('删除失败')
+    }
   })
 }
 
-const handleSubmit = () => {
-  ElMessage.success(dialogTitle.value === '新增商品' ? '添加成功' : '更新成功')
-  dialogVisible.value = false
+// 添加批量删除方法
+const handleBatchDelete = () => {
+  if (!selectedRows.value.length) return
+  ElMessageBox.confirm('确定要删除选中的商品吗？', '提示', {
+    type: 'warning'
+  }).then(async () => {
+    try {
+      const ids = selectedRows.value.map(row => row.id)
+      const result = await post('/travels/admin/delete/batch', ids)
+      if (result.code === 200) {
+        ElMessage.success(result.msg)
+        getTableData()
+      } else {
+        ElMessage.error(result.msg)
+      }
+    } catch (error) {
+      console.error('批量删除失败:', error)
+      ElMessage.error('批量删除失败')
+    }
+  })
 }
 
-const handlePageChange = (page) => {
-  currentPage.value = page
-  // 这里添加获取数据的逻辑
-}
+// 页面加载时获取数据
+onMounted(() => {
+  getTableData()
+  getAllTags()
+})
 </script>
 
 <style scoped>
@@ -317,10 +456,13 @@ const handlePageChange = (page) => {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  padding: 4px 0;
 }
 
 .tag-item {
   margin: 2px 0;
+  width: fit-content;
+  display: inline-block;
 }
 
 .price {
@@ -345,5 +487,39 @@ const handlePageChange = (page) => {
   height: 100%;
   background: #f5f7fa;
   color: #909399;
+}
+
+.search-input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.preview-image {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.product-uploader {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  width: 200px;
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-uploader:hover {
+  border-color: #409EFF;
+}
+
+.product-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
 }
 </style> 

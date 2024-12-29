@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -30,10 +29,6 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
         return travelsMapper.selectAllByRead();
     }
 
-    @Override
-    public void deleteBatch(List<Integer> ids) {
-        travelsMapper.deleteBatch(ids);
-    }
 
     @Override
     public List<String> selectTags(Integer id) {
@@ -89,6 +84,80 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
             throw new RuntimeException("保存旅游商品失败");
         }
     }
+
+    @Override
+    @Transactional
+    public boolean updateWithTags(TravelsVO travelsVO) {
+        try {
+            // 1. 更新旅游商品基本信息
+            boolean updated = this.updateById(travelsVO);
+            if (!updated) {
+                return false;
+            }
+
+            // 2. 删除原有的标签关联
+            travelsMapper.deleteTravelTags(travelsVO.getId());
+
+            // 3. 处理新的标签
+            if (travelsVO.getTags() != null && !travelsVO.getTags().isEmpty()) {
+                String[] tagNames = travelsVO.getTags().split(",");
+                List<Integer> tagIds = new ArrayList<>();
+
+                for (String tagName : tagNames) {
+                    tagName = tagName.trim();
+                    // 查找标签是否存在
+                    Integer tagId = travelsMapper.getTagIdByName(tagName);
+                    if (tagId == null) {
+                        // 如果标签不存在，创建新标签
+                        travelsMapper.insertTag(tagName);
+                        tagId = travelsMapper.getTagIdByName(tagName);
+                    }
+                    tagIds.add(tagId);
+                }
+
+                // 4. 保存新的关联关系
+                if (!tagIds.isEmpty()) {
+                    travelsMapper.insertTravelTags(travelsVO.getId(), tagIds);
+                }
+            }
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("更新旅游商品失败");
+        }
+    }
+
+
+
+    @Override
+    @Transactional
+    public boolean removeWithTags(Integer id) {
+        try {
+            // 1. 删除标签关联
+            travelsMapper.deleteTravelTags(id);
+            // 2. 删除商品
+            return this.removeById(id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("删除旅游商品失败");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteBatch(List<Integer> ids) {
+        try {
+            // 1. 批量删除标签关联
+            travelsMapper.deleteBatchTravelTags(ids);
+            // 2. 批量删除商品
+            this.removeBatchByIds(ids);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException("批量删除旅游商品失败");
+        }
+    }
+
 }
 
 
