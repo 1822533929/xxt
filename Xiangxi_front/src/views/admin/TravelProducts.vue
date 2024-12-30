@@ -101,6 +101,7 @@
       :title="dialogTitle"
       v-model="dialogVisible"
       width="700px"
+      @closed="handleDialogClose"
     >
       <el-form :model="form" :rules="rules" ref="formRef" label-width="100px">
         <el-form-item label="商品名称" prop="title">
@@ -109,13 +110,17 @@
         <el-form-item label="商品图片" prop="cover">
           <el-upload
             class="product-uploader"
-            :action="`${apiBaseUrl}/upload/image`"
-            :headers="uploadHeaders"
+            action="#"
             :show-file-list="false"
-            :on-success="handleUploadSuccess"
+            :auto-upload="false"
+            :on-change="handleImageChange"
             :before-upload="beforeUpload"
           >
-            <img v-if="form.cover" :src="getImageUrl(form.cover)" class="preview-image" />
+            <img 
+              v-if="form.tempPreviewUrl || form.cover" 
+              :src="form.tempPreviewUrl || getImageUrl(form.cover)" 
+              class="preview-image" 
+            />
             <el-icon v-else class="product-uploader-icon"><Plus /></el-icon>
           </el-upload>
         </el-form-item>
@@ -147,7 +152,21 @@
           </el-select>
         </el-form-item>
         <el-form-item label="详细内容" prop="content">
-          <el-input type="textarea" v-model="form.content" rows="6" />
+          <div class="editor-container">
+            <Toolbar
+              style="border-bottom: 1px solid #ccc"
+              :editor="editorRef"
+              :defaultConfig="toolbarConfig"
+              :mode="mode"
+            />
+            <Editor
+              style="height: 500px"
+              v-model="form.content"
+              :defaultConfig="editorConfig"
+              :mode="mode"
+              @onCreated="handleCreated"
+            />
+          </div>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -159,12 +178,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, shallowRef, onBeforeUnmount } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Picture, Plus } from '@element-plus/icons-vue'
 import { useRouter } from 'vue-router'
 import { get, post, del } from '@/common'
 import { API_BASE_URL } from '@/common/constants'
+import '@wangeditor/editor/dist/css/style.css'
+import { Editor, Toolbar } from '@wangeditor/editor-for-vue'
 
 const router = useRouter()
 const apiBaseUrl = API_BASE_URL
@@ -194,7 +215,9 @@ const form = reactive({
   inventory: 0,
   content: '',
   selectedTags: [],
-  tags: ''
+  tags: '',
+  tempImage: null,  // 用于存储临时图片文件
+  tempPreviewUrl: '' // 用于存储临时预览URL
 })
 
 // 表单验证规则
@@ -205,14 +228,10 @@ const rules = {
   inventory: [{ required: true, message: '请输入库存数量', trigger: 'blur' }]
 }
 
-// 上传相关
-const uploadHeaders = {
-  Authorization: 'Bearer ' + localStorage.getItem('token')
-}
-
 // 获取图片URL
 const getImageUrl = (url) => {
   if (!url) return ''
+  if (url.startsWith('blob:')) return url
   if (url.startsWith('http')) return url
   return apiBaseUrl + url
 }
@@ -236,6 +255,7 @@ const getTableData = async () => {
     const result = await get('/travels/admin/selectAll', {
       currentPage: currentPage.value,
       pageSize: pageSize.value,
+      keyword: searchForm.keyword
     })
     if (result.code === 200) {
       tableData.value = result.data.list
@@ -257,28 +277,34 @@ const handleTagsChange = (value) => {
 // 上传相关方法
 const beforeUpload = (file) => {
   const isImage = file.type.startsWith('image/')
+  const isLt2M = file.size / 1024 / 1024 < 2
+
   if (!isImage) {
     ElMessage.error('只能上传图片文件!')
+    return false
+  }
+  if (!isLt2M) {
+    ElMessage.error('图片大小不能超过 2MB!')
     return false
   }
   return true
 }
 
-const handleUploadSuccess = (response) => {
-  if (response.code === 200) {
-    form.cover = response.data
-    ElMessage.success('上传成功')
-  } else {
-    ElMessage.error('上传失败')
-  }
+// 添加图片选择处理方法
+const handleImageChange = (file) => {
+  form.tempImage = file.raw
+  // 创建临时预览URL并存储
+  const previewUrl = URL.createObjectURL(file.raw)
+  form.tempPreviewUrl = previewUrl
 }
 
-// 其他方法实现...
+// 处理搜索
 const handleSearch = () => {
   currentPage.value = 1
   getTableData()
 }
 
+// 重置搜索
 const resetSearch = () => {
   searchForm.keyword = ''
   handleSearch()
@@ -305,11 +331,42 @@ const handleSubmit = async () => {
   await formRef.value.validate(async (valid) => {
     if (valid) {
       try {
+        // 处理内容中的图片
+        const processedContent = await processContent(form.content)
+        form.content = processedContent
+
+        // 1. 先上传图片
+        if (form.tempImage) {
+          const imageFormData = new FormData()
+          imageFormData.append('image', form.tempImage)
+          const uploadResult = await post('/upload/image', imageFormData, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          })
+          if (uploadResult.code === 200) {
+            form.cover = uploadResult.data
+          } else {
+            ElMessage.error('图片上传失败')
+            return
+          }
+        }
+        
+        // 2. 提交商品信息
         const url = form.id ? '/travels/admin/update' : '/travels/admin/add'
-        const result = await post(url, form)
+        const submitData = { ...form }
+        // 删除临时数据
+        delete submitData.tempImage
+        delete submitData.tempPreviewUrl
+        const result = await post(url, submitData)
+
         if (result.code === 200) {
           ElMessage.success(result.msg)
           dialogVisible.value = false
+          // 清理临时预览URL
+          if (form.tempPreviewUrl) {
+            URL.revokeObjectURL(form.tempPreviewUrl)
+          }
           getTableData()
         } else {
           ElMessage.error(result.msg)
@@ -402,11 +459,133 @@ const handleBatchDelete = () => {
   })
 }
 
+// 修改对话框关闭时的处理
+const handleDialogClose = () => {
+  // 清理临时预览URL
+  if (form.tempPreviewUrl) {
+    URL.revokeObjectURL(form.tempPreviewUrl)
+    form.tempPreviewUrl = ''
+  }
+}
+
+// 编辑器相关
+const editorRef = shallowRef()
+const mode = 'default'
+
+// 工具栏配置
+const toolbarConfig = {
+  excludeKeys: [] // 可以配置需要排除的功能键
+}
+
+// 编辑器配置
+const editorConfig = {
+  placeholder: '请输入内容...',
+  MENU_CONF: {
+    uploadImage: {
+      // 自定义图片上传
+      customUpload: async (file, insertFn) => {
+        try {
+          // 将文件转换为 base64
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            const base64 = e.target.result
+            // 插入图片到编辑器，使用 base64
+            insertFn(base64)
+          }
+          reader.readAsDataURL(file)
+        } catch (error) {
+          console.error('图片处理失败:', error)
+          ElMessage.error('图片处理失败')
+        }
+      }
+    }
+  }
+}
+
+// 处理图片上传到服务器
+const uploadImageToServer = async (base64Str) => {
+  try {
+    // 将 base64 转换为文件
+    const arr = base64Str.split(',')
+    const mime = arr[0].match(/:(.*?);/)[1]
+    const bstr = atob(arr[1])
+    let n = bstr.length
+    const u8arr = new Uint8Array(n)
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n)
+    }
+    const file = new File([u8arr], 'image.png', { type: mime })
+
+    // 上传文件
+    const formData = new FormData()
+    formData.append('image', file)
+    const result = await post('/upload/image', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+    
+    if (result.code === 200 && result.data) {
+      return result.data
+    }
+    throw new Error(result.msg || '上传失败')
+  } catch (error) {
+    console.error('图片上传失败:', error)
+    throw error
+  }
+}
+
+// 处理内容中的所有 base64 图片
+const processContent = async (content) => {
+  try {
+    // 创建临时容器
+    const div = document.createElement('div')
+    div.innerHTML = content
+    
+    // 获取所有图片
+    const images = div.getElementsByTagName('img')
+    
+    // 转换为数组以避免实时更新的问题
+    const imageArray = Array.from(images)
+    
+    // 处理每个图片
+    for (const img of imageArray) {
+      const src = img.getAttribute('src')
+      if (src && src.startsWith('data:image')) {
+        try {
+          const imageUrl = await uploadImageToServer(src)
+          if (!imageUrl) {
+            console.error('图片上传返回空URL')
+            continue
+          }
+          img.setAttribute('src', imageUrl)
+        } catch (error) {
+          console.error('处理图片失败:', error)
+        }
+      }
+    }
+    
+    return div.innerHTML
+  } catch (error) {
+    console.error('处理内容中的图片失败:', error)
+    throw error
+  }
+}
+
 // 页面加载时获取数据
 onMounted(() => {
   getTableData()
   getAllTags()
 })
+
+// 组件销毁时，及时销毁编辑器
+onBeforeUnmount(() => {
+  if (editorRef.value) {
+    editorRef.value.destroy()
+  }
+})
+
+const handleCreated = (editor) => {
+  editorRef.value = editor
+}
 </script>
 
 <style scoped>
@@ -521,5 +700,14 @@ onMounted(() => {
 .product-uploader-icon {
   font-size: 28px;
   color: #8c939d;
+}
+
+.editor-container {
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+}
+
+:deep(.w-e-text-container) {
+  min-height: 300px !important;
 }
 </style> 

@@ -288,7 +288,7 @@ const getImageUrl = (url) => {
   if (url.startsWith('http')) return url
   // 确保 url 以 / 开头
   const path = url.startsWith('/') ? url : '/' + url
-  console.log('Getting image URL:', path)
+  // console.log('Getting image URL:', path)
   return import.meta.env.VITE_API_BASE_URL + path
 }
 

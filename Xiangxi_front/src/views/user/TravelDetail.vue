@@ -19,7 +19,13 @@
 
         <!-- 右侧信息 -->
         <div class="info-section">
-          <h1 class="title">{{ detail.title }}</h1>
+          <div class="title-section">
+            <h1 class="title">{{ detail.title }}</h1>
+            <div class="read-count">
+              <el-icon><View /></el-icon>
+              <span>{{ detail.readCount || 0 }}</span>
+            </div>
+          </div>
           
           <!-- 标签 -->
           <div class="tags">
@@ -77,7 +83,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { get } from '@/common'
 import { ElMessage } from 'element-plus'
-import { Picture } from '@element-plus/icons-vue'
+import { Picture, View } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -100,6 +106,8 @@ const getDetail = async () => {
       detail.value = result.data
       // 获取标签
       await getTags()
+      // 增加浏览量
+      await addReadCount()
     }
   } catch (error) {
     console.error('获取详情失败:', error)
@@ -119,6 +127,15 @@ const getTags = async () => {
   } catch (error) {
     console.error('获取标签失败:', error)
     tags.value = []
+  }
+}
+
+// 增加浏览量
+const addReadCount = async () => {
+  try {
+    await get(`/travels/addRead/${route.params.id}`)
+  } catch (error) {
+    console.error('增加浏览量失败:', error)
   }
 }
 
@@ -171,10 +188,28 @@ onMounted(() => {
   gap: 20px;
 }
 
+.title-section {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .title {
   font-size: 24px;
   color: #303133;
   margin: 0;
+}
+
+.read-count {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #909399;
+  font-size: 14px;
+}
+
+.read-count .el-icon {
+  font-size: 16px;
 }
 
 .tags {

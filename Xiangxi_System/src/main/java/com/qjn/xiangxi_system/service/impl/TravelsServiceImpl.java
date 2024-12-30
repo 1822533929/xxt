@@ -158,6 +158,11 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
         }
     }
 
+    @Override
+    public List<TravelsVO> selectAllWithTags(String keyword) {
+        return travelsMapper.selectAllWithTags(keyword);
+    }
+
 }
 
 

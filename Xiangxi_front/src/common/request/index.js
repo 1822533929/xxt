@@ -314,15 +314,15 @@ instance.interceptors.request.use(
 		config.servMsgSync = config.servMsgSync === true //服务端成功消息是否同步显示
 
 		const token = getToken();
-		console.log('Request interceptor - raw token:', token);
+		// console.log('Request interceptor - raw token:', token);
 		
 		if (token) {
 			try {
 				const cleanToken = token.trim();
 				const encodedToken = cleanToken.replace(/\s+/g, '');
-				console.log('Request interceptor - clean token:', encodedToken);
+				// console.log('Request interceptor - clean token:', encodedToken);
 				config.headers[HEADER_TOKEN] = `Bearer ${encodedToken}`;
-				console.log('Request interceptor - authorization header:', config.headers[HEADER_TOKEN]);
+				// console.log('Request interceptor - authorization header:', config.headers[HEADER_TOKEN]);
 			} catch (e) {
 				console.error('Error processing token:', e);
 				removeLocalToken();

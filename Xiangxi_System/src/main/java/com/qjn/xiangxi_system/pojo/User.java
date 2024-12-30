@@ -50,7 +50,7 @@ public class User implements Serializable, UserDetails {
     private String phone;
 
     /**
-     * 发布时间
+     * 邮箱
      */
     private String email;
 

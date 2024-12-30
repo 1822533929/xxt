@@ -2,16 +2,20 @@ package com.qjn.xiangxi_system.controller;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.qjn.xiangxi_system.pojo.Article;
 import com.qjn.xiangxi_system.pojo.Travels;
 import com.qjn.xiangxi_system.pojo.query.BaseQuery;
 import com.qjn.xiangxi_system.pojo.query.TravelsQuery;
 import com.qjn.xiangxi_system.pojo.vo.TravelsVO;
 import com.qjn.xiangxi_system.service.TagsService;
 import com.qjn.xiangxi_system.service.TravelsService;
+import com.qjn.xiangxi_system.utils.FileUploadUtil;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,6 +25,8 @@ public class TravelsController {
     private TravelsService travelsService;
     @Resource
     private TagsService tagsService;
+    @Resource
+    private FileUploadUtil fileUploadUtil;
     /**
      * 热门景点
      * 根据阅读量从高到低查询旅游信息
@@ -88,21 +94,35 @@ public class TravelsController {
     @RequestMapping("/admin/selectAll")
     public Result<PageInfo<TravelsVO>> adminSelectAll(
         @RequestParam(defaultValue = "1") Integer currentPage,
-        @RequestParam(defaultValue = "10") Integer pageSize
+        @RequestParam(defaultValue = "10") Integer pageSize,
+        @RequestParam(required = false) String keyword
     ) {
         PageHelper.startPage(currentPage, pageSize);
-        PageInfo<TravelsVO> pageInfo = new PageInfo<>(travelsService.SelectAll());
+        PageInfo<TravelsVO> pageInfo = new PageInfo<>(travelsService.selectAllWithTags(keyword));
         return Result.success(pageInfo);
     }
     /**
      * 后台添加商品
      */
     @RequestMapping("/admin/add")
-    public Result add(@RequestBody TravelsVO travelsVO) {
-        if (travelsService.saveWithTags(travelsVO)) {
-            return Result.success("添加成功");
+    public Result add(@RequestBody TravelsVO travelsVO,
+                      @RequestParam(value = "image", required = false) MultipartFile image
+    ) {
+        try{
+            String cover = null;
+            // 只在有图片且不是空文件时处理图片上传
+            if (image != null && !image.isEmpty() && image.getSize() > 0) {
+                cover = fileUploadUtil.uploadImage(image);
+            }
+            travelsVO.setTime(java.time.LocalDate.now().toString());
+            travelsVO.setCover(cover);
+            if (travelsService.saveWithTags(travelsVO)) {
+                return Result.success("添加成功");
+            }
+            return Result.error("添加失败");
+        } catch (IOException e) {
+            return Result.error("图片上传失败");
         }
-        return Result.error("添加失败");
     }
     /**
      * 后台修改商品
@@ -142,5 +162,6 @@ public class TravelsController {
     public Result getTags() {
         return Result.success(tagsService.list());
     }
+   
    
 }

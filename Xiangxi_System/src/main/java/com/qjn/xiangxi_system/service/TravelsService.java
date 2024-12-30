@@ -24,4 +24,9 @@ public interface TravelsService extends IService<Travels> {
     boolean removeWithTags(Integer id);
     boolean updateWithTags(TravelsVO travelsVO);
 
+    /**
+     * 模糊查询所有旅游商品及其标签
+     */
+    List<TravelsVO> selectAllWithTags(String keyword);
+
 }

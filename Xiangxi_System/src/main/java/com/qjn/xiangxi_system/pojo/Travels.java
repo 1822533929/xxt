@@ -53,7 +53,7 @@ public class Travels implements Serializable {
     private String money;
 
     /**
-     * 
+     * 库存
      */
     private Integer inventory;
 

@@ -29,6 +29,11 @@ public interface TravelsMapper extends BaseMapper<Travels> {
     void deleteTravelTags(@Param("travelId") Integer travelId);
 
     void deleteBatchTravelTags(@Param("travelIds") List<Integer> travelIds);
+
+    /**
+     * 模糊查询所有旅游商品及其标签
+     */
+    List<TravelsVO> selectAllWithTags(@Param("keyword") String keyword);
 }
 
 
