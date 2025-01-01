@@ -2,6 +2,8 @@ package com.qjn.xiangxi_system.pojo.query;
 
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class TravelsQuery extends BaseQuery {
     /**
@@ -47,7 +49,7 @@ public class TravelsQuery extends BaseQuery {
     /**
      * 费用
      */
-    private String money;
+    private BigDecimal money;
     /**
      * 库存
      */
@@ -172,14 +174,14 @@ public class TravelsQuery extends BaseQuery {
     /**
      * 费用
      */
-    public String getMoney() {
+    public BigDecimal getMoney() {
         return money;
     }
 
     /**
      * 费用
      */
-    public void setMoney(String money) {
+    public void setMoney(BigDecimal money) {
         this.money = money;
     }
 

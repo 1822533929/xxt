@@ -163,6 +163,20 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
         return travelsMapper.selectAllWithTags(keyword);
     }
 
+    @Override
+    public boolean checkInventory(Integer travelId, Integer quantity) {
+        Integer inventory = travelsMapper.getInventory(travelId);
+        if(inventory<=0||inventory<quantity){//库存不足
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void reduceInventory(Integer travelId, Integer quantity) {
+        travelsMapper.reduceInventory(travelId,quantity);
+    }
+
 }
 
 

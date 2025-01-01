@@ -8,8 +8,6 @@
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="userid" column="userId" jdbcType="INTEGER"/>
             <result property="travelid" column="travelId" jdbcType="INTEGER"/>
-            <result property="title" column="title" jdbcType="VARCHAR"/>
-            <result property="username" column="username" jdbcType="VARCHAR"/>
             <result property="orderdate" column="orderDate" jdbcType="DATE"/>
             <result property="status" column="status" jdbcType="VARCHAR"/>
             <result property="totalprice" column="totalPrice" jdbcType="DECIMAL"/>
@@ -17,8 +15,13 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,userId,travelId,
-        title,username,orderDate,
+        id,userId,travelId,orderDate,
         status,totalPrice,quantity
     </sql>
+    <select id="getAllOrders" resultType="com.qjn.xiangxi_system.pojo.vo.OrdersVO">
+        select o.*,u.username,t.title,t.cover from orders o, user u, travels t where o.userid = u.id and o.travelid = t.id
+    </select>
+    <select id="getUserOrders" resultType="com.qjn.xiangxi_system.pojo.vo.OrdersVO">
+        select o.*,u.username,t.title,t.cover from orders o, user u, travels t where o.userid = u.id and o.travelid = t.id and o.userid = #{userid}
+    </select>
 </mapper>

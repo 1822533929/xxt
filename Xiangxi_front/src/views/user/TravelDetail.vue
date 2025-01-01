@@ -75,13 +75,50 @@
         <div class="content-body" v-html="detail.content"></div>
       </div>
     </div>
+
+    <!-- 订单确认对话框 -->
+    <el-dialog
+      title="确认订单"
+      v-model="orderDialogVisible"
+      width="500px"
+    >
+      <div class="order-form">
+        <div class="order-item">
+          <span class="label">商品名称：</span>
+          <span class="value">{{ detail.title }}</span>
+        </div>
+        <div class="order-item">
+          <span class="label">商品单价：</span>
+          <span class="value price">¥{{ detail.money }}</span>
+        </div>
+        <div class="order-item">
+          <span class="label">购买数量：</span>
+          <el-input-number 
+            v-model="orderQuantity" 
+            :min="1" 
+            :max="Number(detail.inventory)"
+            @change="calculateTotal"
+          />
+        </div>
+        <div class="order-item total">
+          <span class="label">商品总价：</span>
+          <span class="value price">¥{{ totalPrice }}</span>
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="orderDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="confirmOrder" :loading="submitting">
+          确认下单
+        </el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { get } from '@/common'
+import { get, post } from '@/common'
 import { ElMessage } from 'element-plus'
 import { Picture, View } from '@element-plus/icons-vue'
 
@@ -90,6 +127,16 @@ const router = useRouter()
 const loading = ref(true)
 const detail = ref({})
 const tags = ref([])
+
+// 订单相关
+const orderDialogVisible = ref(false)
+const orderQuantity = ref(1)
+const submitting = ref(false)
+
+// 计算总价
+const totalPrice = computed(() => {
+  return (detail.value.money * orderQuantity.value).toFixed(2)
+})
 
 // 获取图片URL
 const getImageUrl = (url) => {
@@ -139,9 +186,49 @@ const addReadCount = async () => {
   }
 }
 
-// 预定处理
+// 处理预定按钮点击
 const handleBook = () => {
-  ElMessage.success('预定功能开发中')
+  if (!localStorage.getItem('token')) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
+  orderQuantity.value = 1
+  orderDialogVisible.value = true
+  calculateTotal()
+}
+
+// 计算总价
+const calculateTotal = () => {
+  // 由computed属性totalPrice自动计算
+}
+
+// 确认下单
+const confirmOrder = async () => {
+  try {
+    submitting.value = true
+    // 使用 URLSearchParams 格式化参数
+    const params = new URLSearchParams()
+    params.append('travelId', detail.value.id)
+    params.append('quantity', orderQuantity.value)
+    params.append('money', detail.value.money)
+    
+    const result = await post('/orders/createOrder?' + params.toString())
+    
+    if (result.code === 200) {
+      ElMessage.success('下单成功')
+      orderDialogVisible.value = false
+      // 可以跳转到订单列表页面
+      router.push('/user/orders')
+    } else {
+      ElMessage.error(result.msg || '下单失败')
+    }
+  } catch (error) {
+    console.error('下单失败:', error)
+    ElMessage.error('下单失败')
+  } finally {
+    submitting.value = false
+  }
 }
 
 onMounted(() => {
@@ -296,5 +383,36 @@ onMounted(() => {
 :deep(img) {
   max-width: 100%;
   height: auto;
+}
+
+.order-form {
+  padding: 20px;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.order-item .label {
+  width: 100px;
+  color: #606266;
+}
+
+.order-item .value {
+  flex: 1;
+}
+
+.order-item .price {
+  color: #f56c6c;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.order-item.total {
+  border-top: 1px solid #ebeef5;
+  padding-top: 20px;
+  margin-top: 20px;
 }
 </style> 

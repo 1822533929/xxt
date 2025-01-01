@@ -13,7 +13,7 @@
         <result property="time" column="time" jdbcType="VARCHAR"/>
         <result property="readCount" column="read_count" jdbcType="INTEGER"/>
         <result property="startDate" column="start_date" jdbcType="VARCHAR"/>
-        <result property="money" column="money" jdbcType="VARCHAR"/>
+        <result property="money" column="money" jdbcType="DECIMAL"/>
         <result property="inventory" column="inventory" jdbcType="VARCHAR"/>
     </resultMap>
 
@@ -37,6 +37,9 @@
         descr,content,time,
         read_count,start_date,money,inventory
     </sql>
+    <update id="reduceInventory">
+        UPDATE travels SET inventory = inventory - #{quantity} WHERE id = #{travelId}
+    </update>
 
     <!-- 批量删除 -->
     <delete id="deleteBatch">
@@ -128,6 +131,9 @@
             t.id
         ORDER BY 
             t.id DESC
+    </select>
+    <select id="getInventory" resultType="java.lang.Integer">
+        SELECT inventory FROM travels WHERE id = #{travelId}
     </select>
 
 </mapper>

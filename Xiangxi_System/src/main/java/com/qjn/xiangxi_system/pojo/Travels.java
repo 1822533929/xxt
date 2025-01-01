@@ -1,6 +1,7 @@
 package com.qjn.xiangxi_system.pojo;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 
@@ -38,7 +39,7 @@ public class Travels implements Serializable {
     private String time;
 
     /**
-     * 
+     * 阅读量
      */
     private Integer readCount;
 
@@ -50,7 +51,7 @@ public class Travels implements Serializable {
     /**
      * 费用
      */
-    private String money;
+    private BigDecimal money;
 
     /**
      * 库存
@@ -174,14 +175,14 @@ public class Travels implements Serializable {
     /**
      * 费用
      */
-    public String getMoney() {
+    public BigDecimal getMoney() {
         return money;
     }
 
     /**
      * 费用
      */
-    public void setMoney(String money) {
+    public void setMoney(BigDecimal money) {
         this.money = money;
     }
 

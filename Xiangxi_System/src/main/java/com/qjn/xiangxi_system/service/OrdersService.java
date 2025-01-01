@@ -2,6 +2,9 @@ package com.qjn.xiangxi_system.service;
 
 import com.qjn.xiangxi_system.pojo.Orders;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.qjn.xiangxi_system.pojo.vo.OrdersVO;
+
+import java.util.List;
 
 /**
 * @author Administrator
@@ -10,4 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface OrdersService extends IService<Orders> {
 
+    List<OrdersVO> getAllOrders();
+
+    List<OrdersVO> getUserOrders(Integer userid);
 }

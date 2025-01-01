@@ -25,16 +25,6 @@ public class Orders implements Serializable {
     private Integer travelid;
 
     /**
-     * 旅游商品名称
-     */
-    private String title;
-
-    /**
-     * 购买人
-     */
-    private String username;
-
-    /**
      * 订单日期
      */
     private Date orderdate;
@@ -98,33 +88,7 @@ public class Orders implements Serializable {
         this.travelid = travelid;
     }
 
-    /**
-     * 旅游商品名称
-     */
-    public String getTitle() {
-        return title;
-    }
 
-    /**
-     * 旅游商品名称
-     */
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    /**
-     * 购买人
-     */
-    public String getUsername() {
-        return username;
-    }
-
-    /**
-     * 购买人
-     */
-    public void setUsername(String username) {
-        this.username = username;
-    }
 
     /**
      * 订单日期
@@ -197,8 +161,6 @@ public class Orders implements Serializable {
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
             && (this.getUserid() == null ? other.getUserid() == null : this.getUserid().equals(other.getUserid()))
             && (this.getTravelid() == null ? other.getTravelid() == null : this.getTravelid().equals(other.getTravelid()))
-            && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
-            && (this.getUsername() == null ? other.getUsername() == null : this.getUsername().equals(other.getUsername()))
             && (this.getOrderdate() == null ? other.getOrderdate() == null : this.getOrderdate().equals(other.getOrderdate()))
             && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
             && (this.getTotalprice() == null ? other.getTotalprice() == null : this.getTotalprice().equals(other.getTotalprice()))
@@ -212,8 +174,6 @@ public class Orders implements Serializable {
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
         result = prime * result + ((getUserid() == null) ? 0 : getUserid().hashCode());
         result = prime * result + ((getTravelid() == null) ? 0 : getTravelid().hashCode());
-        result = prime * result + ((getTitle() == null) ? 0 : getTitle().hashCode());
-        result = prime * result + ((getUsername() == null) ? 0 : getUsername().hashCode());
         result = prime * result + ((getOrderdate() == null) ? 0 : getOrderdate().hashCode());
         result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
         result = prime * result + ((getTotalprice() == null) ? 0 : getTotalprice().hashCode());
@@ -230,8 +190,6 @@ public class Orders implements Serializable {
         sb.append(", id=").append(id);
         sb.append(", userid=").append(userid);
         sb.append(", travelid=").append(travelid);
-        sb.append(", title=").append(title);
-        sb.append(", username=").append(username);
         sb.append(", orderdate=").append(orderdate);
         sb.append(", status=").append(status);
         sb.append(", totalprice=").append(totalprice);
