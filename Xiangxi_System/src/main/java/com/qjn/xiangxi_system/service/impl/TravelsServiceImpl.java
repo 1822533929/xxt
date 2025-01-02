@@ -177,6 +177,11 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
         travelsMapper.reduceInventory(travelId,quantity);
     }
 
+    @Override
+    public void releaseInventory(Integer travelid, Integer quantity) {
+        travelsMapper.releaseInventory(travelid,quantity);
+    }
+
 }
 
 

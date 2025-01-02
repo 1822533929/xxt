@@ -12,6 +12,7 @@ import com.qjn.xiangxi_system.service.TravelsService;
 import com.qjn.xiangxi_system.utils.Result;
 import com.qjn.xiangxi_system.utils.UserToken;
 import jakarta.annotation.Resource;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.*;
 import com.qjn.xiangxi_system.utils.DateTimeUtil;
 
@@ -76,12 +77,15 @@ public class OrdersController {
     }
     /**
      * 订单状态修改->已取消
+     * 取消订单后释放库存
      */
     @RequestMapping("/cancelOrder")
     public Result cancelOrder(Integer id){
         Orders order = new Orders();
         order.setId(id);
         order.setStatus("已取消");
+        Orders orders = orderService.getById(id);
+        travelsService.releaseInventory(orders.getTravelid(), orders.getQuantity());
         orderService.updateById(order);
         return Result.success();
     }

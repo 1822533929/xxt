@@ -37,8 +37,13 @@
         descr,content,time,
         read_count,start_date,money,inventory
     </sql>
+    <!--减少库存-->
     <update id="reduceInventory">
         UPDATE travels SET inventory = inventory - #{quantity} WHERE id = #{travelId}
+    </update>
+    <!--释放库存-->
+    <update id="releaseInventory">
+        UPDATE travels SET inventory = inventory + #{quantity} WHERE id = #{travelid}
     </update>
 
     <!-- 批量删除 -->

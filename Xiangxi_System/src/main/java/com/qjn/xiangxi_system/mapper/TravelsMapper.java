@@ -38,6 +38,8 @@ public interface TravelsMapper extends BaseMapper<Travels> {
     Integer getInventory(Integer travelId);
 
     void reduceInventory(Integer travelId, Integer quantity);
+
+    void releaseInventory(Integer travelid, Integer quantity);
 }
 
 

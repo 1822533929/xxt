@@ -37,4 +37,5 @@ public interface TravelsService extends IService<Travels> {
      */
     void reduceInventory(Integer travelId, Integer quantity);
 
+    void releaseInventory(Integer travelid, Integer quantity);
 }
