@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.Article;
 import com.qjn.xiangxi_system.pojo.query.ArticleQuery;
 import com.qjn.xiangxi_system.service.ArticleService;
+import com.qjn.xiangxi_system.utils.DateTimeUtil;
 import com.qjn.xiangxi_system.utils.FileUploadUtil;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
@@ -41,7 +42,7 @@ public class ArticleController {
         article.setCover(cover);
         article.setContent(content);
         article.setLikes(0);
-        article.setDate(java.time.LocalDate.now().toString());
+        article.setDate(DateTimeUtil.getDateTime());
         articleService.save(article);
         return Result.success();
     } catch (IOException e) {

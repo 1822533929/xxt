@@ -136,6 +136,7 @@ public class TravelsController {
     }
     /**
      * 后台删除商品
+     * 删除对应订单（待更改）
      */
     @RequestMapping("/admin/delete/{id}")
     public Result delete(@PathVariable Integer id) {
@@ -146,6 +147,7 @@ public class TravelsController {
     }
     /**
      * 后台批量删除商品
+     * 删除对应订单（待更改）
      */
     @RequestMapping("/admin/delete/batch")
     public Result batchDelete(@RequestBody List<Integer> ids) {

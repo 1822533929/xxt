@@ -8,7 +8,7 @@
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="userid" column="userId" jdbcType="INTEGER"/>
             <result property="travelid" column="travelId" jdbcType="INTEGER"/>
-            <result property="orderdate" column="orderDate" jdbcType="DATE"/>
+            <result property="orderdate" column="orderDate" jdbcType="VARCHAR"/>
             <result property="status" column="status" jdbcType="VARCHAR"/>
             <result property="totalprice" column="totalPrice" jdbcType="DECIMAL"/>
             <result property="quantity" column="quantity" jdbcType="INTEGER"/>
@@ -18,10 +18,38 @@
         id,userId,travelId,orderDate,
         status,totalPrice,quantity
     </sql>
+    <!-- 批量删除 -->
+    <delete id="deleteBatch">
+        DELETE FROM orders WHERE id IN
+        <foreach collection="list" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
     <select id="getAllOrders" resultType="com.qjn.xiangxi_system.pojo.vo.OrdersVO">
-        select o.*,u.username,t.title,t.cover from orders o, user u, travels t where o.userid = u.id and o.travelid = t.id
+        SELECT 
+            o.*,
+            t.title,
+            t.cover,
+            t.money,
+            u.username
+        FROM 
+            orders o
+        LEFT JOIN 
+            travels t ON o.travelid = t.id
+        LEFT JOIN 
+            user u ON o.userid = u.id
+        <where>
+            <if test="title != null and title != ''">
+                AND t.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="orderId != null and orderId != ''">
+                AND o.id = #{orderId}
+            </if>
+        </where>
+        ORDER BY 
+            o.orderdate DESC
     </select>
     <select id="getUserOrders" resultType="com.qjn.xiangxi_system.pojo.vo.OrdersVO">
-        select o.*,u.username,t.title,t.cover from orders o, user u, travels t where o.userid = u.id and o.travelid = t.id and o.userid = #{userid}
+        select o.*,u.username,t.title,t.cover,t.money from orders o, user u, travels t where o.userid = u.id and o.travelid = t.id and o.userid = #{userid}
     </select>
 </mapper>

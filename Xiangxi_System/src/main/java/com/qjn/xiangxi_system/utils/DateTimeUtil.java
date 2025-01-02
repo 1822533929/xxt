@@ -1,19 +1,16 @@
 package com.qjn.xiangxi_system.utils;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class DateTimeUtil {
-//    public static String getDateTime() {
-//        LocalDateTime currentDateTime = LocalDateTime.now();
-//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-//        return currentDateTime.format(formatter);
-//    }
-    public static Date getDateTime() {
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        return Date.from(currentDateTime.atZone(ZoneId.systemDefault()).toInstant());
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    
+    /**
+     * 获取当前日期时间字符串
+     * @return 格式化的日期时间字符串 (yyyy-MM-dd HH:mm:ss)
+     */
+    public static String getDateTime() {
+        return LocalDateTime.now().format(DATE_TIME_FORMATTER);
     }
-
 }

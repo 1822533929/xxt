@@ -5,6 +5,7 @@ import com.qjn.xiangxi_system.pojo.Orders;
 import com.qjn.xiangxi_system.pojo.vo.OrdersVO;
 import com.qjn.xiangxi_system.service.OrdersService;
 import com.qjn.xiangxi_system.mapper.OrdersMapper;
+import com.qjn.xiangxi_system.pojo.query.OrdersQuery;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
@@ -24,13 +25,18 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders>
     OrdersMapper ordersMapper;
 
     @Override
-    public List<OrdersVO> getAllOrders() {
-        return ordersMapper.getAllOrders();
+    public List<OrdersVO> getAllOrders(OrdersQuery query) {
+        return ordersMapper.getAllOrders(query);
     }
 
     @Override
-    public List<OrdersVO> getUserOrders(Integer userid) {
-        return ordersMapper.getUserOrders(userid);
+    public List<OrdersVO> getUserOrders(Integer userId) {
+        return ordersMapper.getUserOrders(userId);
+    }
+
+    @Override
+    public void deleteBatch(List<Integer> ids) {
+        ordersMapper.deleteBatch(ids);
     }
 }
 

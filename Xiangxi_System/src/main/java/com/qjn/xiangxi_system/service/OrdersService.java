@@ -3,6 +3,7 @@ package com.qjn.xiangxi_system.service;
 import com.qjn.xiangxi_system.pojo.Orders;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.qjn.xiangxi_system.pojo.vo.OrdersVO;
+import com.qjn.xiangxi_system.pojo.query.OrdersQuery;
 
 import java.util.List;
 
@@ -13,7 +14,9 @@ import java.util.List;
 */
 public interface OrdersService extends IService<Orders> {
 
-    List<OrdersVO> getAllOrders();
+    List<OrdersVO> getAllOrders(OrdersQuery query);
 
-    List<OrdersVO> getUserOrders(Integer userid);
+    List<OrdersVO> getUserOrders(Integer userId);
+
+    void deleteBatch(List<Integer> ids);
 }

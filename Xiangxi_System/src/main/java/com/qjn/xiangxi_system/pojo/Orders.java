@@ -27,7 +27,7 @@ public class Orders implements Serializable {
     /**
      * 订单日期
      */
-    private Date orderdate;
+    private String orderdate;
 
     /**
      * 订单状态（如：待支付、已支付、已取消等）
@@ -93,14 +93,14 @@ public class Orders implements Serializable {
     /**
      * 订单日期
      */
-    public Date getOrderdate() {
+    public String getOrderdate() {
         return orderdate;
     }
 
     /**
      * 订单日期
      */
-    public void setOrderdate(Date orderdate) {
+    public void setOrderdate(String orderdate) {
         this.orderdate = orderdate;
     }
 

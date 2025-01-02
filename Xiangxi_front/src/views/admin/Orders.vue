@@ -1,257 +1,339 @@
 <template>
   <div class="orders">
-    <div class="header">
-      <h2>旅游订单管理</h2>
-      <div class="header-right">
+    <!-- 搜索栏 -->
+    <div class="search-bar">
+      <div class="search-inputs">
         <el-input
-          v-model="searchKey"
-          placeholder="输入订单号搜索"
+          v-model="searchForm.title"
+          placeholder="请输入商品名称"
           class="search-input"
           clearable
-          @keyup.enter="handleSearch"
-        >
-          <template #prefix>
-            <el-icon><Search /></el-icon>
-          </template>
-        </el-input>
+        />
+        <el-input
+          v-model="searchForm.orderId"
+          placeholder="请输入订单编号"
+          class="search-input"
+          clearable
+        />
+        <el-button type="primary" @click="handleSearch">查询</el-button>
+        <el-button @click="resetSearch">重置</el-button>
       </div>
     </div>
 
-    <el-table :data="tableData" style="width: 100%" v-loading="loading">
-      <el-table-column prop="orderNo" label="订单号" width="180" />
-      <el-table-column prop="productName" label="商品名称" />
-      <el-table-column prop="userName" label="用户名" width="120" />
-      <el-table-column prop="amount" label="金额" width="120">
+    <!-- 操作栏 -->
+    <div class="operation-bar">
+      <el-button 
+        type="danger" 
+        @click="handleBatchDelete" 
+        :disabled="!selectedRows.length"
+      >
+        批量删除
+      </el-button>
+    </div>
+
+    <!-- 表格 -->
+    <el-table 
+      :data="tableData" 
+      style="width: 100%" 
+      v-loading="loading"
+      @selection-change="handleSelectionChange"
+    >
+      <el-table-column type="selection" width="55" />
+      <el-table-column prop="id" label="订单编号" width="120" />
+      <el-table-column prop="title" label="商品名称" min-width="120">
         <template #default="{ row }">
-          <span class="amount">¥{{ row.amount.toFixed(2) }}</span>
+          <el-button 
+            link 
+            type="primary" 
+            @click="handleTitleClick(row.travelid)"
+          >
+            {{ row.title }}
+          </el-button>
         </template>
       </el-table-column>
-      <el-table-column prop="payStatus" label="支付状态" width="100">
+      <el-table-column label="商品图片" width="120">
         <template #default="{ row }">
-          <el-tag :type="row.payStatus === 1 ? 'success' : 'warning'">
-            {{ row.payStatus === 1 ? '已支付' : '待支付' }}
+          <el-image 
+            :src="getImageUrl(row.cover)" 
+            fit="cover"
+            style="width: 80px; height: 60px; border-radius: 4px;"
+          >
+            <template #error>
+              <div class="image-slot">
+                <el-icon><Picture /></el-icon>
+              </div>
+            </template>
+          </el-image>
+        </template>
+      </el-table-column>
+      <el-table-column prop="money" label="商品单价" width="100">
+        <template #default="{ row }">
+          <span class="price">¥{{ row.money }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="quantity" label="购买数量" width="100" />
+      <el-table-column label="总价" width="100">
+        <template #default="{ row }">
+          <span class="price">¥{{ (row.money * row.quantity).toFixed(2) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="username" label="购买人" width="120" />
+      <el-table-column prop="orderdate" label="购买时间" width="180" />
+      <el-table-column prop="status" label="订单状态" width="100">
+        <template #default="{ row }">
+          <el-tag :type="getStatusType(row.status)">
+            {{ getStatusText(row.status) }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="orderStatus" label="订单状态" width="100">
+      <el-table-column label="操作" width="120" fixed="right">
         <template #default="{ row }">
-          <el-tag :type="getOrderStatusType(row.orderStatus)">
-            {{ getOrderStatusText(row.orderStatus) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="createTime" label="下单时间" width="180" />
-      <el-table-column label="操作" width="200" fixed="right">
-        <template #default="{ row }">
-          <el-button type="primary" link @click="handleDetail(row)">详情</el-button>
-          <el-button 
-            type="success" 
-            link 
-            v-if="row.orderStatus === 1"
-            @click="handleConfirm(row)"
-          >
-            确认
-          </el-button>
-          <el-button 
-            type="danger" 
-            link 
-            v-if="row.orderStatus === 0"
-            @click="handleCancel(row)"
-          >
-            取消
-          </el-button>
+          <el-button link type="danger" @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
+    <!-- 分页 -->
     <el-pagination
       class="pagination"
       :total="total"
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
-      @current-change="handlePageChange"
+      :page-sizes="[10, 20, 50]"
+      layout="total, sizes, prev, pager, next"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
     />
-
-    <!-- 订单详情对话框 -->
-    <el-dialog
-      title="订单详情"
-      v-model="dialogVisible"
-      width="600px"
-    >
-      <div class="order-detail">
-        <div class="detail-item">
-          <span class="label">订单号：</span>
-          <span>{{ currentOrder.orderNo }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">商品名称：</span>
-          <span>{{ currentOrder.productName }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">用户名：</span>
-          <span>{{ currentOrder.userName }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">联系电话：</span>
-          <span>{{ currentOrder.phone }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">订单金额：</span>
-          <span class="amount">¥{{ currentOrder.amount?.toFixed(2) }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">支付状态：</span>
-          <el-tag :type="currentOrder.payStatus === 1 ? 'success' : 'warning'">
-            {{ currentOrder.payStatus === 1 ? '已支付' : '待支付' }}
-          </el-tag>
-        </div>
-        <div class="detail-item">
-          <span class="label">订单状态：</span>
-          <el-tag :type="getOrderStatusType(currentOrder.orderStatus)">
-            {{ getOrderStatusText(currentOrder.orderStatus) }}
-          </el-tag>
-        </div>
-        <div class="detail-item">
-          <span class="label">下单时间：</span>
-          <span>{{ currentOrder.createTime }}</span>
-        </div>
-        <div class="detail-item">
-          <span class="label">备注：</span>
-          <span>{{ currentOrder.remark || '无' }}</span>
-        </div>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
+import { Picture } from '@element-plus/icons-vue'
+import { get, post } from '@/common'
+import { API_BASE_URL } from '@/common/constants'
+import { useRouter } from 'vue-router'
 
-// 表格数据
-const tableData = ref([
-  {
-    orderNo: 'DD20240315001',
-    productName: '三亚5日游',
-    userName: '张三',
-    amount: 3999.00,
-    payStatus: 1,
-    orderStatus: 1,
-    createTime: '2024-03-15 10:00:00',
-    phone: '13800138000',
-    remark: '需要安排接送机'
-  }
-])
+const router = useRouter()
+
+// 数据
 const loading = ref(false)
-const total = ref(100)
+const tableData = ref([])
+const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(10)
-const searchKey = ref('')
+const selectedRows = ref([])
+const searchForm = reactive({
+  title: '',
+  orderId: ''
+})
 
-// 对话框相关
-const dialogVisible = ref(false)
-const currentOrder = reactive({})
+// 获取图片URL
+const getImageUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return API_BASE_URL + url
+}
 
-// 订单状态工具方法
-const getOrderStatusType = (status) => {
+// 获取状态标签类型
+const getStatusType = (status) => {
   const types = {
-    0: 'info',    // 待处理
-    1: 'warning', // 待确认
-    2: 'success', // 已确认
-    3: 'danger'   // 已取消
+    '待支付': 'warning',
+    '已完成': 'success',
+    '已取消': 'info'
   }
   return types[status] || 'info'
 }
 
-const getOrderStatusText = (status) => {
+// 获取状态显示文本
+const getStatusText = (status) => {
   const texts = {
-    0: '待处理',
-    1: '待确认',
-    2: '已确认',
-    3: '已取消'
+    '待支付': '待支付',
+    '已完成': '已完成',
+    '已取消': '已取消'
   }
-  return texts[status] || '未知'
+  return texts[status] || status
 }
 
-// 方法
+// 获取订单列表
+const getTableData = async () => {
+  loading.value = true
+  try {
+    const result = await get('/orders/getAllOrders', {
+      currentPage: currentPage.value,
+      pageSize: pageSize.value,
+      title: searchForm.title,
+      orderId: searchForm.orderId
+    })
+    if (result.code === 200) {
+      tableData.value = result.data.list
+      total.value = result.data.total
+    }
+  } catch (error) {
+    console.error('获取订单列表失败:', error)
+    ElMessage.error('获取订单列表失败')
+  } finally {
+    loading.value = false
+  }
+}
+
+// 处理搜索
 const handleSearch = () => {
-  // 这里添加搜索逻辑
-  console.log('搜索关键词：', searchKey.value)
+  currentPage.value = 1
+  getTableData()
 }
 
-const handleDetail = (row) => {
-  Object.assign(currentOrder, row)
-  dialogVisible.value = true
+// 重置搜索
+const resetSearch = () => {
+  searchForm.title = ''
+  searchForm.orderId = ''
+  handleSearch()
 }
 
-const handleConfirm = (row) => {
-  ElMessageBox.confirm('确定要确认该订单吗？', '提示', {
+// 处理选择行变化
+const handleSelectionChange = (rows) => {
+  selectedRows.value = rows
+}
+
+// 处理删除
+const handleDelete = (row) => {
+  ElMessageBox.confirm('确定要删除该订单吗？', '提示', {
     type: 'warning'
-  }).then(() => {
-    ElMessage.success('订单已确认')
+  }).then(async () => {
+    try {
+      const result = await post('/orders/deleteOrder/' + row.id)
+      if (result.code === 200) {
+        ElMessage.success('删除成功')
+        getTableData()
+      } else {
+        ElMessage.error(result.msg || '删除失败')
+      }
+    } catch (error) {
+      console.error('删除失败:', error)
+      ElMessage.error('删除失败')
+    }
   })
 }
 
-const handleCancel = (row) => {
-  ElMessageBox.confirm('确定要取消该订单吗？', '提示', {
+// 处理批量删除
+const handleBatchDelete = () => {
+  if (!selectedRows.value.length) return
+  ElMessageBox.confirm('确定要删除选中的订单吗？', '提示', {
     type: 'warning'
-  }).then(() => {
-    ElMessage.success('订单已取消')
+  }).then(async () => {
+    try {
+      const ids = selectedRows.value.map(row => row.id)
+      const result = await post('/orders/delete/batch', ids)
+      if (result.code === 200) {
+        ElMessage.success('删除成功')
+        getTableData()
+      } else {
+        ElMessage.error(result.msg || '删除失败')
+      }
+    } catch (error) {
+      console.error('批量删除失败:', error)
+      ElMessage.error('批量删除失败')
+    }
   })
 }
 
-const handlePageChange = (page) => {
-  currentPage.value = page
-  // 这里添加获取数据的逻辑
+// 处理分页
+const handleSizeChange = (val) => {
+  pageSize.value = val
+  getTableData()
 }
+
+const handleCurrentChange = (val) => {
+  currentPage.value = val
+  getTableData()
+}
+
+// 处理商品名称点击
+const handleTitleClick = (travelId) => {
+  router.push(`/user/travel-detail/${travelId}`)
+}
+
+onMounted(() => {
+  getTableData()
+})
 </script>
 
 <style scoped>
 .orders {
   padding: 20px;
+  background-color: #f5f7fa;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+.search-bar {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 16px;
 }
 
-.header-right {
+.search-inputs {
   display: flex;
+  gap: 10px;
   align-items: center;
 }
 
 .search-input {
-  width: 250px;
-  margin-right: 10px;
+  width: 200px;
+}
+
+.operation-bar {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+:deep(.el-table) {
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #fff;
+}
+
+.price {
+  color: #f56c6c;
+  font-weight: bold;
 }
 
 .pagination {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+  background-color: #fff;
+  padding: 15px 20px;
+  border-radius: 8px;
 }
 
-.amount {
-  color: #f56c6c;
-  font-weight: bold;
-}
-
-.order-detail {
-  padding: 20px;
-}
-
-.detail-item {
-  margin-bottom: 15px;
+.image-slot {
   display: flex;
+  justify-content: center;
   align-items: center;
+  width: 100%;
+  height: 100%;
+  background: #f5f7fa;
+  color: #909399;
 }
 
-.detail-item .label {
-  width: 100px;
-  color: #606266;
+:deep(.el-tag--warning) {
+  background-color: #fdf6ec;
+  border-color: #faecd8;
+  color: #e6a23c;
+}
+
+:deep(.el-tag--success) {
+  background-color: #f0f9eb;
+  border-color: #e1f3d8;
+  color: #67c23a;
+}
+
+:deep(.el-tag--info) {
+  background-color: #f4f4f5;
+  border-color: #e9e9eb;
+  color: #909399;
 }
 </style> 

@@ -12,9 +12,7 @@ import com.qjn.xiangxi_system.service.TravelsService;
 import com.qjn.xiangxi_system.utils.Result;
 import com.qjn.xiangxi_system.utils.UserToken;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.qjn.xiangxi_system.utils.DateTimeUtil;
 
 import java.math.BigDecimal;
@@ -32,7 +30,9 @@ public class OrdersController {
      */
     @RequestMapping("/createOrder")
     public Result createOrder(Integer travelId,
-                            @RequestHeader("Authorization") String token, Integer quantity, BigDecimal money) {
+                            @RequestHeader("Authorization") String token, 
+                            Integer quantity, 
+                            BigDecimal money) {
         //确认库存充足
         if (!travelsService.checkInventory(travelId, quantity)) {
             return Result.error("库存不足");
@@ -91,7 +91,7 @@ public class OrdersController {
     @RequestMapping("/getAllOrders")
     public Result<PageInfo<OrdersVO>> getAllOrders(OrdersQuery query){
         PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
-        PageInfo<OrdersVO> pageInfo = new PageInfo<>(orderService.getAllOrders());
+        PageInfo<OrdersVO> pageInfo = new PageInfo<>(orderService.getAllOrders(query));
         return Result.success(pageInfo);
     }
     /**
@@ -110,10 +110,21 @@ public class OrdersController {
     /**
      * 删除订单
      */
-    @RequestMapping("/deleteOrder")
-    public Result deleteOrder(Integer id){
+    @RequestMapping("/deleteOrder/{id}")
+    public Result deleteOrder(@PathVariable Integer id){
         orderService.removeById(id);
         return Result.success();
+    }
+    /**
+     * 批量删除订单
+     */
+    @RequestMapping("/delete/batch")
+    public Result batchDelete(@RequestBody List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) {
+            return Result.error("未选择要删除的数据");
+        }
+        orderService.deleteBatch(ids);
+        return Result.success("批量删除成功");
     }
 
 }
