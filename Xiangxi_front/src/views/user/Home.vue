@@ -2,9 +2,11 @@
   <div class="home-container">
     <!-- 顶部欢迎栏 -->
     <div class="welcome-bar">
-      <div class="welcome-text">欢迎来到湘西旅游网</div>
+      <div class="welcome-text" style="color: rgb(24, 149, 0); font-size: 20px;">&nbsp湘西旅游信息集成与推荐系统</div>
+      <div class="weather-widget">
+        <iframe scrolling="no" src="https://widget.tianqiapi.com/?style=tg&skin=pitaya" frameborder="0" width="470" height="60" allowtransparency="true"></iframe>
+      </div>
     </div>
-    
     <!-- 导航栏 -->
     <div class="nav-bar">
       <div class="nav-menu">
@@ -113,13 +115,14 @@ export default {
 
 .welcome-bar {
   height: 40px;
-  background-color: #f5f5f5;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 0 20px;
 }
 
 .welcome-text {
+  font-style: italic;
   font-size: 14px;
   color: #666;
 }
@@ -215,5 +218,14 @@ export default {
 .copyright p {
   font-size: 14px;
   color: #cccccc;
+}
+
+.weather-widget {
+  display: flex;
+  align-items: center;
+}
+
+.weather-widget iframe {
+  margin-top: 10px;
 }
 </style>
