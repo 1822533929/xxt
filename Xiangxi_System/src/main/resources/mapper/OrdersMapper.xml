@@ -50,6 +50,25 @@
             o.orderdate DESC
     </select>
     <select id="getUserOrders" resultType="com.qjn.xiangxi_system.pojo.vo.OrdersVO">
-        select o.*,u.username,t.title,t.cover,t.money from orders o, user u, travels t where o.userid = u.id and o.travelid = t.id and o.userid = #{userid}
+        SELECT 
+            o.*,
+            u.username,
+            t.title,
+            t.cover,
+            t.money 
+        FROM 
+            orders o, user u, travels t 
+        WHERE 
+            o.userid = u.id 
+            AND o.travelid = t.id 
+            AND o.userid = #{userId}
+            <if test="title != null and title != ''">
+                AND t.title LIKE CONCAT('%', #{title}, '%')
+            </if>
+            <if test="orderId != null and orderId != ''">
+                AND o.id = #{orderId}
+            </if>
+        ORDER BY 
+            o.orderdate DESC
     </select>
 </mapper>

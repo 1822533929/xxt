@@ -219,7 +219,7 @@ const confirmOrder = async () => {
       ElMessage.success('下单成功')
       orderDialogVisible.value = false
       // 可以跳转到订单列表页面
-      router.push('/user/orders')
+      // router.push('/user/myorders')
     } else {
       ElMessage.error(result.msg || '下单失败')
     }

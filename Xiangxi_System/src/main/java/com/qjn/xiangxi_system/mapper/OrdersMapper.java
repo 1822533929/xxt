@@ -4,6 +4,8 @@ import com.qjn.xiangxi_system.pojo.Orders;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.qjn.xiangxi_system.pojo.vo.OrdersVO;
 import com.qjn.xiangxi_system.pojo.query.OrdersQuery;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -14,11 +16,14 @@ import java.util.List;
 * @Entity com.qjn.xiangxi_system.pojo.Orders
 */
 
+@Mapper
 public interface OrdersMapper extends BaseMapper<Orders> {
 
     List<OrdersVO> getAllOrders(OrdersQuery query);
 
-    List<OrdersVO> getUserOrders(Integer userId);
+    List<OrdersVO> getUserOrders(@Param("userId") Integer userId, 
+                                @Param("title") String title, 
+                                @Param("orderId") String orderId);
 
     void deleteBatch(List<Integer> ids);
 }

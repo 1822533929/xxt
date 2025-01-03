@@ -12,7 +12,6 @@ import com.qjn.xiangxi_system.service.TravelsService;
 import com.qjn.xiangxi_system.utils.Result;
 import com.qjn.xiangxi_system.utils.UserToken;
 import jakarta.annotation.Resource;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.*;
 import com.qjn.xiangxi_system.utils.DateTimeUtil;
 
@@ -65,13 +64,13 @@ public class OrdersController {
         }
     }
     /**
-     * 订单状态修改->已支付
+     * 订单状态修改->已完成
      */
     @RequestMapping("/updateOrder")
     public Result updateOrder(Integer id){
         Orders order = new Orders();
         order.setId(id);
-        order.setStatus("已支付");
+        order.setStatus("已完成");
         orderService.updateById(order);
         return Result.success();
     }
@@ -80,14 +79,17 @@ public class OrdersController {
      * 取消订单后释放库存
      */
     @RequestMapping("/cancelOrder")
-    public Result cancelOrder(Integer id){
-        Orders order = new Orders();
-        order.setId(id);
-        order.setStatus("已取消");
-        Orders orders = orderService.getById(id);
-        travelsService.releaseInventory(orders.getTravelid(), orders.getQuantity());
-        orderService.updateById(order);
-        return Result.success();
+    public Result cancelOrder(@RequestParam Integer id) {
+        try {
+            if (orderService.cancelOrder(id)) {
+                return Result.success("订单取消成功");
+            } else {
+                return Result.error("订单取消失败");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("订单取消失败: " + e.getMessage());
+        }
     }
     /**
      * 分页查询所有订单
@@ -102,13 +104,17 @@ public class OrdersController {
      *  查询用户订单
      */
     @RequestMapping("/getUserOrders")
-    public Result<PageInfo<OrdersVO>> getUserOrders(OrdersQuery query, @RequestHeader("Authorization") String token){
+    public Result<PageInfo<OrdersVO>> getUserOrders(OrdersQuery query, 
+                                              @RequestHeader("Authorization") String token) {
         User user = UserToken.parseUserFromToken(token);
         if (user == null || user.getId() == null) {
             return Result.error("无法获取用户信息");
         }
+        
         PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
-        PageInfo<OrdersVO> pageInfo = new PageInfo<>(orderService.getUserOrders(user.getId()));
+        PageInfo<OrdersVO> pageInfo = new PageInfo<>(
+            orderService.getUserOrders(user.getId(), query.getTitle(), query.getOrderId())
+        );
         return Result.success(pageInfo);
     }
     /**

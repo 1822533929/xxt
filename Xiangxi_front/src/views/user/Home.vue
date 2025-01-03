@@ -39,7 +39,7 @@
           <template #dropdown>
             <el-dropdown-menu>
               <el-dropdown-item>我的游记</el-dropdown-item>
-              <el-dropdown-item>我的订单</el-dropdown-item>
+              <el-dropdown-item @click="myorders">我的订单</el-dropdown-item>
               <el-dropdown-item>我的反馈</el-dropdown-item>
               <el-dropdown-item>个人资料</el-dropdown-item>
               <el-dropdown-item>修改密码</el-dropdown-item>
@@ -98,6 +98,9 @@ export default {
   methods: {
     handleLogout() {
       this.$router.push('/login')
+    },
+    myorders() {
+      this.$router.push('/user/myorders')
     }
   }
 }

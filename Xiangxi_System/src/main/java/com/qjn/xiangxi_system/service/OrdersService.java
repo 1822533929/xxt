@@ -16,7 +16,9 @@ public interface OrdersService extends IService<Orders> {
 
     List<OrdersVO> getAllOrders(OrdersQuery query);
 
-    List<OrdersVO> getUserOrders(Integer userId);
+    List<OrdersVO> getUserOrders(Integer userId, String title, String orderId);
 
     void deleteBatch(List<Integer> ids);
+
+    boolean cancelOrder(Integer id);
 }
