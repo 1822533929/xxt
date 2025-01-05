@@ -9,6 +9,7 @@ import com.qjn.xiangxi_system.pojo.query.TravelsQuery;
 import com.qjn.xiangxi_system.pojo.vo.TravelsVO;
 import com.qjn.xiangxi_system.service.TagsService;
 import com.qjn.xiangxi_system.service.TravelsService;
+import com.qjn.xiangxi_system.utils.DateTimeUtil;
 import com.qjn.xiangxi_system.utils.FileUploadUtil;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
@@ -114,7 +115,7 @@ public class TravelsController {
             if (image != null && !image.isEmpty() && image.getSize() > 0) {
                 cover = fileUploadUtil.uploadImage(image);
             }
-            travelsVO.setTime(java.time.LocalDate.now().toString());
+            travelsVO.setTime(DateTimeUtil.getDateTime());
             travelsVO.setCover(cover);
             if (travelsService.saveWithTags(travelsVO)) {
                 return Result.success("添加成功");

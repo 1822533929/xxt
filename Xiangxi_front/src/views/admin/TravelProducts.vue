@@ -602,6 +602,7 @@ const handleCreated = (editor) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .search-input {
@@ -618,6 +619,7 @@ const handleCreated = (editor) => {
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 16px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .left-buttons {
@@ -629,6 +631,7 @@ const handleCreated = (editor) => {
   border-radius: 8px;
   overflow: hidden;
   background-color: #fff;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .tags-column {
@@ -656,6 +659,7 @@ const handleCreated = (editor) => {
   background-color: #fff;
   padding: 15px 20px;
   border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .image-slot {

@@ -34,7 +34,7 @@
     <!-- 表格 -->
     <el-table 
       :data="tableData" 
-      style="width: 100%" 
+      style="width: 100% ;box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);"
       v-loading="loading"
       @selection-change="handleSelectionChange"
     >
@@ -270,6 +270,7 @@ onMounted(() => {
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 16px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .search-inputs {
@@ -287,6 +288,7 @@ onMounted(() => {
   padding: 20px;
   border-radius: 8px;
   margin-bottom: 16px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 :deep(.el-table) {
@@ -307,6 +309,7 @@ onMounted(() => {
   background-color: #fff;
   padding: 15px 20px;
   border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .image-slot {
