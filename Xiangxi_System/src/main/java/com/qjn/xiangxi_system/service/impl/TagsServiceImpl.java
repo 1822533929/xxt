@@ -4,7 +4,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qjn.xiangxi_system.pojo.Tags;
 import com.qjn.xiangxi_system.service.TagsService;
 import com.qjn.xiangxi_system.mapper.TagsMapper;
+import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
 * @author Administrator
@@ -14,7 +18,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class TagsServiceImpl extends ServiceImpl<TagsMapper, Tags>
     implements TagsService{
+    @Resource
+    private TagsMapper tagsMapper;
 
+    @Override
+    public List<String> getAllTags() {
+        return tagsMapper.getAllTags();
+    }
 }
 
 

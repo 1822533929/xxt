@@ -12,4 +12,7 @@
     <sql id="Base_Column_List">
         tag_id,tag_name
     </sql>
+    <select id="getAllTags" resultType="java.lang.String">
+        select tag_name from tags
+    </select>
 </mapper>

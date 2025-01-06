@@ -49,15 +49,13 @@ public class TravelsController {
      * 分页查询所有旅游商品
      */
     @RequestMapping("/selectAll")
-    public Result<PageInfo<Travels>> selectAll(
+    public Result<PageInfo<TravelsVO>> selectAll(
         @RequestParam(defaultValue = "1") Integer currentPage,
-        @RequestParam(defaultValue = "6") Integer pageSize
+        @RequestParam(defaultValue = "6") Integer pageSize,
+        @RequestParam(required = false) String keyword
     ) {
-        TravelsQuery query = new TravelsQuery();
-        query.setCurrentPage(currentPage);
-        query.setPageSize(pageSize);
-        PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
-        PageInfo<Travels> pageInfo = new PageInfo<>(travelsService.list());
+        PageHelper.startPage(currentPage, pageSize);
+        PageInfo<TravelsVO> pageInfo = new PageInfo<>(travelsService.selectAllWithTags(keyword));
         return Result.success(pageInfo);
     }
 
@@ -163,7 +161,7 @@ public class TravelsController {
      */
     @RequestMapping("/getAllTags")
     public Result getTags() {
-        return Result.success(tagsService.list());
+        return Result.success(tagsService.getAllTags());
     }
    
    

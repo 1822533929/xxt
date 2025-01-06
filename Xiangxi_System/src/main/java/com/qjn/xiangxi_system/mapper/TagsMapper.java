@@ -3,6 +3,8 @@ package com.qjn.xiangxi_system.mapper;
 import com.qjn.xiangxi_system.pojo.Tags;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import java.util.List;
+
 /**
 * @author Administrator
 * @description 针对表【tags】的数据库操作Mapper
@@ -11,6 +13,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 */
 public interface TagsMapper extends BaseMapper<Tags> {
 
+    List<String> getAllTags();
 }
 
 
