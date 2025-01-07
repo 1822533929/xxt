@@ -1,15 +1,21 @@
 <template>
   <div class="travel-guides">
-    <div class="page-header">
-      <h2>推荐旅游攻略</h2>
-      <div class="header-right">
-        <el-input
-          v-model="searchQuery"
-          placeholder="搜索攻略..."
-          prefix-icon="el-icon-search"
-          class="search-input"
-          @input="handleSearch"
-        />
+    <div class="hero-section">
+      <div class="hero-content">
+        <h1>湘西旅游攻略</h1>
+        <p>带上这份攻略，开始你的湘西之旅吧！</p>
+        <div class="search-box">
+          <el-input
+            v-model="searchQuery"
+            placeholder="搜索攻略..."
+            class="search-input"
+            @input="handleSearch"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
+        </div>
       </div>
     </div>
 
@@ -62,6 +68,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { get } from '@/common'
 import { ElMessage } from 'element-plus'
+import { Search } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -150,38 +157,74 @@ onMounted(() => {
 
 <style scoped>
 .travel-guides {
-  padding: 20px;
+  background-color: #f5f7fa;
+  min-height: calc(100vh - 60px);
 }
 
-.page-header {
+.hero-section {
+  height: 400px;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('@/images/background/aizhai.jpg');
+  background-size: cover;
+  background-position: center;
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  justify-content: center;
+  color: white;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
-.header-right {
+.hero-content {
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.hero-content h1 {
+  font-size: 3em;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-content p {
+  font-size: 1.2em;
+  margin-bottom: 30px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.search-box {
   display: flex;
-  gap: 15px;
+  justify-content: center;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .search-input {
-  width: 250px;
+  width: 500px;
+}
+
+:deep(.el-input__wrapper) {
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
 .guides-container {
   display: flex;
   justify-content: center;
+  padding: 0 20px;
 }
 
 .guides-content {
-  width: 60%;
+  width: 800px;
+  max-width: 100%;
 }
 
 .guide-card {
   margin-bottom: 20px;
   transition: all 0.3s;
   cursor: pointer;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .guide-card:hover {

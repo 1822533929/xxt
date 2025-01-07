@@ -76,5 +76,13 @@ public class RoutesController {
         routesService.updateById(routes);
         return Result.success();
     }
+    /**
+     * 获取单个路线
+     */
+    @RequestMapping("/get/{id}")
+    public Result get(@PathVariable Integer id) {
+        Routes routes = routesService.getById(id);
+        return Result.success(routes);
+    }
 
 }
