@@ -137,7 +137,7 @@ const getRoutes = async () => {
 
 // 查看路线详情
 const viewRoute = (route) => {
-  router.push(`/route-detail/${route.id}`)
+  router.push(`/user/route-detail/${route.id}`)
 }
 
 const handleSizeChange = (val) => {
