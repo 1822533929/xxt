@@ -22,8 +22,8 @@
       <div class="content-wrapper">
         <!-- 封面图片 -->
         <div class="cover-image">
-          <el-image 
-            :src="getImageUrl(routeData.img)" 
+          <el-image
+            :src="getImageUrl(routeData.img)"
             fit="cover"
             :preview-src-list="[getImageUrl(routeData.img)]"
           >
@@ -53,9 +53,12 @@
         <!-- 地理位置 -->
         <div class="location-section" v-if="routeData.location">
           <h2>地理位置</h2>
-          <div class="location-info"><!--这里等着插入地图-->
-            <p>经度：{{ routeData.longitude }}</p>
-            <p>纬度：{{ routeData.latitude }}</p>
+          <div class="location-info">
+            <MapView
+              :longitude="routeData.longitude"
+              :latitude="routeData.latitude"
+              :location="routeData.location"
+            ></MapView>
           </div>
         </div>
       </div>
@@ -69,6 +72,7 @@ import { useRoute } from 'vue-router'
 import { get } from '@/common'
 import { ElMessage } from 'element-plus'
 import { Calendar, Location, Picture } from '@element-plus/icons-vue'
+import MapView from "@/views/map/MapView.vue";
 
 const route = useRoute()
 const routeData = ref({})
@@ -106,20 +110,20 @@ onMounted(() => {
 }
 
 .header-section {
-  background-color: #fff;
-  padding: 40px 0;
-  border-bottom: 1px solid #ebeef5;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  /*position: relative;*/
+  /*display: flex;*/
+  /*align-items: flex-end;*/
+  padding: 10px;
+  /*justify-content: center;*/
 }
 
 .content-wrapper {
   max-width: 800px;
   margin: 0 auto;
-  width: 100%;
-  padding: 0 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  padding: 40px;
 }
 
 .header-section h1 {
@@ -136,8 +140,12 @@ onMounted(() => {
   align-items: center;
 }
 
-.route-meta .el-icon {
-  margin-right: 5px;
+.route-meta h2 {
+  font-size: 1.5em;
+  color: #303133;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid #409EFF;
 }
 
 .cover-image {
@@ -190,8 +198,6 @@ onMounted(() => {
 }
 
 .location-section {
-  /*background-color: #f5f7fa;*/
-  /*padding: 20px;*/
   border-radius: 4px;
 }
 
