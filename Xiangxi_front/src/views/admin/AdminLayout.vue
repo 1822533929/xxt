@@ -44,7 +44,7 @@
               <el-icon><Document /></el-icon>
               <span>信息管理</span>
             </template>
-            <el-menu-item index="/admin/travel-notes">游记信息</el-menu-item>
+            <el-menu-item index="/admin/travel-news">湘西资讯</el-menu-item>
             <el-menu-item index="/admin/travel-guides">旅游攻略</el-menu-item>
             <el-menu-item index="/admin/travel-routes">旅游路线</el-menu-item>
             <el-menu-item index="/admin/travel-products">旅游商品</el-menu-item>

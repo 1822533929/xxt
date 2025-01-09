@@ -84,10 +84,10 @@ const routes = [
       },
       // 信息管理
       {
-        path: 'travel-notes',
-        name: 'TravelNotes',
-        component: () => import('../views/admin/TravelNotes.vue'),
-        meta: { title: '游记信息' }
+        path: 'travel-news',
+        name: 'TravelNews',
+        component: () => import('../views/admin/TravelNews.vue'),
+        meta: { title: '旅游资讯' }
       },
       {
         path: 'travel-guides',
