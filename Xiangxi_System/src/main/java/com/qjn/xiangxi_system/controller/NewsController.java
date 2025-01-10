@@ -59,7 +59,7 @@ public class NewsController {
         } catch (IOException e) {
             return Result.error("图片上传失败");
         }
-        news.setPublishTime(DateTimeUtil.getDateTime());
+        news.setPublishTime(DateTimeUtil.getDate());
         newsService.save(news);
         return Result.success();
     }
@@ -85,6 +85,16 @@ public class NewsController {
     @RequestMapping("/delete/batch")
     public Result batchDelete(@RequestBody List<Integer> ids) {
         newsService.deleteBatch(ids);
+        return Result.success();
+    }
+    /**
+     * 浏览量增加
+     */
+    @RequestMapping("/addRead")
+    public Result addRead(Integer id) {
+        News news = newsService.getById(id);
+        news.setReadCount(news.getReadCount() + 1);
+        newsService.updateById(news);
         return Result.success();
     }
 

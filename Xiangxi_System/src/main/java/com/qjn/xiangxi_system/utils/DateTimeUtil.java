@@ -13,4 +13,11 @@ public class DateTimeUtil {
     public static String getDateTime() {
         return LocalDateTime.now().format(DATE_TIME_FORMATTER);
     }
+    /**
+     * 获取当前日期字符串
+     * @return 格式化的日期字符串 (yyyy-MM-dd)
+     */
+    public static String getDate() {
+        return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
 }
