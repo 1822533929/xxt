@@ -59,7 +59,6 @@ public class NewsController {
         } catch (IOException e) {
             return Result.error("图片上传失败");
         }
-        news.setPublishTime(DateTimeUtil.getDate());
         newsService.save(news);
         return Result.success();
     }

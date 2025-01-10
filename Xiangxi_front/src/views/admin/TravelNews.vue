@@ -3,13 +3,13 @@
     <!-- 搜索区域 -->
     <el-card class="search-card">
       <div class="search-form">
-        <el-input
-          v-model="searchForm.title"
-          placeholder="请输入标题关键词"
-          clearable
-          class="search-input"
-        />
-        <div class="search-buttons">
+        <div class="search-group">
+          <el-input
+            v-model="searchForm.title"
+            placeholder="请输入标题关键词"
+            clearable
+            class="search-input"
+          />
           <el-button type="primary" @click="handleSearch">
             <el-icon><Search /></el-icon>搜索
           </el-button>
@@ -102,6 +102,15 @@
         <el-form-item label="摘要">
           <el-input type="textarea" v-model="form.summary" rows="3" />
         </el-form-item>
+        <el-form-item label="发布时间">
+          <el-date-picker
+            v-model="form.publishTime"
+            type="date"
+            placeholder="选择发布日期"
+            format="YYYY-MM-DD"
+            value-format="YYYY-MM-DD"
+          />
+        </el-form-item>
         <el-form-item label="封面">
           <el-upload
             class="cover-upload"
@@ -170,7 +179,8 @@ const form = reactive({
   cover: '',
   content: '',
   coverFile: null,
-  coverPreview: ''
+  coverPreview: '',
+  publishTime: ''
 })
 
 // 获取图片URL
@@ -228,16 +238,20 @@ const handleAdd = () => {
     cover: '',
     content: '',
     coverFile: null,
-    coverPreview: ''
+    coverPreview: '',
+    publishTime: new Date().toISOString().split('T')[0]
   })
   dialogVisible.value = true
 }
 
 const handleEdit = (row) => {
   dialogTitle.value = '编辑资讯'
-  Object.assign(form, row)
-  form.coverPreview = getImageUrl(row.cover)
-  form.coverFile = null
+  Object.assign(form, {
+    ...row,
+    coverPreview: '',
+    coverFile: null,
+    publishTime: row.publishTime || ''
+  })
   dialogVisible.value = true
 }
 
@@ -378,18 +392,14 @@ getNewsList()
   align-items: center;
 }
 
+.search-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .search-input {
   width: 300px;
-}
-
-.search-buttons {
-  display: flex;
-  gap: 10px;
-}
-
-.operation-buttons {
-  display: flex;
-  gap: 10px;
 }
 
 .cover-image {
