@@ -13,4 +13,6 @@ import java.util.List;
 public interface NewsService extends IService<News> {
 
     void deleteBatch(List<Integer> ids);
+
+    List<News> getNewsByTime();
 }

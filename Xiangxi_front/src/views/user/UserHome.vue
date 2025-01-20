@@ -86,7 +86,7 @@ const getImageUrl = (url) => {
 
 const getLatestNews = async () => {
   try {
-    const result = await get('/news/getNewsList?currentPage=1&pageSize=4')
+    const result = await get('/news/getNewsByTime?currentPage=1&pageSize=4')
     if (result.code === 200) {
       latestNews.value = result.data.list
     }

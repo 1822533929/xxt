@@ -96,5 +96,13 @@ public class NewsController {
         newsService.updateById(news);
         return Result.success();
     }
+    /**
+     * 获取最新资讯数据
+     */
+    @RequestMapping("/getNewsByTime")
+    public Result getNewsListByTime() {
+        PageInfo<News> pageInfo = new PageInfo<>(newsService.getNewsByTime());
+        return Result.success(pageInfo);
+    }
 
 }

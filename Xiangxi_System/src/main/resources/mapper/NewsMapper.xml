@@ -25,4 +25,7 @@
             #{id}
         </foreach>
     </delete>
+    <select id="getNewsByTime" resultType="com.qjn.xiangxi_system.pojo.News">
+        select * from news order by publish_time desc
+    </select>
 </mapper>

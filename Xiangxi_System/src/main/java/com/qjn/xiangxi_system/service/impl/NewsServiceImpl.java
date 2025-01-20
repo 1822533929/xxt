@@ -24,6 +24,11 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News>
     public void deleteBatch(List<Integer> ids) {
         newsMapper.deleteBatch(ids);
     }
+
+    @Override
+    public List<News> getNewsByTime() {
+        return newsMapper.getNewsByTime();
+    }
 }
 
 
