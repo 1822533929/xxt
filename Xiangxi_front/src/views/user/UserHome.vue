@@ -42,6 +42,38 @@
         </div>
       </div>
     </div>
+
+    <!-- 热门景点区域 -->
+    <div class="spots-section">
+      <div class="section-header">
+        <h2>热门景点</h2>
+        <router-link to="/user/travel" class="more-link">
+          更多<el-icon><ArrowRight /></el-icon>
+        </router-link>
+      </div>
+      
+      <div class="spots-grid">
+        <div v-for="spot in hotSpots" :key="spot.id" class="spot-item" @click="viewSpot(spot)">
+          <div class="spot-image-container">
+            <el-image 
+              :src="getImageUrl(spot.cover)"
+              class="spot-image"
+              fit="cover"
+            >
+              <template #error>
+                <div class="image-error">
+                  <el-icon><Picture /></el-icon>
+                </div>
+              </template>
+            </el-image>
+            <div class="spot-info">
+              <h3 class="spot-title">{{ spot.title }}</h3>
+              <div class="spot-description">{{ spot.descr }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -56,25 +88,26 @@ import zhangjiajieImage from '@/images/carousel/zhangjiajie.jpg'
 
 const router = useRouter()
 const latestNews = ref([])
+const hotSpots = ref([])
 
 const carouselItems = [
   {
     id: 1,
     title: '凤凰古城',
     description: '湘西最著名的旅游景点',
-    imageUrl: fenghuangImage
+     imageUrl: fenghuangImage
   },
   {
     id: 2,
     title: '德夯苗寨',
     description: '体验原真的苗族文化',
-    imageUrl: dehangImage
+     imageUrl: dehangImage
   },
   {
     id: 3,
     title: '张家界',
     description: '世界自然遗产',
-    imageUrl: zhangjiajieImage
+     imageUrl: zhangjiajieImage
   }
 ]
 
@@ -95,12 +128,28 @@ const getLatestNews = async () => {
   }
 }
 
+const getHotSpots = async () => {
+  try {
+    const result = await get('/travels/selectAllByRead?currentPage=1&pageSize=3')
+    if (result.code === 200) {
+      hotSpots.value = result.data.list
+    }
+  } catch (error) {
+    console.error('获取热门景点失败:', error)
+  }
+}
+
 const viewNews = (news) => {
   router.push(`/user/news-detail/${news.id}`)
 }
 
+const viewSpot = (spot) => {
+  router.push(`/user/travel-detail/${spot.id}`)
+}
+
 onMounted(() => {
   getLatestNews()
+  getHotSpots()
 })
 </script>
 
@@ -262,5 +311,86 @@ onMounted(() => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+.spots-section {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.spots-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.spot-item {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.spot-image-container {
+  position: relative;
+  width: 100%;
+  height: 250px;
+}
+
+.spot-image {
+  width: 100%;
+  height: 100%;
+  transition: transform 0.3s ease;
+}
+
+.spot-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 15px;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  color: white;
+  transform: translateY(calc(100% - 50px));
+  transition: transform 0.3s ease;
+}
+
+.spot-title {
+  margin: 0;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.spot-description {
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  line-height: 1.4;
+}
+
+.spot-item:hover .spot-image {
+  transform: scale(1.05);
+}
+
+.spot-item:hover .spot-info {
+  transform: translateY(0);
+}
+
+.spot-item:hover .spot-description {
+  opacity: 1;
+}
+
+.image-error {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f2f5;
+  color: #909399;
 }
 </style> 

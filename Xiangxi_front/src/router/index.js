@@ -151,6 +151,7 @@ const routes = [
     ]
 
   }
+
 ]
 
 // const router = createRouter({
@@ -160,7 +161,12 @@ const routes = [
 
 const router = createRouter({
   history: createWebHistory(BASE_URL),
-  routes
+  routes,
+  scrollBehavior(to, from, savedPosition) {
+    // 默认情况，返回顶部
+    return { top: 0 };
+  }
 });
+
 
 export default router 
