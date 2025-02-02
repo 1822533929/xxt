@@ -25,6 +25,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     public void deleteBatch(List<Integer> ids) {
         articleMapper.deleteBatch(ids);
     }
+
+    @Override
+    public List<Article> findHot() {
+        return articleMapper.findHot();
+    }
 }
 
 

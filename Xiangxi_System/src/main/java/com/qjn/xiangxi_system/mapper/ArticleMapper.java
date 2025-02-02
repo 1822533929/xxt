@@ -14,6 +14,8 @@ import java.util.List;
 public interface ArticleMapper extends BaseMapper<Article> {
 
     void deleteBatch(List<Integer> ids);
+
+    List<Article> findHot();
 }
 
 

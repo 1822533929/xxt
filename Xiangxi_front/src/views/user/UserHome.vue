@@ -74,6 +74,87 @@
         </div>
       </div>
     </div>
+
+    <!-- 热门攻略区域 -->
+    <div class="guides-section">
+      <div class="section-header">
+        <h2>热门攻略</h2>
+        <router-link to="/user/guides" class="more-link">
+          更多<el-icon><ArrowRight /></el-icon>
+        </router-link>
+      </div>
+      
+      <div class="guides-grid">
+        <div v-for="guide in hotGuides" 
+             :key="guide.id" 
+             class="guide-item" 
+             @click="viewGuide(guide)"
+        >
+          <el-image 
+            :src="getImageUrl(guide.cover)" 
+            class="guide-image"
+            fit="cover"
+          >
+            <template #error>
+              <div class="image-error">
+                <el-icon><Picture /></el-icon>
+              </div>
+            </template>
+          </el-image>
+          <div class="guide-content">
+            <h3 class="guide-title">{{ guide.title }}</h3>
+            <p class="guide-date">{{ guide.date }}</p>
+            <div class="guide-meta">
+              <span class="likes">
+                <el-icon><Star /></el-icon>
+                {{ guide.likes }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 热门路线区域 -->
+    <div class="routes-section">
+      <div class="section-header">
+        <h2>热门路线</h2>
+        <router-link to="/user/routes" class="more-link">
+          更多<el-icon><ArrowRight /></el-icon>
+        </router-link>
+      </div>
+      
+      <div class="routes-grid">
+        <div v-for="route in hotRoutes" 
+             :key="route.id" 
+             class="route-item" 
+             @click="viewRoute(route)"
+        >
+          <el-image 
+            :src="getImageUrl(route.img)" 
+            class="route-image"
+            fit="cover"
+          >
+            <template #error>
+              <div class="image-error">
+                <el-icon><Picture /></el-icon>
+              </div>
+            </template>
+          </el-image>
+          <div class="route-content">
+            <h3 class="route-title">{{ route.title }}</h3>
+            <div class="route-info">
+              <span class="route-days">
+                <el-icon><Calendar /></el-icon>&nbsp{{ route.days }}天</span>
+              <span class="route-location">
+                <el-icon><Location /></el-icon>
+                {{ route.location }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -81,7 +162,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { get } from '@/common'
-import { ArrowRight, Picture } from '@element-plus/icons-vue'
+import { ArrowRight, Picture, Star, Location } from '@element-plus/icons-vue'
 import fenghuangImage from '@/images/carousel/fenghuang.jpg'
 import dehangImage from '@/images/carousel/dehang.jpg'
 import zhangjiajieImage from '@/images/carousel/zhangjiajie.jpg'
@@ -89,6 +170,8 @@ import zhangjiajieImage from '@/images/carousel/zhangjiajie.jpg'
 const router = useRouter()
 const latestNews = ref([])
 const hotSpots = ref([])
+const hotGuides = ref([])
+const hotRoutes = ref([])
 
 const carouselItems = [
   {
@@ -139,6 +222,28 @@ const getHotSpots = async () => {
   }
 }
 
+const getHotGuides = async () => {
+  try {
+    const result = await get('/article/findHot?currentPage=1&pageSize=3')
+    if (result.code === 200) {
+      hotGuides.value = result.data.list
+    }
+  } catch (error) {
+    console.error('获取热门攻略失败:', error)
+  }
+}
+
+const getHotRoutes = async () => {
+  try {
+    const result = await get('/routes/selectAll?currentPage=1&pageSize=3')
+    if (result.code === 200) {
+      hotRoutes.value = result.data.list
+    }
+  } catch (error) {
+    console.error('获取热门路线失败:', error)
+  }
+}
+
 const viewNews = (news) => {
   router.push(`/user/news-detail/${news.id}`)
 }
@@ -147,9 +252,19 @@ const viewSpot = (spot) => {
   router.push(`/user/travel-detail/${spot.id}`)
 }
 
+const viewGuide = (guide) => {
+  router.push(`/user/article-detail/${guide.id}`)
+}
+
+const viewRoute = (route) => {
+  router.push(`/user/route-detail/${route.id}`)
+}
+
 onMounted(() => {
   getLatestNews()
   getHotSpots()
+  getHotGuides()
+  getHotRoutes()
 })
 </script>
 
@@ -392,5 +507,137 @@ onMounted(() => {
   justify-content: center;
   background: #f0f2f5;
   color: #909399;
+}
+
+.guides-section {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.guides-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.guide-item {
+  background: #f5f7fa;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.guide-item:hover {
+  transform: translateY(-5px);
+}
+
+.guide-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.guide-content {
+  padding: 15px;
+}
+
+.guide-title {
+  font-size: 16px;
+  color: #303133;
+  margin: 0 0 10px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.guide-date {
+  color: #909399;
+  font-size: 12px;
+  margin: 0 0 10px 0;
+}
+
+.guide-meta {
+  display: flex;
+  align-items: center;
+  color: #f56c6c;
+  font-size: 14px;
+}
+
+.likes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.routes-section {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.routes-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.route-item {
+  background: #f5f7fa;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.route-item:hover {
+  transform: translateY(-5px);
+}
+
+.route-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.route-content {
+  padding: 15px;
+}
+
+.route-title {
+  font-size: 16px;
+  color: #303133;
+  margin: 0 0 10px 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.route-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.route-days {
+  color: #909399;
+  font-size: 14px;
+}
+
+.route-location {
+  color: #409EFF;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 </style> 

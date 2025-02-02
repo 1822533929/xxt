@@ -126,4 +126,14 @@ public class ArticleController {
         List<Article> list = articleService.list(new QueryWrapper<Article>().like("title", keyword));
         return Result.success(list);
     }
+    /**
+     * 查询热门攻略
+     */
+    @RequestMapping("/findHot")
+    public Result<PageInfo<Article>> findHot(ArticleQuery query) {
+        PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
+        PageInfo<Article> pageInfo = new PageInfo<>(articleService.findHot());
+        return Result.success(pageInfo);
+    }
+
 }

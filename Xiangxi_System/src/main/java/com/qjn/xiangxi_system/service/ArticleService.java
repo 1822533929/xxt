@@ -12,4 +12,6 @@ import java.util.List;
 */
 public interface ArticleService extends IService<Article> {
     void deleteBatch(List<Integer> ids);
+
+    List<Article> findHot();
 }

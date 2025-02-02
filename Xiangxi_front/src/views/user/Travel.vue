@@ -4,7 +4,7 @@
     <div class="hero-section">
       <div class="hero-content">
         <h1>湘西特色旅游</h1>
-        <p>探索湘西秘境，体验独特民族文化</p>
+        <p>探索最迷人的湘西山水，感受浓郁的民族风情</p>
         <!-- 搜索框 -->
         <div class="search-box">
           <el-input

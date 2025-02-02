@@ -340,7 +340,7 @@ const handleSubmit = async () => {
         if (form.id) {
           formData.append('id', form.id)
         }
-        
+
         if (form.img instanceof File) {
           formData.append('image', form.img)
         } else if (form.img) {

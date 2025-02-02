@@ -26,4 +26,7 @@
             #{id}
         </foreach>
     </delete>
+    <select id="findHot" resultType="com.qjn.xiangxi_system.pojo.Article">
+        SELECT * FROM article ORDER BY likes DESC
+    </select>
 </mapper>
