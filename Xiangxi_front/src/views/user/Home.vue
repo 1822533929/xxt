@@ -172,6 +172,7 @@ export default {
   min-height: calc(100vh - 100px - 300px); /* 减去头部和底部的高度 */
   /*padding: 20px;*/
   /*max-width: 1200px;*/
+  background-color: #F7F7F7;;
   width: 100%;
   margin: 0 auto;
 }

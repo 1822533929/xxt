@@ -43,6 +43,55 @@
       </div>
     </div>
 
+    <!-- 热门攻略区域 -->
+    <div class="guides-section">
+      <div class="section-header">
+        <h2>热门攻略</h2>
+        <router-link to="/user/guides" class="more-link">
+          更多<el-icon><ArrowRight /></el-icon>
+        </router-link>
+      </div>
+
+      <div class="guides-grid">
+        <div v-for="guide in hotGuides"
+             :key="guide.id"
+             class="guide-item"
+             @click="viewGuide(guide)"
+        >
+          <el-image
+              :src="getImageUrl(guide.cover)"
+              class="guide-image"
+              fit="cover"
+          >
+            <template #error>
+              <div class="image-error">
+                <el-icon><Picture /></el-icon>
+              </div>
+            </template>
+          </el-image>
+          <div class="guide-content">
+            <h3 class="guide-title">{{ guide.title }}</h3>
+            <div class="guide-footer">
+              <span class="guide-date">{{ guide.date }}</span>
+              <span class="likes">
+                <el-icon><Star /></el-icon>
+                {{ guide.likes }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 景点标题背景 -->
+    <div class="title-background">
+      <div class="title-content">
+        <!--        <h1>湘西风景</h1>-->
+        <!--        <p>探索湘西独特的自然与人文景观</p>-->
+        <el-image :src="hottravel" fit="cover"></el-image>
+      </div>
+    </div>
+
     <!-- 热门景点区域 -->
     <div class="spots-section">
       <div class="section-header">
@@ -75,43 +124,12 @@
       </div>
     </div>
 
-    <!-- 热门攻略区域 -->
-    <div class="guides-section">
-      <div class="section-header">
-        <h2>热门攻略</h2>
-        <router-link to="/user/guides" class="more-link">
-          更多<el-icon><ArrowRight /></el-icon>
-        </router-link>
-      </div>
-      
-      <div class="guides-grid">
-        <div v-for="guide in hotGuides" 
-             :key="guide.id" 
-             class="guide-item" 
-             @click="viewGuide(guide)"
-        >
-          <el-image 
-            :src="getImageUrl(guide.cover)" 
-            class="guide-image"
-            fit="cover"
-          >
-            <template #error>
-              <div class="image-error">
-                <el-icon><Picture /></el-icon>
-              </div>
-            </template>
-          </el-image>
-          <div class="guide-content">
-            <h3 class="guide-title">{{ guide.title }}</h3>
-            <p class="guide-date">{{ guide.date }}</p>
-            <div class="guide-meta">
-              <span class="likes">
-                <el-icon><Star /></el-icon>
-                {{ guide.likes }}
-              </span>
-            </div>
-          </div>
-        </div>
+    <!-- 路线标题背景 -->
+    <div class="title-background">
+      <div class="title-content">
+         <!--        <h1>精选路线</h1>-->
+        <!--        <p>定制专属您的湘西之旅</p>-->
+        <el-image :src="hotroute" fit="cover"></el-image>
       </div>
     </div>
 
@@ -166,6 +184,8 @@ import { ArrowRight, Picture, Star, Location } from '@element-plus/icons-vue'
 import fenghuangImage from '@/images/carousel/fenghuang.jpg'
 import dehangImage from '@/images/carousel/dehang.jpg'
 import zhangjiajieImage from '@/images/carousel/zhangjiajie.jpg'
+import hottravel from '@/images/module/travel.png'
+import hotroute from '@/images/module/route.png'
 
 const router = useRouter()
 const latestNews = ref([])
@@ -556,20 +576,21 @@ onMounted(() => {
   overflow: hidden;
 }
 
+.guide-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
 .guide-date {
   color: #909399;
   font-size: 12px;
-  margin: 0 0 10px 0;
-}
-
-.guide-meta {
-  display: flex;
-  align-items: center;
-  color: #f56c6c;
-  font-size: 14px;
 }
 
 .likes {
+  color: #f56c6c;
+  font-size: 14px;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -639,5 +660,32 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+.title-background {
+  width: 100%;
+  height: 140px;
+  /*background: linear-gradient(135deg, #1890ff 0%, #36cfc9 100%);*/
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.title-content {
+  width: 600px;
+  text-align: center;
+  color: white;
+}
+
+.title-content h1 {
+  font-size: 32px;
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+
+.title-content p {
+  font-size: 16px;
+  opacity: 0.9;
 }
 </style> 
