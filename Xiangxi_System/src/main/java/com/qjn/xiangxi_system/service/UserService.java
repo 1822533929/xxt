@@ -3,6 +3,8 @@ package com.qjn.xiangxi_system.service;
 import com.qjn.xiangxi_system.pojo.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.List;
+
 /**
 * @author Administrator
 * @description 针对表【user】的数据库操作Service
@@ -18,4 +20,10 @@ public interface UserService extends IService<User> {
      * 根据用户名查找用户
      */
     User findByUsername(String username);
+
+    List<User> selectAllUser();
+
+    void deleteBatch(List<Integer> ids);
+
+    List<User> selectAllAdmin();
 }

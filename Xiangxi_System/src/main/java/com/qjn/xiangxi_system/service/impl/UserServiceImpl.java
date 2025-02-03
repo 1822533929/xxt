@@ -9,6 +9,8 @@ import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
 * @author Administrator
 * @description 针对表【user】的数据库操作Service实现
@@ -23,6 +25,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public User findByUsername(String username) {
         return userMapper.findByUsername(username);
+    }
+
+    @Override
+    public List<User> selectAllUser() {
+        return userMapper.selectAllUser();
+    }
+
+    @Override
+    public void deleteBatch(List<Integer> ids) {
+        userMapper.deleteBatch(ids);
+    }
+
+    @Override
+    public List<User> selectAllAdmin() {
+        return userMapper.selectAllAdmin();
     }
 
     @Override

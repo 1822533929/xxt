@@ -1,6 +1,9 @@
 package com.qjn.xiangxi_system.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.User;
+import com.qjn.xiangxi_system.pojo.query.UserQuery;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +13,9 @@ import com.qjn.xiangxi_system.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import com.qjn.xiangxi_system.utils.JSONUtils;
 import com.qjn.xiangxi_system.utils.JWTUtils;
+
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -66,5 +72,66 @@ public class UserController {
         user.setEmail(email);
         user.setPhone(phone);
            return Result.success(userService.register(user));
+    }
+    /**
+     * admin
+     * 展示所有用户信息
+     */
+    @GetMapping("/selectAllUser")
+    public Result<PageInfo<User>> selectAll(UserQuery query)
+    {
+        PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
+        PageInfo<User> pageInfo = new PageInfo<>(userService.selectAllUser());
+        return Result.success(pageInfo);
+    }
+    /**
+     * admin
+     * 展示所有管理员信息
+     */
+    @GetMapping("/selectAllAdmin")
+    public Result<PageInfo<User>> selectAllAdmin(UserQuery query)
+    {
+        PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
+        PageInfo<User> pageInfo = new PageInfo<>(userService.selectAllAdmin());
+        return Result.success(pageInfo);
+    }
+    /**
+     * admin
+     * 添加用户
+     */
+    @PostMapping("/addUser")
+    public Result addUser(@RequestBody User user)
+    {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return Result.success(userService.save(user));
+    }
+ 
+    /**
+     * admin
+     * 修改用户信息
+     */
+    @PostMapping("/updateUser")
+    public Result updateUser(@RequestBody User user)
+    {
+        return Result.success(userService.updateById(user));
+    }
+    /**
+     * admin
+     * 删除用户
+     */
+    @GetMapping("/deleteUser/{id}")
+    public Result deleteUser(@PathVariable Integer id)
+    {
+        return Result.success(userService.removeById(id));
+    }
+    /**
+     * admin
+     * 批量删除用户
+     */
+    @PostMapping("/deleteUser/batch")
+    public Result batchDeleteUser(@RequestBody List<Integer> ids)
+    {
+        userService.deleteBatch(ids);
+        return Result.success();
     }
 }
