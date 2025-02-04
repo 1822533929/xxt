@@ -9,7 +9,7 @@
             <el-avatar :size="40" :src="userInfo.avatar">
               <el-icon><UserFilled /></el-icon>
             </el-avatar>
-            <span class="username">{{ userInfo.name }}</span>
+            <span class="username">{{ userInfo.name || '管理员' }}</span>
             <el-icon class="el-icon--right"><CaretBottom /></el-icon>
           </div>
           <template #dropdown>
@@ -96,9 +96,10 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { get } from '@/common'
 import { 
   HomeFilled, 
   Document, 
@@ -115,6 +116,24 @@ const userInfo = reactive({
   name: '管理员',
   avatar: ''
 })
+
+// 获取用户信息
+const getUserInfo = async () => {
+  try {
+    const result = await get('/user/getUserInfo')
+    if (result.code === 200) {
+      userInfo.name = result.data.name || '管理员'
+      if (result.data.avatar) {
+        const avatarPath = result.data.avatar.replace('/img/upload/', '')
+        userInfo.avatar = result.data.avatar.startsWith('http') 
+          ? result.data.avatar 
+          : import.meta.env.VITE_API_BASE_URL + '/img/upload/' + avatarPath
+      }
+    }
+  } catch (error) {
+    console.error('获取用户信息失败:', error)
+  }
+}
 
 // 当前激活的菜单
 const activeMenu = ref(route.path)
@@ -164,6 +183,7 @@ const handleCommand = (command) => {
       ElMessageBox.confirm('确定要退出登录吗？', '提示', {
         type: 'warning'
       }).then(() => {
+        localStorage.removeItem('token') // 清除token
         router.push('/login')
       })
       break
@@ -182,6 +202,10 @@ const handlePasswordSubmit = () => {
     }
   })
 }
+
+onMounted(() => {
+  getUserInfo()
+})
 </script>
 
 <style scoped>
@@ -220,6 +244,13 @@ const handlePasswordSubmit = () => {
   display: flex;
   align-items: center;
   cursor: pointer;
+  padding: 0 8px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.avatar-container:hover {
+  background-color: #f5f7fa;
 }
 
 .username {

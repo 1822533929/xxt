@@ -34,8 +34,10 @@
         
         <el-dropdown trigger="click">
           <div class="user-info">
-            <el-avatar :size="40" :src="userAvatar"/>
-            <span class="username">{{ username }}</span>
+            <el-avatar :size="40" :src="userInfo.avatar">
+              <el-icon><UserFilled /></el-icon>
+            </el-avatar>
+            <span class="username">{{ userInfo.name || '用户' }}</span>
           </div>
           
           <template #dropdown>
@@ -82,30 +84,56 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "Home",
-  data() {
-    return {
-      searchText: '',
-      username: '用户名',
-      userAvatar: '',
+<script setup>
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { get } from '@/common'
+import { UserFilled } from '@element-plus/icons-vue'
+import { ElMessageBox } from 'element-plus'
+
+const router = useRouter()
+const searchText = ref('')
+
+// 用户信息
+const userInfo = reactive({
+  name: '用户',
+  avatar: ''
+})
+
+// 获取用户信息
+const getUserInfo = async () => {
+  try {
+    const result = await get('/user/getUserInfo')
+    if (result.code === 200) {
+      userInfo.name = result.data.name || '用户'
+      if (result.data.avatar) {
+        const avatarPath = result.data.avatar.replace('/img/upload/', '')
+        userInfo.avatar = result.data.avatar.startsWith('http') 
+          ? result.data.avatar 
+          : import.meta.env.VITE_API_BASE_URL + '/img/upload/' + avatarPath
+      }
     }
-  },
-  computed: {
-    activeMenu() {
-      return this.$route.path
-    }
-  },
-  methods: {
-    handleLogout() {
-      this.$router.push('/login')
-    },
-    myorders() {
-      this.$router.push('/user/myorders')
-    }
+  } catch (error) {
+    console.error('获取用户信息失败:', error)
   }
 }
+
+const handleLogout = () => {
+  ElMessageBox.confirm('确定要退出登录吗？', '提示', {
+    type: 'warning'
+  }).then(() => {
+    localStorage.removeItem('token')
+    router.push('/login')
+  })
+}
+
+const myorders = () => {
+  router.push('/user/myorders')
+}
+
+onMounted(() => {
+  getUserInfo()
+})
 </script>
 
 <style scoped>
@@ -160,10 +188,17 @@ export default {
   display: flex;
   align-items: center;
   cursor: pointer;
-  gap: 8px;
+  padding: 0 8px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.user-info:hover {
+  background-color: #f5f7fa;
 }
 
 .username {
+  margin: 0 8px;
   font-size: 14px;
   color: #333;
 }

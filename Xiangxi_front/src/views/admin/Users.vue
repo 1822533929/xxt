@@ -45,7 +45,7 @@
       </el-table-column>
       <el-table-column prop="role" label="角色" width="100">
         <template #default="{ row }">
-          <el-tag :type="row.role === 1 ? 'info' : 'success'">
+          <el-tag :type="row.role === 1 ? 'warning' : 'success'">
             {{ row.role === 1 ? '用户' : '管理员' }}
           </el-tag>
         </template>

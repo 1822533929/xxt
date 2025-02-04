@@ -5,8 +5,10 @@ import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.User;
 import com.qjn.xiangxi_system.pojo.query.UserQuery;
 import com.qjn.xiangxi_system.utils.Result;
+import com.qjn.xiangxi_system.utils.UserToken;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.qjn.xiangxi_system.service.UserService;
@@ -105,7 +107,7 @@ public class UserController {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return Result.success(userService.save(user));
     }
- 
+
     /**
      * admin
      * 修改用户信息
@@ -133,5 +135,29 @@ public class UserController {
     {
         userService.deleteBatch(ids);
         return Result.success();
+    }
+    /**
+     * 获取用户名和头像
+     */
+    @GetMapping("/getUserInfo")
+    public Result getUserInfo(@RequestHeader("Authorization") String token) {
+        //获取用户信息
+        User user = UserToken.parseUserFromToken(token);
+        if (user == null || user.getId() == null) {
+            return Result.error("无法获取用户信息");
+        }
+        // 确保返回的用户信息是最新的
+        user = userService.getById(user.getId());
+        if (user == null) {
+            return Result.error("用户不存在");
+        }
+        
+        // 如果头像路径不为空，确保路径格式正确
+        if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+            String avatarPath = user.getAvatar().replace("/img/upload/", "");
+            user.setAvatar(avatarPath);
+        }
+
+        return Result.success(user);
     }
 }

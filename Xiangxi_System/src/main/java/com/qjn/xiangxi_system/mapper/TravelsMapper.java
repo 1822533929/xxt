@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.qjn.xiangxi_system.pojo.vo.TravelsVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface TravelsMapper extends BaseMapper<Travels> {
@@ -40,6 +42,14 @@ public interface TravelsMapper extends BaseMapper<Travels> {
     void reduceInventory(Integer travelId, Integer quantity);
 
     void releaseInventory(Integer travelid, Integer quantity);
+
+    @Select("SELECT t.title, COUNT(o.id) as sales " +
+            "FROM travels t " +
+            "LEFT JOIN orders o ON t.id = o.travelid " +
+            "GROUP BY t.id " +
+            "ORDER BY sales DESC " +
+            "LIMIT 5")
+    List<Map<String, Object>> getProductRank();
 }
 
 
