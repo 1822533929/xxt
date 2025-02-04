@@ -42,10 +42,10 @@
           
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>我的游记</el-dropdown-item>
+              <el-dropdown-item>我的创作</el-dropdown-item>
               <el-dropdown-item @click="myorders">我的订单</el-dropdown-item>
               <el-dropdown-item>我的反馈</el-dropdown-item>
-              <el-dropdown-item>个人资料</el-dropdown-item>
+              <el-dropdown-item @click="goToProfile">个人资料</el-dropdown-item>
               <el-dropdown-item>修改密码</el-dropdown-item>
               <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
@@ -129,6 +129,10 @@ const handleLogout = () => {
 
 const myorders = () => {
   router.push('/user/myorders')
+}
+
+const goToProfile = () => {
+  router.push('/user/profile')
 }
 
 onMounted(() => {

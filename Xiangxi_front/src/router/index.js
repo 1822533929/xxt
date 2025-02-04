@@ -77,6 +77,11 @@ const routes = [
         path: 'news-detail/:id',
         name: 'NewsDetail',
         component: () => import('../views/user/NewsDetail.vue')
+      },
+      {
+        path: 'profile',
+        name: 'UserProfile',
+        component: () => import('../views/user/Profile.vue')
       }
     ]
   },

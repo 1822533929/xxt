@@ -4,8 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.User;
 import com.qjn.xiangxi_system.pojo.query.UserQuery;
-import com.qjn.xiangxi_system.utils.Result;
-import com.qjn.xiangxi_system.utils.UserToken;
+import com.qjn.xiangxi_system.utils.*;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -13,9 +12,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.qjn.xiangxi_system.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import com.qjn.xiangxi_system.utils.JSONUtils;
-import com.qjn.xiangxi_system.utils.JWTUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -25,6 +24,8 @@ public class UserController {
     private UserService userService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private FileUploadUtil fileUploadUtil;
 
     @PostMapping("/adminLogin")
     public Result adminLogin(@RequestParam("username") String username, 
@@ -159,5 +160,44 @@ public class UserController {
         }
 
         return Result.success(user);
+    }
+    /**
+     * 个人信息更改
+     *
+     */
+    @PostMapping("/updateUserInfo")
+    public Result updateUserInfo(
+        @RequestParam("username") String username,
+        @RequestParam("name") String name,
+        @RequestParam("phone") String phone,
+        @RequestParam("email") String email,
+        @RequestParam(value = "image", required = false) MultipartFile image,
+        @RequestHeader("Authorization") String token
+    ) {
+        try {
+            User user = new User();
+            user.setUsername(username);
+            user.setName(name);
+            user.setPhone(phone);
+            user.setEmail(email);
+            
+            String avatar = null;
+            // 只在有图片且不是空文件时处理图片上传
+            if (image != null && !image.isEmpty() && image.getSize() > 0) {
+                avatar = fileUploadUtil.uploadImage(image);
+                user.setAvatar(avatar);
+            }
+
+            //获取用户信息
+            User user1 = UserToken.parseUserFromToken(token);
+            if (user1 == null || user1.getId() == null) {
+                return Result.error("无法获取用户信息");
+            }
+            user.setId(user1.getId());
+            userService.updateById(user);
+            return Result.success();
+        } catch (IOException e) {
+            return Result.error("图片上传失败");
+        }
     }
 }
