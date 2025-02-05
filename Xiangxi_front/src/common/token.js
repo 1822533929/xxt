@@ -45,9 +45,7 @@ export const getLocalToken = () => {
  */
 export const setLocalToken = (token) => {
   if (!token) return;
-  
-  // 添加日志
-  console.log('Setting token:', token);
+
   
   try {
     // 如果是字符串，直接存储
@@ -55,7 +53,6 @@ export const setLocalToken = (token) => {
       const cleanToken = token.trim();
       if (cleanToken) {
         localStorage.setItem(LOCAL_TOKEN, cleanToken);
-        console.log('Stored token as string:', cleanToken);
       }
       return;
     }

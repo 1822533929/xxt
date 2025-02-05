@@ -200,4 +200,21 @@ public class UserController {
             return Result.error("图片上传失败");
         }
     }
+    /**
+     * 修改密码
+     */
+    @PostMapping("/updatePassword")
+    public Result updatePassword(String oldPassword,String newPassword,@RequestHeader("Authorization") String token){
+        //获取用户信息
+        User user = UserToken.parseUserFromToken(token);
+        if (user == null || user.getId() == null) {
+            return Result.error("无法获取用户信息");
+        }
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            return Result.error("旧密码错误");
+        }
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userService.updateById(user);
+        return Result.success();
+    }
 }

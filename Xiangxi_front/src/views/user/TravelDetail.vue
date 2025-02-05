@@ -188,7 +188,7 @@ const addReadCount = async () => {
 
 // 处理预定按钮点击
 const handleBook = () => {
-  if (!localStorage.getItem('token')) {
+  if (!localStorage.getItem('Sure-Token')) {
     ElMessage.warning('请先登录')
     router.push('/login')
     return
@@ -218,8 +218,6 @@ const confirmOrder = async () => {
     if (result.code === 200) {
       ElMessage.success('下单成功')
       orderDialogVisible.value = false
-      // 可以跳转到订单列表页面
-      // router.push('/user/myorders')
     } else {
       ElMessage.error(result.msg || '下单失败')
     }

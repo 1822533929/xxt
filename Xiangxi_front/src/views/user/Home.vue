@@ -11,7 +11,7 @@
     <div class="nav-bar">
       <div class="nav-menu">
         <el-menu 
-          mode="horizontal" 
+          mode="horizontal"
           :default-active="activeMenu"
           router
           class="menu-items"
@@ -46,7 +46,7 @@
               <el-dropdown-item @click="myorders">我的订单</el-dropdown-item>
               <el-dropdown-item>我的反馈</el-dropdown-item>
               <el-dropdown-item @click="goToProfile">个人资料</el-dropdown-item>
-              <el-dropdown-item>修改密码</el-dropdown-item>
+              <el-dropdown-item @click="goToChangePassword">修改密码</el-dropdown-item>
               <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -99,7 +99,7 @@ const userInfo = reactive({
   name: '用户',
   avatar: ''
 })
-
+const activeMenu = ref('home'); // 设置默认值
 // 获取用户信息
 const getUserInfo = async () => {
   try {
@@ -122,7 +122,7 @@ const handleLogout = () => {
   ElMessageBox.confirm('确定要退出登录吗？', '提示', {
     type: 'warning'
   }).then(() => {
-    localStorage.removeItem('token')
+    localStorage.removeItem('Sure-Token')
     router.push('/login')
   })
 }
@@ -133,6 +133,10 @@ const myorders = () => {
 
 const goToProfile = () => {
   router.push('/user/profile')
+}
+
+const goToChangePassword = () => {
+  router.push('/user/change-password')
 }
 
 onMounted(() => {
