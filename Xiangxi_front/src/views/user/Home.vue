@@ -44,7 +44,7 @@
             <el-dropdown-menu>
               <el-dropdown-item>我的创作</el-dropdown-item>
               <el-dropdown-item @click="myorders">我的订单</el-dropdown-item>
-              <el-dropdown-item>我的反馈</el-dropdown-item>
+              <el-dropdown-item @click="goToMyFeedback">我的反馈</el-dropdown-item>
               <el-dropdown-item @click="goToProfile">个人资料</el-dropdown-item>
               <el-dropdown-item @click="goToChangePassword">修改密码</el-dropdown-item>
               <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
@@ -137,6 +137,10 @@ const goToProfile = () => {
 
 const goToChangePassword = () => {
   router.push('/user/change-password')
+}
+
+const goToMyFeedback = () => {
+  router.push('/user/my-feedback')
 }
 
 onMounted(() => {

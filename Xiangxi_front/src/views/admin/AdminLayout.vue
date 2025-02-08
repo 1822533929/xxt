@@ -14,7 +14,7 @@
           </div>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="profile">个人资料</el-dropdown-item>
+              <el-dropdown-item command="profile" >个人资料</el-dropdown-item>
               <el-dropdown-item command="password">修改密码</el-dropdown-item>
               <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
@@ -99,7 +99,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { get } from '@/common'
+import {get, post} from '@/common'
 import { 
   HomeFilled, 
   Document, 
@@ -174,7 +174,7 @@ const passwordRules = {
 const handleCommand = (command) => {
   switch (command) {
     case 'profile':
-      ElMessage.info('个人资料功能开发中')
+      router.push('/user/profile')
       break
     case 'password':
       passwordDialogVisible.value = true
@@ -191,14 +191,31 @@ const handleCommand = (command) => {
 }
 
 const handlePasswordSubmit = () => {
-  passwordFormRef.value?.validate((valid) => {
+  passwordFormRef.value.validate(async (valid) => {
     if (valid) {
-      ElMessage.success('密码修改成功')
-      passwordDialogVisible.value = false
-      // 重置表单
-      passwordForm.oldPassword = ''
-      passwordForm.newPassword = ''
-      passwordForm.confirmPassword = ''
+      try {
+        // 构造表单数据
+        const formData = new FormData()
+        formData.append('oldPassword', passwordForm.oldPassword.trim())
+        formData.append('newPassword', passwordForm.newPassword.trim())
+
+        const res = await post('/user/updatePassword', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        })
+
+        if (res.code === 200) {
+          ElMessage.success('密码修改成功，请重新登录')
+          localStorage.removeItem('Sure-Token')
+          router.push('/login')
+        } else {
+          ElMessage.error(res.message || '修改密码失败')
+        }
+      } catch (error) {
+        console.error('修改密码失败:', error)
+        ElMessage.error(error.response?.data?.message || '修改密码失败，请稍后重试')
+      }
     }
   })
 }

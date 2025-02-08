@@ -24,7 +24,7 @@ public class MyAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        //没有权限访问，执行该方法，在该方法中返回json给前端，就行了
+        //没有权限访问，执行该方法，在该方法中返回json给前端
 
         //登录失败的统一结果
         Result result = Result.error(CodeEnum.NO_AUTH);
