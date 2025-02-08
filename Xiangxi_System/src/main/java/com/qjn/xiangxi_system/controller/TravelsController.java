@@ -163,6 +163,7 @@ public class TravelsController {
     public Result getTags() {
         return Result.success(tagsService.getAllTags());
     }
-   
+
+
    
 }

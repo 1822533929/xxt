@@ -25,12 +25,45 @@
       </div>
       
       <div class="nav-right">
-        <el-input
-          v-model="searchText"
-          placeholder="搜索..."
-          prefix-icon="el-icon-search"
-          class="search-input"
-        />
+        <div class="search-container">
+          <el-input
+            v-model="searchText"
+            placeholder="搜索景点..."
+            @input="handleSearch"
+            @focus="showSearchResults = true"
+            class="search-input"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
+          
+          <!-- 搜索结果下拉框 -->
+          <div v-show="showSearchResults && searchResults.length > 0" class="search-results">
+            <div
+              v-for="item in searchResults"
+              :key="item.id"
+              class="search-item"
+              @click="goToDetail(item)"
+            >
+              <el-image
+                :src="getImageUrl(item.cover)"
+                class="search-item-image"
+                fit="cover"
+              >
+                <template #error>
+                  <div class="image-placeholder">
+                    <el-icon><Picture /></el-icon>
+                  </div>
+                </template>
+              </el-image>
+              <div class="search-item-info">
+                <div class="search-item-title">{{ item.title }}</div>
+                <div class="search-item-desc">{{ item.descr }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
         
         <el-dropdown trigger="click">
           <div class="user-info">
@@ -60,6 +93,8 @@
     </div>
 
     <!-- 网站底部 -->
+    <div class="background-container">
+    </div>
     <div class="footer">
       <div class="footer-content">
         <div class="footer-section">
@@ -73,8 +108,9 @@
         </div>
         <div class="footer-section">
           <h3>快速链接</h3>
-          <p>帮助中心</p>
+          <p >帮助中心</p>
           <p>隐私政策</p>
+<!--          <a href="/user/feedback">问题反馈</a>-->
         </div>
       </div>
       <div class="copyright">
@@ -85,14 +121,16 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { get } from '@/common'
-import { UserFilled } from '@element-plus/icons-vue'
+import { get, ElMessage } from '@/common'
+import { UserFilled, Search, Picture } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
 
 const router = useRouter()
 const searchText = ref('')
+const searchResults = ref([])
+const showSearchResults = ref(false)
 
 // 用户信息
 const userInfo = reactive({
@@ -143,8 +181,54 @@ const goToMyFeedback = () => {
   router.push('/user/my-feedback')
 }
 
+// 处理搜索
+const handleSearch = async () => {
+  if (!searchText.value.trim()) {
+    searchResults.value = []
+    return
+  }
+  
+  try {
+    const result = await get(`/travels/selectAll?keyword=${searchText.value.trim()}&pageSize=5`)
+    if (result.code === 200) {
+      searchResults.value = result.data.list
+    }
+  } catch (error) {
+    console.error('搜索失败:', error)
+    ElMessage.error('搜索失败，请稍后重试')
+  }
+}
+
+// 获取图片URL
+const getImageUrl = (url) => {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  return import.meta.env.VITE_API_BASE_URL + url
+}
+
+// 跳转到详情页
+const goToDetail = (item) => {
+  searchText.value = ''
+  searchResults.value = []
+  showSearchResults.value = false
+  router.push(`/user/travel-detail/${item.id}`)
+}
+
+// 点击其他地方关闭搜索结果
+const handleClickOutside = (event) => {
+  const searchContainer = document.querySelector('.search-container')
+  if (searchContainer && !searchContainer.contains(event.target)) {
+    showSearchResults.value = false
+  }
+}
+
 onMounted(() => {
   getUserInfo()
+  document.addEventListener('click', handleClickOutside)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -192,8 +276,13 @@ onMounted(() => {
   gap: 20px;
 }
 
+.search-container {
+  position: relative;
+  width: 300px;
+}
+
 .search-input {
-  width: 200px;
+  width: 100%;
 }
 
 .user-info {
@@ -216,7 +305,7 @@ onMounted(() => {
 }
 
 .main-content {
-  min-height: calc(100vh - 100px - 300px); /* 减去头部和底部的高度 */
+  /*min-height: calc(100vh - 100px - 300px); !* 减去头部和底部的高度 *!*/
   /*padding: 20px;*/
   /*max-width: 1200px;*/
   background-color: #F7F7F7;;
@@ -229,7 +318,7 @@ onMounted(() => {
   background-color: #2c3e50;
   color: #ffffff;
   padding: 40px 0 20px;
-  margin-top: 40px;
+  /*margin-top: 40px;*/
 }
 
 .footer-content {
@@ -276,4 +365,81 @@ onMounted(() => {
 .weather-widget iframe {
   margin-top: 10px;
 }
+
+.search-results {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 4px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.search-item {
+  display: flex;
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.3s;
+}
+
+.search-item:hover {
+  background-color: #f5f7fa;
+}
+
+.search-item-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.image-placeholder {
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  color: #909399;
+}
+
+.search-item-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.search-item-title {
+  font-size: 14px;
+  color: #303133;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.search-item-desc {
+  font-size: 12px;
+  color: #909399;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+:deep(.el-input__wrapper) {
+  border-radius: 20px;
+}
+.background-container {
+  background-image: url('@/images/background/mainbg.png');
+  background-repeat: no-repeat;
+  background-position: bottom center;
+  background-size: cover;
+  min-height: 55vh; /* 确保背景覆盖整个视口高度 */
+}
+
 </style>
