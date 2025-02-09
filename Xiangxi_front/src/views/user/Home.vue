@@ -2,7 +2,10 @@
   <div class="home-container">
     <!-- 顶部欢迎栏 -->
     <div class="welcome-bar">
-      <div class="welcome-text" style="color: rgb(24, 149, 0); font-size: 20px;">&nbsp湘西旅游信息集成与推荐系统</div>
+
+      <div class="welcome-text" style="color: rgb(24, 149, 0); font-size: 20px;">
+        <el-image :src="xiangxi" fit="cover" style=" position: relative;
+  top: 6px;"></el-image>湘西旅游信息集成与推荐系统</div>
       <div class="weather-widget">
         <iframe scrolling="no" src="https://widget.tianqiapi.com/?style=tg&skin=pitaya" frameborder="0" width="470" height="60" allowtransparency="true"></iframe>
       </div>
@@ -126,6 +129,7 @@ import { useRouter } from 'vue-router'
 import { get, ElMessage } from '@/common'
 import { UserFilled, Search, Picture } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
+import xiangxi from '@/images/icon/湘西.svg'
 
 const router = useRouter()
 const searchText = ref('')

@@ -3,6 +3,7 @@ import Login from '../views/Login.vue'
 import AdminLayout from '../views/admin/AdminLayout.vue'
 import Home from "@/views/user/Home.vue";
 import { BASE_URL, LOGIN_ROUTE_NAME } from '@/common/constants';
+import { getLocalToken } from '@/common'
 
 const routes = [
   //默认路由定位到登录页面
@@ -165,14 +166,14 @@ const routes = [
       }
     ]
 
+  },
+  // 404页面路由
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('../views/404.vue')
   }
-
 ]
-
-// const router = createRouter({
-//   history: createWebHistory(),
-//   routes
-// })
 
 const router = createRouter({
   history: createWebHistory(BASE_URL),
@@ -183,5 +184,45 @@ const router = createRouter({
   }
 });
 
+// 路由守卫
+router.beforeEach(async (to, from, next) => {
+  const token = getLocalToken()
+  
+  // 不需要登录的路由
+  const publicPages = ['/login']
+  const authRequired = !publicPages.includes(to.path)
+  
+  // 判断用户角色
+  let userRole = null
+  if (token) {
+    try {
+      const response = await fetch(import.meta.env.VITE_API_BASE_URL + '/user/getUserInfo', {
+        headers: {
+          'Authorization': token
+        }
+      })
+      const data = await response.json()
+      if (data.code === 200) {
+        userRole = data.data.role
+      }
+    } catch (error) {
+      console.error('获取用户信息失败:', error)
+    }
+  }
+  
+  if (authRequired && !token) {
+    // 需要登录但未登录，重定向到登录页
+    next('/login')
+  } else if (to.path.startsWith('/admin')) {
+    // 访问管理员页面
+    if (userRole === 0) {
+      next() // 管理员可以访问
+    } else {
+      next('/user/home') // 非管理员重定向到用户首页
+    }
+  } else {
+    next() // 其他情况允许访问
+  }
+})
 
 export default router 

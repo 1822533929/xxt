@@ -598,7 +598,7 @@ onMounted(() => {
 
 .routes-section {
   max-width: 1200px;
-  margin: 20px auto;
+  margin: 0px auto;
   padding: 20px;
   background: white;
   border-radius: 8px;
