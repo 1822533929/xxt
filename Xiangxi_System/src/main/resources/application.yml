@@ -10,9 +10,11 @@ spring:
     servlet:
       path: /xxt/api
       multipart:
-        max-file-size: 10MB
-        max-request-size: 10MB
-
+        #单个文件设置大小
+        max-file-size: 500MB
+        #总文件限制大小
+        max-request-size: 500MB
+# 10mb
 #  main:
 #    allow-bean-definition-overriding=true:#server:
 #  port: 8080

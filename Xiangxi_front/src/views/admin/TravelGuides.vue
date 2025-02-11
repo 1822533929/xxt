@@ -220,10 +220,11 @@ const uploadImageToServer = async (base64Str) => {
     // 上传文件
     const formData = new FormData()
     formData.append('image', file)
+    formData.append('path',"articleContent")//富文本图片上传路径
     const result = await post('/upload/image', formData, {
-      headers: { 
+      headers: {
         'Content-Type': 'multipart/form-data',
-        'Authorization': 'Bearer ' + localStorage.getItem('token')
+        'Authorization': 'Bearer ' + localStorage.getItem('token'),
       }
     })
     

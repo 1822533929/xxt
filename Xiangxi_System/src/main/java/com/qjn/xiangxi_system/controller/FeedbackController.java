@@ -41,7 +41,7 @@ public class FeedbackController {
             String imageUrl = null;
             // 只在有图片且不是空文件时处理图片上传
             if (image != null && !image.isEmpty() && image.getSize() > 0) {
-                imageUrl = fileUploadUtil.uploadImage(image);
+                imageUrl = fileUploadUtil.uploadImage(image, "feedback");
             }
             //获取用户数据
             User user = UserToken.parseUserFromToken(token);

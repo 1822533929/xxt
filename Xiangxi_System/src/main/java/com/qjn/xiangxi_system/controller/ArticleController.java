@@ -34,7 +34,7 @@ public class ArticleController {
         String cover = null;
         // 只在有图片且不是空文件时处理图片上传
         if (image != null && !image.isEmpty() && image.getSize() > 0) {
-            cover = fileUploadUtil.uploadImage(image);
+            cover = fileUploadUtil.uploadImage(image,"articleCover");
         }
         Article article=new Article();
         article.setTitle(title);

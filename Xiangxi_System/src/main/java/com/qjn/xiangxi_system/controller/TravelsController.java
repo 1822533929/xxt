@@ -102,16 +102,18 @@ public class TravelsController {
     }
     /**
      * 后台添加商品
+     * bug修复：如果请求中包含文件上传（如 MultipartFile），则不能使用 @RequestBody 注解，因为 @RequestBody 期望的是 JSON 格式的数据。
+     * 可以使用 @ModelAttribute 来绑定表单数据。
      */
     @RequestMapping("/admin/add")
-    public Result add(@RequestBody TravelsVO travelsVO,
+    public Result add(@ModelAttribute TravelsVO travelsVO,
                       @RequestParam(value = "image", required = false) MultipartFile image
     ) {
         try{
             String cover = null;
             // 只在有图片且不是空文件时处理图片上传
             if (image != null && !image.isEmpty() && image.getSize() > 0) {
-                cover = fileUploadUtil.uploadImage(image);
+                cover = fileUploadUtil.uploadImage(image, "travelCover");
             }
             travelsVO.setTime(DateTimeUtil.getDateTime());
             travelsVO.setCover(cover);

@@ -2,7 +2,7 @@
   <div class="admin-layout">
     <!-- 顶部导航栏 -->
     <el-header class="header">
-      <div class="logo">湘西旅游管理系统</div>
+      <div class="logo">湘西旅游管理后台</div>
       <div class="user-info">
         <el-dropdown trigger="click" @command="handleCommand">
           <div class="avatar-container">

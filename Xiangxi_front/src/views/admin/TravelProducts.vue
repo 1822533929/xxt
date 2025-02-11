@@ -333,35 +333,30 @@ const handleSubmit = async () => {
       try {
         // 处理内容中的图片
         const processedContent = await processContent(form.content)
-        form.content = processedContent
-
-        // 1. 先上传图片
-        if (form.tempImage) {
-          const imageFormData = new FormData()
-          imageFormData.append('image', form.tempImage)
-          const uploadResult = await post('/upload/image', imageFormData, {
-            headers: {
-              'Content-Type': 'multipart/form-data'
-            }
-          })
-          if (uploadResult.code === 200) {
-            form.cover = uploadResult.data
-          } else {
-            ElMessage.error('图片上传失败')
-            return
-          }
-        }
+        // 创建 FormData 对象，直接发送到后端
+        const formData = new FormData()
+        formData.append('title', form.title)
+        formData.append('descr', form.descr)
+        formData.append('money', form.money)
+        formData.append('inventory', form.inventory)
+        formData.append('content', processedContent)
+        formData.append('tags', form.selectedTags.join(','))
         
-        // 2. 提交商品信息
+        // 添加封面图片
+        if (form.tempImage) {
+          formData.append('image', form.tempImage)
+        }
+
+        // 提交商品信息
         const url = form.id ? '/travels/admin/update' : '/travels/admin/add'
-        const submitData = { ...form }
-        // 删除临时数据
-        delete submitData.tempImage
-        delete submitData.tempPreviewUrl
-        const result = await post(url, submitData)
+        const result = await post(url, formData, {
+          headers: {
+            'Content-Type':'multipart/form-data'  // 让浏览器自动设置正确的 Content-Type
+          }
+        })
 
         if (result.code === 200) {
-          ElMessage.success(result.msg)
+          ElMessage.success(form.id ? '修改成功' : '添加成功')
           dialogVisible.value = false
           // 清理临时预览URL
           if (form.tempPreviewUrl) {
@@ -369,7 +364,7 @@ const handleSubmit = async () => {
           }
           getTableData()
         } else {
-          ElMessage.error(result.msg)
+          ElMessage.error(result.msg || '操作失败')
         }
       } catch (error) {
         console.error('提交失败:', error)
@@ -403,7 +398,7 @@ const viewDetail = (row) => {
 // 添加编辑方法
 const handleEdit = (row) => {
   dialogTitle.value = '编辑商品'
-  Object.assign(form, {
+  Object.return(form, {
     id: row.id,
     title: row.title,
     cover: row.cover,
@@ -519,6 +514,7 @@ const uploadImageToServer = async (base64Str) => {
     // 上传文件
     const formData = new FormData()
     formData.append('image', file)
+    formData.append('path', 'articleContent')
     const result = await post('/upload/image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })

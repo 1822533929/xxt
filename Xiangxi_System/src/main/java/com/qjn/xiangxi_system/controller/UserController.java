@@ -184,7 +184,7 @@ public class UserController {
             String avatar = null;
             // 只在有图片且不是空文件时处理图片上传
             if (image != null && !image.isEmpty() && image.getSize() > 0) {
-                avatar = fileUploadUtil.uploadImage(image);
+                avatar = fileUploadUtil.uploadImage(image, "user");
                 user.setAvatar(avatar);
             }
 
