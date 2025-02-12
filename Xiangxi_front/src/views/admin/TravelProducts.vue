@@ -141,7 +141,6 @@
             allow-create
             default-first-option
             placeholder="请选择或创建标签"
-            @change="handleTagsChange"
           >
             <el-option
               v-for="tag in availableTags"
@@ -215,9 +214,8 @@ const form = reactive({
   inventory: 0,
   content: '',
   selectedTags: [],
-  tags: '',
-  tempImage: null,  // 用于存储临时图片文件
-  tempPreviewUrl: '' // 用于存储临时预览URL
+  tempImage: null,
+  tempPreviewUrl: ''
 })
 
 // 表单验证规则
@@ -241,7 +239,7 @@ const getAllTags = async () => {
   try {
     const result = await get('/travels/getAllTags')
     if (result.code === 200) {
-      availableTags.value = result.data.map(tag => tag.tagName)
+      availableTags.value = result.data || []
     }
   } catch (error) {
     console.error('获取标签失败:', error)
@@ -271,7 +269,7 @@ const getTableData = async () => {
 
 // 处理标签变化
 const handleTagsChange = (value) => {
-  form.tags = value.join(',')
+  // value 已经直接更新到 form.selectedTags，不需要额外处理
 }
 
 // 上传相关方法
@@ -312,17 +310,7 @@ const resetSearch = () => {
 
 const handleAdd = () => {
   dialogTitle.value = '新增商品'
-  Object.assign(form, {
-    id: null,
-    title: '',
-    cover: '',
-    descr: '',
-    money: 0,
-    inventory: 0,
-    content: '',
-    selectedTags: [],
-    tags: ''
-  })
+  initForm()
   dialogVisible.value = true
 }
 
@@ -333,6 +321,7 @@ const handleSubmit = async () => {
       try {
         // 处理内容中的图片
         const processedContent = await processContent(form.content)
+        
         // 创建 FormData 对象，直接发送到后端
         const formData = new FormData()
         formData.append('title', form.title)
@@ -347,11 +336,15 @@ const handleSubmit = async () => {
           formData.append('image', form.tempImage)
         }
 
-        // 提交商品信息
+        // 如果是编辑模式，添加ID
+        if (form.id) {
+          formData.append('id', form.id)
+        }
+
         const url = form.id ? '/travels/admin/update' : '/travels/admin/add'
         const result = await post(url, formData, {
           headers: {
-            'Content-Type':'multipart/form-data'  // 让浏览器自动设置正确的 Content-Type
+            'Content-Type': 'multipart/form-data'
           }
         })
 
@@ -372,6 +365,20 @@ const handleSubmit = async () => {
       }
     }
   })
+}
+
+// 初始化表单数据
+const initForm = () => {
+  form.id = null
+  form.title = ''
+  form.descr = ''
+  form.money = 0
+  form.inventory = 0
+  form.content = ''
+  form.cover = ''
+  form.tempImage = null
+  form.tempPreviewUrl = ''
+  form.selectedTags = []
 }
 
 // 添加分页方法
@@ -398,16 +405,15 @@ const viewDetail = (row) => {
 // 添加编辑方法
 const handleEdit = (row) => {
   dialogTitle.value = '编辑商品'
-  Object.return(form, {
+  Object.assign(form, {
     id: row.id,
     title: row.title,
-    cover: row.cover,
     descr: row.descr,
-    money: Number(row.money),
-    inventory: Number(row.inventory),
+    money: row.money,
+    inventory: row.inventory,
     content: row.content,
-    selectedTags: row.tags ? row.tags.split(',') : [],
-    tags: row.tags || ''
+    cover: row.cover,
+    selectedTags: row.tags ? row.tags.split(',') : []
   })
   dialogVisible.value = true
 }
@@ -514,7 +520,7 @@ const uploadImageToServer = async (base64Str) => {
     // 上传文件
     const formData = new FormData()
     formData.append('image', file)
-    formData.append('path', 'articleContent')
+    formData.append('path', 'travelContent')
     const result = await post('/upload/image', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
@@ -524,7 +530,6 @@ const uploadImageToServer = async (base64Str) => {
     }
     throw new Error(result.msg || '上传失败')
   } catch (error) {
-    console.error('图片上传失败:', error)
     throw error
   }
 }
@@ -554,7 +559,7 @@ const processContent = async (content) => {
           }
           img.setAttribute('src', imageUrl)
         } catch (error) {
-          console.error('处理图片失败:', error)
+          // console.log('处理图片失败');
         }
       }
     }

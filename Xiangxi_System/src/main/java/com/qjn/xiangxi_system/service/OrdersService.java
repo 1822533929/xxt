@@ -21,4 +21,8 @@ public interface OrdersService extends IService<Orders> {
     void deleteBatch(List<Integer> ids);
 
     boolean cancelOrder(Integer id);
+
+    void deleteByTravelId(Integer id);
+
+    void deleteByUserId(Integer id);
 }

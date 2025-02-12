@@ -72,7 +72,17 @@ public class RoutesController {
      * 修改路线
      */
     @RequestMapping("/update")
-    public Result update(Routes routes) {
+    public Result update(@ModelAttribute Routes routes,@RequestParam(value = "image", required = false) MultipartFile image) {
+        try{
+            String cover = null;
+            // 只在有图片且不是空文件时处理图片上传
+            if (image != null && !image.isEmpty() && image.getSize() > 0) {
+                cover = fileUploadUtil.uploadImage(image,"routeCover");
+            }
+            routes.setImg(cover);
+        }catch (IOException e){
+            return Result.error("图片上传失败");
+        }
         routesService.updateById(routes);
         return Result.success();
     }

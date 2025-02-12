@@ -9,10 +9,7 @@ import com.qjn.xiangxi_system.utils.DateTimeUtil;
 import com.qjn.xiangxi_system.utils.FileUploadUtil;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -66,7 +63,17 @@ public class NewsController {
      * 修改资讯数据
      */
     @RequestMapping("/updateNews")
-    public Result updateNews(News news) {
+    public Result updateNews(@ModelAttribute News news,@RequestParam(value = "image", required = false) MultipartFile image) {
+        try{
+            String cover = null;
+            // 只在有图片且不是空文件时处理图片上传
+            if (image != null && !image.isEmpty() && image.getSize() > 0) {
+                cover = fileUploadUtil.uploadImage(image, "newsCover");
+            }
+            news.setCover(cover);
+        }catch (IOException e){
+            return Result.error("图片上传失败");
+        }
         newsService.updateById(news);
         return Result.success();
     }

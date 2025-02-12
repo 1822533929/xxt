@@ -74,6 +74,16 @@ public class OrdersServiceImpl extends ServiceImpl<OrdersMapper, Orders>
             throw new RuntimeException("取消订单失败");
         }
     }
+
+    @Override
+    public void deleteByTravelId(Integer id) {
+        ordersMapper.deleteByTravelId(id);
+    }
+
+    @Override
+    public void deleteByUserId(Integer id) {
+        ordersMapper.deleteByUserId(id);
+    }
 }
 
 

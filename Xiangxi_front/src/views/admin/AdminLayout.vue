@@ -183,7 +183,7 @@ const handleCommand = (command) => {
       ElMessageBox.confirm('确定要退出登录吗？', '提示', {
         type: 'warning'
       }).then(() => {
-        localStorage.removeItem('token') // 清除token
+        localStorage.removeItem('Sure-Token') // 清除token
         router.push('/login')
       })
       break

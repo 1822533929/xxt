@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.User;
 import com.qjn.xiangxi_system.pojo.query.UserQuery;
+import com.qjn.xiangxi_system.service.OrdersService;
 import com.qjn.xiangxi_system.utils.*;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,8 @@ import java.util.List;
 public class UserController {
     @Autowired
     private UserService userService;
+    @Autowired
+    private OrdersService orderService;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
@@ -125,6 +128,13 @@ public class UserController {
     @GetMapping("/deleteUser/{id}")
     public Result deleteUser(@PathVariable Integer id)
     {
+        /**
+         * 删除用户的订单
+         */
+        orderService.deleteByUserId(id);
+        /**
+         * 删除用户的攻略（预留位置）
+         */
         return Result.success(userService.removeById(id));
     }
     /**
@@ -134,6 +144,15 @@ public class UserController {
     @PostMapping("/deleteUser/batch")
     public Result batchDeleteUser(@RequestBody List<Integer> ids)
     {
+        /**
+         * 删除用户的订单
+         */
+        for(Integer id : ids){
+            orderService.deleteByUserId(id);
+        }
+        /**
+         * 删除用户的攻略（预留位置）
+         */
         userService.deleteBatch(ids);
         return Result.success();
     }

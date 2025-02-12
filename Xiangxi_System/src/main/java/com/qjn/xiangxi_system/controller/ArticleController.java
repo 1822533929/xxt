@@ -50,8 +50,18 @@ public class ArticleController {
         }
     }
     @RequestMapping("/update")
-    public Result update(Article article)
+    public Result update(@ModelAttribute Article article,@RequestParam(value = "image", required = false) MultipartFile image)
     {
+        try{
+            String cover = null;
+            // 只在有图片且不是空文件时处理图片上传
+            if (image != null && !image.isEmpty() && image.getSize() > 0) {
+                cover = fileUploadUtil.uploadImage(image, "articleCover");
+            }
+            article.setCover(cover);
+        }catch (IOException e){
+            return Result.error("图片上传失败");
+        }
         articleService.updateById(article);
         return Result.success();
     }

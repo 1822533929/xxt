@@ -40,6 +40,10 @@ public interface OrdersMapper extends BaseMapper<Orders> {
             "WHERE orderdate >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH) " +
             "GROUP BY month")
     List<Map<String, Object>> getMonthlyOrders();
+
+    void deleteByTravelId(Integer id);
+
+    void deleteByUserId(Integer id);
 }
 
 

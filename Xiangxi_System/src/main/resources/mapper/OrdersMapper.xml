@@ -25,6 +25,14 @@
             #{id}
         </foreach>
     </delete>
+    <!-- 根据旅行ID删除订单 -->
+    <delete id="deleteByTravelId">
+        DELETE FROM orders WHERE travelid = #{id}
+    </delete>
+    <!-- 根据用户ID删除订单 -->
+    <delete id="deleteByUserId">
+        DELETE FROM orders WHERE userid = #{userId}
+    </delete>
     <select id="getAllOrders" resultType="com.qjn.xiangxi_system.pojo.vo.OrdersVO">
         SELECT 
             o.*,

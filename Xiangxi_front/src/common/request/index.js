@@ -51,7 +51,7 @@ class RequestInfoPool {
 	}
 
 	/**
-	 * 处理请求信息，如果请求信息池中不存在相同的���求信息，则将请求信息放入请求信息池中, 并返回true,否则发返回false
+	 * 处理请求信息，如果请求信息池中不存在相同请求信息，则将请求信息放入请求信息池中, 并返回true,否则发返回false
 	 */
 	putRequstInfo = (requestConfig, maxDuration = 5000) => {
 		const {
@@ -151,7 +151,7 @@ class RequestInfoPool {
 	isEmpty = () => this.pool.length === 0
 
 	/**
-	 * 请��信息池为是否仅有一个请求信息
+	 * 请求信息池为是否仅有一个请求信息
 	 */
 	hasOnlyOne = () => this.pool.length === 1
 

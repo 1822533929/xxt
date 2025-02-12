@@ -7,16 +7,19 @@ import com.qjn.xiangxi_system.pojo.Travels;
 import com.qjn.xiangxi_system.pojo.query.BaseQuery;
 import com.qjn.xiangxi_system.pojo.query.TravelsQuery;
 import com.qjn.xiangxi_system.pojo.vo.TravelsVO;
+import com.qjn.xiangxi_system.service.OrdersService;
 import com.qjn.xiangxi_system.service.TagsService;
 import com.qjn.xiangxi_system.service.TravelsService;
 import com.qjn.xiangxi_system.utils.DateTimeUtil;
 import com.qjn.xiangxi_system.utils.FileUploadUtil;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.PrivateKey;
 import java.util.List;
 
 @RestController
@@ -28,6 +31,8 @@ public class TravelsController {
     private TagsService tagsService;
     @Resource
     private FileUploadUtil fileUploadUtil;
+    @Resource
+    private OrdersService orderService;
     /**
      * 热门景点
      * 根据阅读量从高到低查询旅游信息
@@ -115,7 +120,6 @@ public class TravelsController {
             if (image != null && !image.isEmpty() && image.getSize() > 0) {
                 cover = fileUploadUtil.uploadImage(image, "travelCover");
             }
-            travelsVO.setTime(DateTimeUtil.getDateTime());
             travelsVO.setCover(cover);
             if (travelsService.saveWithTags(travelsVO)) {
                 return Result.success("添加成功");
@@ -129,7 +133,18 @@ public class TravelsController {
      * 后台修改商品
      */
     @RequestMapping("/admin/update")
-    public Result update(@RequestBody TravelsVO travelsVO) {
+    public Result update(@ModelAttribute TravelsVO travelsVO,@RequestParam(value = "image", required = false) MultipartFile image) {
+        try {
+            String cover = null;
+            // 只在有图片且不是空文件时处理图片上传
+            if (image != null && !image.isEmpty() && image.getSize() > 0) {
+                cover = fileUploadUtil.uploadImage(image, "travelCover");
+            }
+            travelsVO.setTime(DateTimeUtil.getDateTime());
+            travelsVO.setCover(cover);
+        }catch (IOException e){
+            return Result.error("图片上传失败");
+        }
         if (travelsService.updateWithTags(travelsVO)) {
             return Result.success("修改成功");
         }
@@ -137,10 +152,11 @@ public class TravelsController {
     }
     /**
      * 后台删除商品
-     * 删除对应订单（待更改）
      */
     @RequestMapping("/admin/delete/{id}")
     public Result delete(@PathVariable Integer id) {
+        //删除商品的所有订单
+        orderService.deleteByTravelId(id);
         if (travelsService.removeWithTags(id)) {
             return Result.success("删除成功");
         }
@@ -148,15 +164,24 @@ public class TravelsController {
     }
     /**
      * 后台批量删除商品
-     * 删除对应订单（待更改）
      */
     @RequestMapping("/admin/delete/batch")
+    @Transactional
     public Result batchDelete(@RequestBody List<Integer> ids) {
         if (ids == null || ids.isEmpty()) {
             return Result.error("未选择要删除的数据");
         }
-        travelsService.deleteBatch(ids);
-        return Result.success("批量删除成功");
+        try {
+            // 删除商品所有订单
+            for (Integer id : ids) {
+                orderService.deleteByTravelId(id);
+            }
+            // 删除商品
+            travelsService.deleteBatch(ids);
+            return Result.success("批量删除成功");
+        } catch (Exception e) {
+            throw new RuntimeException("批量删除失败：" + e.getMessage());
+        }
     }
     /**
      * 获取所有标签信息
