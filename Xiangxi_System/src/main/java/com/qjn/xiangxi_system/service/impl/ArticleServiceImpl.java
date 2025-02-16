@@ -2,10 +2,10 @@ package com.qjn.xiangxi_system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qjn.xiangxi_system.pojo.Article;
+import com.qjn.xiangxi_system.pojo.vo.ArticleVO;
 import com.qjn.xiangxi_system.service.ArticleService;
 import com.qjn.xiangxi_system.mapper.ArticleMapper;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,8 +27,18 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     }
 
     @Override
-    public List<Article> findHot() {
+    public List<ArticleVO> findHot() {
         return articleMapper.findHot();
+    }
+
+    @Override
+    public ArticleVO selectByIdWithUser(Integer id) {
+        return articleMapper.selectByIdWithUser(id);
+    }
+
+    @Override
+    public List<ArticleVO> selectAllWithUser() {
+        return articleMapper.selectAllWithUser();
     }
 }
 

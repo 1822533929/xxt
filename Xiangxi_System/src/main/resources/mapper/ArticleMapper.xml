@@ -12,12 +12,13 @@
             <result property="date" column="date" jdbcType="VARBINARY"/>
             <result property="likes" column="likes" jdbcType="INTEGER"/>
             <result property="descr" column="descr" jdbcType="VARCHAR"/>
+            <result property="userid" column="userid" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,title,descr,
         cover,content,likes,
-        date
+        date,userid
     </sql>
     <!-- 批量删除 -->
     <delete id="deleteBatch" parameterType="java.util.List">
@@ -26,7 +27,27 @@
             #{id}
         </foreach>
     </delete>
-    <select id="findHot" resultType="com.qjn.xiangxi_system.pojo.Article">
-        SELECT * FROM article ORDER BY likes DESC
+
+    <!-- 根据ID查询文章及用户信息 -->
+    <select id="selectByIdWithUser" resultType="com.qjn.xiangxi_system.pojo.vo.ArticleVO">
+        SELECT a.*, u.name
+        FROM article a
+        LEFT JOIN user u ON a.userid = u.id
+        WHERE a.id = #{id}
+    </select>
+
+    <!-- 分页查询所有文章及用户信息 -->
+    <select id="selectAllWithUser" resultType="com.qjn.xiangxi_system.pojo.vo.ArticleVO">
+        SELECT a.*, u.name
+        FROM article a
+        LEFT JOIN user u ON a.userid = u.id
+        ORDER BY a.date DESC
+    </select>
+
+    <select id="findHot" resultType="com.qjn.xiangxi_system.pojo.vo.ArticleVO">
+        SELECT a.*, u.username 
+        FROM article a
+        LEFT JOIN user u ON a.userid = u.id
+        ORDER BY a.likes DESC
     </select>
 </mapper>

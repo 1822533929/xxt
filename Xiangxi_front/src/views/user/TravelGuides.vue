@@ -19,32 +19,39 @@
       </div>
     </div>
 
-    <div class="guides-container">
-      <div class="guides-content">
-        <el-card 
+    <div class="guides-wrapper">
+      <div class="guides-container" v-loading="loading">
+        <div 
           v-for="guide in articleList" 
           :key="guide.id" 
-          class="guide-card" 
+          class="guide-item"
           @click="viewDetail(guide.id)"
-          v-loading="loading"
         >
-          <div class="guide-layout">
-             <img :src="getImageUrl(guide.cover)" class="guide-image" @error="handleImageError">
-             <div class="guide-info">
-               <h3>{{ guide.title }}</h3>
-               <p class="description">{{ guide.descr }}</p>
-               <div class="card-footer">
-                 <span class="time">{{ formatDate(guide.date) }}</span>
-                 <el-button type="text">查看详情</el-button>
-               </div>
-             </div>
+          <h3 class="guide-title">{{ guide.title }}</h3>
+          <div class="guide-content">
+            <img :src="getImageUrl(guide.cover)" class="guide-image" @error="handleImageError">
+            <div class="guide-info">
+              <p class="guide-descr">{{ guide.descr }}</p>
+              <div class="guide-footer">
+                <div class="guide-meta">
+                  <span class="time">
+                    <el-icon><Calendar /></el-icon>
+                    {{ formatDate(guide.date) }}
+                  </span>
+                  <span>
+                    <!--发布者-->
+                    <span class="author">By.{{ guide.name }}</span>
+                  </span>
+                  <span class="likes">
+                    <el-icon><Star /></el-icon>
+                    {{ guide.likes || 0 }}
+                  </span>
+
+                </div>
+                <el-button type="primary" link>查看详情</el-button>
+              </div>
+            </div>
           </div>
-        </el-card>
-        <div v-if="loading" class="loading-placeholder">
-          加载中...
-        </div>
-        <div v-if="!loading && articleList.length === 0" class="empty-placeholder">
-          暂无数据
         </div>
       </div>
     </div>
@@ -68,7 +75,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { get } from '@/common'
 import { ElMessage } from 'element-plus'
-import { Search } from '@element-plus/icons-vue'
+import { Search, Calendar, Star } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -207,83 +214,88 @@ onMounted(() => {
   background-color: rgba(255, 255, 255, 0.9);
 }
 
+.guides-wrapper {
+  padding: 20px;
+  background-color: #f5f7fa;
+}
+
 .guides-container {
-  display: flex;
-  justify-content: center;
-  padding: 0 20px;
-}
-
-.guides-content {
-  width: 800px;
-  max-width: 100%;
-}
-
-.guide-card {
-  margin-bottom: 20px;
-  transition: all 0.3s;
-  cursor: pointer;
-  background-color: #fff;
+  max-width: 1000px;
+  margin: 0 auto;
+  background: #fff;
   border-radius: 8px;
-  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  padding: 20px;
 }
 
-.guide-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+.guide-item {
+  cursor: pointer;
+  padding: 20px;
+  border-bottom: 1px solid #ebeef5;
+  transition: all 0.3s;
 }
 
-.guide-layout {
+.guide-item:last-child {
+  border-bottom: none;
+}
+
+.guide-item:hover {
+  background-color: #f5f7fa;
+}
+
+.guide-title {
+  font-size: 18px;
+  color: #303133;
+  margin-bottom: 15px;
+}
+
+.guide-content {
   display: flex;
   gap: 20px;
-  height: 160px;
-  overflow: hidden;
+  height: 120px;
 }
 
 .guide-image {
-  width: 200px;
-  height: 160px;
+  width: 180px;
+  height: 120px;
   object-fit: cover;
   border-radius: 4px;
 }
 
 .guide-info {
   flex: 1;
-  padding: 10px 15px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
-.guide-info h3 {
-  margin: 0 0 8px;
-  font-size: 18px;
-  color: #303133;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.description {
-  color: #666;
-  margin: 5px 0;
-  flex: 1;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
+.guide-descr {
+  color: #606266;
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.6;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
-.card-footer {
+.guide-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 5px;
+  margin-top: auto;
 }
 
-.time {
-  color: #999;
+.guide-meta {
+  display: flex;
+  gap: 15px;
+  color: #909399;
   font-size: 13px;
+}
+
+.guide-meta .el-icon {
+  margin-right: 4px;
 }
 
 .pagination {

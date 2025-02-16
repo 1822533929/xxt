@@ -28,6 +28,13 @@
       <el-table-column type="selection" width="55" />
       <el-table-column prop="title" label="标题" min-width="150" show-overflow-tooltip />
       <el-table-column prop="descr" label="描述" min-width="200" show-overflow-tooltip />
+      <el-table-column prop="username" label="发布者" width="120">
+        <template #default="{ row }">
+          <el-tag size="small" type="info">
+            {{ row.name || '未知用户' }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column label="封面" width="100">
         <template #default="{ row }">
           <el-image

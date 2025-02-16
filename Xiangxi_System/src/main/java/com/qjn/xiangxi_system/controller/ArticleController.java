@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.Article;
+import com.qjn.xiangxi_system.pojo.User;
 import com.qjn.xiangxi_system.pojo.query.ArticleQuery;
+import com.qjn.xiangxi_system.pojo.vo.ArticleVO;
 import com.qjn.xiangxi_system.service.ArticleService;
 import com.qjn.xiangxi_system.utils.DateTimeUtil;
 import com.qjn.xiangxi_system.utils.FileUploadUtil;
 import com.qjn.xiangxi_system.utils.Result;
+import com.qjn.xiangxi_system.utils.UserToken;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -25,19 +28,26 @@ public class ArticleController {
     @Autowired
     private FileUploadUtil fileUploadUtil;
 
+
     @RequestMapping("/add")
     public Result add( @RequestParam(value = "image", required = false) MultipartFile image,
                        @RequestParam("descr") String descr,
                        @RequestParam("title") String title,
-                       @RequestParam("content") String content){
+                       @RequestParam("content") String content,
+                       @RequestHeader("Authorization") String token){
        try{
         String cover = null;
         // 只在有图片且不是空文件时处理图片上传
         if (image != null && !image.isEmpty() && image.getSize() > 0) {
             cover = fileUploadUtil.uploadImage(image,"articleCover");
         }
+           User user = UserToken.parseUserFromToken(token);
+           if (user == null || user.getId() == null) {
+               return Result.error("无法获取用户信息");
+           }
         Article article=new Article();
         article.setTitle(title);
+        article.setUserid(user.getId());
         article.setDescr(descr);
         article.setCover(cover);
         article.setContent(content);
@@ -92,7 +102,7 @@ public class ArticleController {
     @RequestMapping("/selectById/{id}")
     public Result selectById(@PathVariable("id") Integer id)
     {
-        Article article = articleService.getById(id);
+        ArticleVO article = articleService.selectByIdWithUser(id);
         return Result.success(article);
     }
     /**
@@ -101,17 +111,17 @@ public class ArticleController {
     @RequestMapping("/selectAll")
     public Result selectAll()
     {
-        List<Article> list = articleService.list();
+        List<ArticleVO> list = articleService.selectAllWithUser();
         return Result.success(list);
     }
     /**
      * 分页查询
      */
     @RequestMapping("/selectPage")
-    public Result<PageInfo<Article>> selectPage(ArticleQuery query)
+    public Result<PageInfo<ArticleVO>> selectPage(ArticleQuery query)
     {
         PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
-        PageInfo<Article> pageInfo = new PageInfo<>(articleService.list());
+        PageInfo<ArticleVO> pageInfo = new PageInfo<>(articleService.selectAllWithUser());
         return Result.success(pageInfo);
     }
     /**

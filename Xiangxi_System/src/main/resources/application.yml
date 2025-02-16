@@ -11,7 +11,7 @@ spring:
       path: /xxt/api
       multipart:
         #单个文件设置大小
-        max-file-size: 1024MB
+        max-file-size: 500MB
         #总文件限制大小
         max-request-size: 1024MB
 server:

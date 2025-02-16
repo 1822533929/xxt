@@ -2,6 +2,7 @@ package com.qjn.xiangxi_system.service;
 
 import com.qjn.xiangxi_system.pojo.Article;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.qjn.xiangxi_system.pojo.vo.ArticleVO;
 
 import java.util.List;
 
@@ -13,5 +14,9 @@ import java.util.List;
 public interface ArticleService extends IService<Article> {
     void deleteBatch(List<Integer> ids);
 
-    List<Article> findHot();
+    List<ArticleVO> findHot();
+
+    ArticleVO selectByIdWithUser(Integer id);
+
+    List<ArticleVO> selectAllWithUser();
 }

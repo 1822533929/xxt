@@ -45,6 +45,10 @@ public class Article implements Serializable {
      * 发布日期
      */
     private String date;
+    /**
+     * 用户id
+     */
+    private Integer userid;
 
     private static final long serialVersionUID = 1L;
 
@@ -144,6 +148,18 @@ public class Article implements Serializable {
      */
     public void setDate(String date) {
         this.date = date;
+    }
+    /**
+     * 用户id
+     */
+    public Integer getUserid() {
+        return userid;
+    }
+    /**
+     * 用户id
+     */
+    public void setUserid(Integer userid) {
+        this.userid = userid;
     }
 
 
