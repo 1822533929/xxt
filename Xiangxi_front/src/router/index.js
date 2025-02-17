@@ -93,6 +93,16 @@ const routes = [
         path: 'my-feedback',
         name: 'MyFeedback',
         component: () => import('../views/user/MyFeedback.vue')
+      },
+      {
+        path: 'publish-guide',
+        name: 'PublishGuide',
+        component: () => import('../views/user/PublishGuide.vue')
+      },
+      {
+        path: 'my-articles',
+        name: 'MyArticles',
+        component: () => import('../views/user/MyArticles.vue')
       }
     ]
   },

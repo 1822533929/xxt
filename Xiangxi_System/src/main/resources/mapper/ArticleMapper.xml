@@ -30,7 +30,7 @@
 
     <!-- 根据ID查询文章及用户信息 -->
     <select id="selectByIdWithUser" resultType="com.qjn.xiangxi_system.pojo.vo.ArticleVO">
-        SELECT a.*, u.name
+        SELECT a.*, u.name,u.avatar
         FROM article a
         LEFT JOIN user u ON a.userid = u.id
         WHERE a.id = #{id}
@@ -45,9 +45,12 @@
     </select>
 
     <select id="findHot" resultType="com.qjn.xiangxi_system.pojo.vo.ArticleVO">
-        SELECT a.*, u.username 
+        SELECT a.*, u.name
         FROM article a
         LEFT JOIN user u ON a.userid = u.id
         ORDER BY a.likes DESC
+    </select>
+    <select id="findByUserId" resultType="com.qjn.xiangxi_system.pojo.Article">
+        SELECT * FROM article WHERE userid = #{userId}
     </select>
 </mapper>

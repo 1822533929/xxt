@@ -23,6 +23,8 @@ public interface ArticleMapper extends BaseMapper<Article> {
     ArticleVO selectByIdWithUser(Integer id);
 
     List<ArticleVO> selectAllWithUser();
+
+    List<Article> findByUserId(Integer userId);
 }
 
 

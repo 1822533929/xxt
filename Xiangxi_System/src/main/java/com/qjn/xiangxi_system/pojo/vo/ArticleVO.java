@@ -8,4 +8,5 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class ArticleVO extends Article {
     private String name;
+    private String avatar;
 } 

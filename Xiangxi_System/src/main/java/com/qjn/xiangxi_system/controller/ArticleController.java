@@ -139,7 +139,6 @@ public class ArticleController {
     }
     /**
      * 模糊查询
-     * 好像得分页
      */
     @RequestMapping("/search")
     public Result search(@RequestParam("keyword") String keyword) {
@@ -150,9 +149,22 @@ public class ArticleController {
      * 查询热门攻略
      */
     @RequestMapping("/findHot")
-    public Result<PageInfo<Article>> findHot(ArticleQuery query) {
+    public Result<PageInfo<ArticleVO>> findHot(ArticleQuery query) {
         PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
-        PageInfo<Article> pageInfo = new PageInfo<>(articleService.findHot());
+        PageInfo<ArticleVO> pageInfo = new PageInfo<>(articleService.findHot());
+        return Result.success(pageInfo);
+    }
+    /**
+     * 查询用户id的攻略
+     */
+    @RequestMapping("/findByUserId")
+    public Result<PageInfo<Article>> findByUserId(@RequestHeader("Authorization") String token, ArticleQuery query) {
+        User user = UserToken.parseUserFromToken(token);
+        if (user == null || user.getId() == null) {
+            return Result.error("无法获取用户信息");
+        }
+        PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
+        PageInfo<Article> pageInfo = new PageInfo<>(articleService.findByUserId(user.getId()));
         return Result.success(pageInfo);
     }
 

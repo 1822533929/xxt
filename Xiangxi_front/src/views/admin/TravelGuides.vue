@@ -27,21 +27,13 @@
     >
       <el-table-column type="selection" width="55" />
       <el-table-column prop="title" label="标题" min-width="150" show-overflow-tooltip />
-      <el-table-column prop="descr" label="描述" min-width="200" show-overflow-tooltip />
-      <el-table-column prop="username" label="发布者" width="120">
-        <template #default="{ row }">
-          <el-tag size="small" type="info">
-            {{ row.name || '未知用户' }}
-          </el-tag>
-        </template>
-      </el-table-column>
       <el-table-column label="封面" width="100">
         <template #default="{ row }">
           <el-image
-            :src="getImageUrl(row.cover)"
-            :preview-src-list="[getImageUrl(row.cover)]"
-            class="cover-image"
-            fit="cover"
+              :src="getImageUrl(row.cover)"
+              :preview-src-list="[getImageUrl(row.cover)]"
+              class="cover-image"
+              fit="cover"
           >
             <template #error>
               <div class="image-error">
@@ -51,6 +43,15 @@
           </el-image>
         </template>
       </el-table-column>
+      <el-table-column prop="descr" label="描述" min-width="200" show-overflow-tooltip />
+      <el-table-column prop="username" label="发布者" width="120">
+        <template #default="{ row }">
+          <el-tag size="small" type="info">
+            {{ row.name || '未知用户' }}
+          </el-tag>
+        </template>
+      </el-table-column>
+
       <el-table-column label="内容" width="100">
         <template #default="{ row }">
           <el-button link type="primary" @click="viewContent(row)">
@@ -101,9 +102,9 @@
             :on-change="handleCoverChange"
             :show-file-list="false"
           >
-            <img 
-              v-if="form.coverPreview || form.cover" 
-              :src="form.coverPreview || getImageUrl(form.cover)" 
+            <img
+              v-if="form.coverPreview || form.cover"
+              :src="form.coverPreview || getImageUrl(form.cover)"
               class="upload-preview"
             >
             <el-icon v-else class="upload-icon"><Plus /></el-icon>
@@ -182,7 +183,7 @@ const mode = 'default'
 
 // 工具栏配置
 const toolbarConfig = {
-  excludeKeys: [] // 可以配置需要排除的功能键
+  excludeKeys: []
 }
 
 // 编辑器配置

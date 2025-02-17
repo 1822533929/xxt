@@ -19,4 +19,6 @@ public interface ArticleService extends IService<Article> {
     ArticleVO selectByIdWithUser(Integer id);
 
     List<ArticleVO> selectAllWithUser();
+
+    List<Article> findByUserId(Integer userId);
 }

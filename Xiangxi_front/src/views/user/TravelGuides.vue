@@ -19,6 +19,23 @@
       </div>
     </div>
 
+    <div class="filter-bar">
+      <div class="filter-container">
+        <div class="filter-left">
+          <el-radio-group v-model="sortType" @change="handleSortChange">
+            <el-radio-button label="latest">最新发布</el-radio-button>
+            <el-radio-button label="hot">热门攻略</el-radio-button>
+          </el-radio-group>
+        </div>
+        <div class="filter-right">
+          <el-button type="primary" @click="handlePublish">
+            <el-icon><Edit /></el-icon>
+            发布攻略
+          </el-button>
+        </div>
+      </div>
+    </div>
+
     <div class="guides-wrapper">
       <div class="guides-container" v-loading="loading">
         <div 
@@ -75,7 +92,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { get } from '@/common'
 import { ElMessage } from 'element-plus'
-import { Search, Calendar, Star } from '@element-plus/icons-vue'
+import { Search, Calendar, Star, Edit } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -84,6 +101,7 @@ const total = ref(0)
 const loading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
+const sortType = ref('latest')
 
 const getArticleList = async () => {
   loading.value = true
@@ -92,7 +110,12 @@ const getArticleList = async () => {
       currentPage: currentPage.value,
       pageSize: pageSize.value,
     }
-    const url = searchQuery.value ? '/article/search' : '/article/selectPage'
+    let url = '/article/selectPage'
+    if (searchQuery.value) {
+      url = '/article/search'
+    } else if (sortType.value === 'hot') {
+      url = '/article/findHot'
+    }
     if (searchQuery.value) {
       params.keyword = searchQuery.value
     }
@@ -157,6 +180,15 @@ const handleImageError = (e) => {
   e.target.src = '/default-image.jpg'
 }
 
+const handleSortChange = () => {
+  currentPage.value = 1
+  getArticleList()
+}
+
+const handlePublish = () => {
+  router.push('/user/publish-guide')
+}
+
 onMounted(() => {
   getArticleList()
 })
@@ -214,8 +246,39 @@ onMounted(() => {
   background-color: rgba(255, 255, 255, 0.9);
 }
 
+.filter-bar {
+  padding: 0 20px;
+  margin-bottom: 20px;
+}
+
+.filter-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.filter-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.filter-right .el-button {
+  padding: 8px 20px;
+}
+
+.filter-right .el-icon {
+  margin-right: 4px;
+}
+
 .guides-wrapper {
-  padding: 20px;
+  padding: 0px;
   background-color: #f5f7fa;
 }
 
@@ -230,7 +293,7 @@ onMounted(() => {
 
 .guide-item {
   cursor: pointer;
-  padding: 20px;
+  padding: 5px 20px 20px;
   border-bottom: 1px solid #ebeef5;
   transition: all 0.3s;
 }

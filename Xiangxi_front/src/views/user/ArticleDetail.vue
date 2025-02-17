@@ -3,34 +3,60 @@
     <div class="article-container">
       <div class="article-header">
         <h1>{{ article.title }}</h1>
-        <div class="article-meta">
-          <span class="time">发布时间：{{ formatDate(article.date) }}</span>
-          <div class="likes">
-            <span class="like-count">{{ article.likes || 0 }}点赞</span>
-            <el-button 
-              type="primary" 
-              :icon="Star" 
-              circle 
-              size="small"
-              :class="{ 'liked': isLiked }"
-              @click="handleLike"
-            />
+
+        <div class="article-info">
+          <div class="author-info">
+            <el-avatar 
+              :size="40" 
+              :src="getImageUrl(article.avatar)"
+              class="author-avatar"
+            >
+              <el-icon><UserFilled /></el-icon>
+            </el-avatar>
+            <span class="author-name">{{ article.name || '匿名用户' }}</span>
+          </div>
+          <div class="meta-info">
+            <span class="publish-time">
+              <el-icon><Calendar /></el-icon>
+              {{ formatDate(article.date) }}
+            </span>
+            <span class="likes-count">
+              <el-icon><Star /></el-icon>
+              {{ article.likes || 0 }} 点赞
+            </span>
           </div>
         </div>
       </div>
       
       <div class="article-content">
-        <img 
-          v-if="article.cover" 
-          :src="getImageUrl(article.cover)" 
-          class="cover-image"
-          @error="handleImageError"
-        >
-        <div class="content" v-html="article.content"></div>
+        <div class="content-wrapper">
+          <img 
+            v-if="article.cover" 
+            :src="getImageUrl(article.cover)" 
+            class="cover-image"
+            @error="handleImageError"
+          >
+          <div class="content" v-html="article.content"></div>
+        </div>
+        <div class="like-button">
+          <el-button
+              type="primary"
+              :class="{ 'liked': isLiked }"
+              @click="handleLike"
+              size="large"
+              round
+          >
+            <el-icon><Star /></el-icon>
+            {{ isLiked ? '已点赞' : '点赞' }}
+          </el-button>
+        </div>
       </div>
       
       <div class="article-footer">
-        <el-button @click="goBack">返回列表</el-button>
+        <el-button type="default" @click="goBack" round>
+          <el-icon><ArrowLeft /></el-icon>
+          返回列表
+        </el-button>
       </div>
     </div>
   </div>
@@ -41,7 +67,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { get, post } from '@/common'
 import { ElMessage } from 'element-plus'
-import { Star } from '@element-plus/icons-vue'
+import { Star, Calendar, UserFilled, ArrowLeft } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -135,62 +161,97 @@ const goBack = () => {
 }
 
 .article-header {
-  margin-bottom: 30px;
-  text-align: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ebeef5;
 }
 
 .article-header h1 {
   font-size: 28px;
   color: #303133;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.article-meta {
-  color: #909399;
-  font-size: 14px;
+.article-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 15px 0;
+  padding: 0 20px;
 }
 
-.article-meta span {
-  margin: 0 10px;
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.author-avatar {
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.author-name {
+  font-size: 16px;
+  color: #303133;
+  font-weight: 500;
+}
+
+.meta-info {
+  display: flex;
+  gap: 20px;
+  color: #909399;
+  font-size: 14px;
+}
+
+.meta-info .el-icon {
+  margin-right: 4px;
 }
 
 .article-content {
   line-height: 1.8;
   color: #606266;
+  padding: 0 20px;
+}
+
+.content-wrapper {
+  margin-bottom: 20px;
 }
 
 .cover-image {
   width: 100%;
-  max-height: 700px;
+  max-height: 400px;
   object-fit: cover;
-  margin-bottom: 20px;
-  border-radius: 4px;
+  margin-bottom: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .content {
   font-size: 16px;
   line-height: 1.8;
   color: #303133;
-  padding: 20px 0;
+}
+
+.like-button {
+  text-align: center;
+  margin: 40px 0;
+}
+
+.like-button .el-button {
+  padding: 12px 30px;
+  font-size: 16px;
+}
+
+.like-button .el-icon {
+  margin-right: 6px;
 }
 
 .article-footer {
   margin-top: 30px;
   text-align: center;
-}
-
-.likes {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.like-count {
-  color: #606266;
+  padding-top: 20px;
+  border-top: 1px solid #ebeef5;
 }
 
 .liked {
@@ -201,5 +262,15 @@ const goBack = () => {
 .liked:hover {
   background-color: #f78989;
   border-color: #f78989;
+}
+
+:deep(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+}
+
+:deep(p) {
+  margin: 16px 0;
 }
 </style> 

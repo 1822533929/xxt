@@ -40,6 +40,11 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article>
     public List<ArticleVO> selectAllWithUser() {
         return articleMapper.selectAllWithUser();
     }
+
+    @Override
+    public List<Article> findByUserId(Integer userId) {
+        return articleMapper.findByUserId(userId);
+    }
 }
 
 

@@ -78,7 +78,7 @@
           
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item>我的创作</el-dropdown-item>
+              <el-dropdown-item @click="goToMyArticles">我的创作</el-dropdown-item>
               <el-dropdown-item @click="myorders">我的订单</el-dropdown-item>
               <el-dropdown-item @click="goToMyFeedback">我的反馈</el-dropdown-item>
               <el-dropdown-item @click="goToProfile">个人资料</el-dropdown-item>
@@ -171,6 +171,9 @@ const handleLogout = () => {
 
 const myorders = () => {
   router.push('/user/myorders')
+}
+const goToMyArticles = () => {
+  router.push('/user/my-articles')
 }
 
 const goToProfile = () => {
