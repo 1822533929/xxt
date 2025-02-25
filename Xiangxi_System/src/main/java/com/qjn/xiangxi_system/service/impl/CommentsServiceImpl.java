@@ -2,6 +2,7 @@ package com.qjn.xiangxi_system.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qjn.xiangxi_system.pojo.Comments;
+import com.qjn.xiangxi_system.pojo.vo.CommentsVO;
 import com.qjn.xiangxi_system.service.CommentsService;
 import com.qjn.xiangxi_system.mapper.CommentsMapper;
 import com.qjn.xiangxi_system.utils.DateTimeUtil;
@@ -21,7 +22,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments>
     @Resource
     private CommentsMapper commentsMapper;
     @Override
-    public List<Comments> getCommentsByArticleId(Integer articleId) {
+    public List<CommentsVO> getCommentsByArticleId(Integer articleId) {
         return commentsMapper.getCommentsByArticleId(articleId);
     }
 

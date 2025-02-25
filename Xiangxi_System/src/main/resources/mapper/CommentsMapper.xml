@@ -29,7 +29,7 @@
         delete from comments where parent_id=#{commentId}
     </delete>
     <!--获取文章对应的评论-->
-    <select id="getCommentsByArticleId" resultType="com.qjn.xiangxi_system.pojo.Comments">
-        select * from comments where article_id=#{articleId}
+    <select id="getCommentsByArticleId" resultType="com.qjn.xiangxi_system.pojo.vo.CommentsVO">
+        select c.id,c.article_id,c.user_id,c.parent_id,c.likes,c.content,c.created_at,u.name,u.avatar from comments c left join user u on c.user_id=u.id where c.article_id=#{articleId} order by c.created_at desc
     </select>
 </mapper>

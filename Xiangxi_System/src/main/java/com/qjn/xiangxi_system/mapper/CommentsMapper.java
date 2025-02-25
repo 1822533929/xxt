@@ -2,6 +2,7 @@ package com.qjn.xiangxi_system.mapper;
 
 import com.qjn.xiangxi_system.pojo.Comments;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.qjn.xiangxi_system.pojo.vo.CommentsVO;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 */
 public interface CommentsMapper extends BaseMapper<Comments> {
 
-    List<Comments> getCommentsByArticleId(Integer articleId);
+    List<CommentsVO> getCommentsByArticleId(Integer articleId);
 
     void likeComment(Integer commentId);
 

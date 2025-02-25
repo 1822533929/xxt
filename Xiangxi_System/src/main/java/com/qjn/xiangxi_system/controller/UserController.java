@@ -158,6 +158,7 @@ public class UserController {
     }
     /**
      * 获取用户名和头像
+     * From 用户栏
      */
     @GetMapping("/getUserInfo")
     public Result getUserInfo(@RequestHeader("Authorization") String token) {
@@ -180,9 +181,59 @@ public class UserController {
 
         return Result.success(user);
     }
+
+    /**
+     * 获取用户信息
+     * From 评论区
+     */
+    @GetMapping("/getUserInfoFromComment")
+    public Result getUserInfoFormComment(@RequestHeader("Authorization") String token) {
+        //获取用户信息
+        User user = UserToken.parseUserFromToken(token);
+        if (user == null || user.getId() == null) {
+            return Result.error("无法获取用户信息");
+        }
+        // 确保返回的用户信息是最新的
+        user = userService.getById(user.getId());
+        if (user == null) {
+            return Result.error("用户不存在");
+        }
+
+        // 如果头像路径不为空，确保路径格式正确
+        if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+            String avatarPath = user.getAvatar().replace("/img/upload/", "");
+            user.setAvatar(avatarPath);
+        }
+
+        return Result.success(user);
+    }
+    /**
+     * 获取用户信息
+     * From 修改界面
+     */
+    @GetMapping("/getUserInfoFromEdit")
+    public Result getUserInfoFromEdit(@RequestHeader("Authorization") String token) {
+        //获取用户信息
+        User user = UserToken.parseUserFromToken(token);
+        if (user == null || user.getId() == null) {
+            return Result.error("无法获取用户信息");
+        }
+        // 确保返回的用户信息是最新的
+        user = userService.getById(user.getId());
+        if (user == null) {
+            return Result.error("用户不存在");
+        }
+
+        // 如果头像路径不为空，确保路径格式正确
+        if (user.getAvatar() != null && !user.getAvatar().isEmpty()) {
+            String avatarPath = user.getAvatar().replace("/img/upload/", "");
+            user.setAvatar(avatarPath);
+        }
+
+        return Result.success(user);
+    }
     /**
      * 个人信息更改
-     *
      */
     @PostMapping("/updateUserInfo")
     public Result updateUserInfo(

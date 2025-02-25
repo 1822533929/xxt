@@ -2,6 +2,7 @@ package com.qjn.xiangxi_system.service;
 
 import com.qjn.xiangxi_system.pojo.Comments;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.qjn.xiangxi_system.pojo.vo.CommentsVO;
 
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
 */
 public interface CommentsService extends IService<Comments> {
 
-    List<Comments> getCommentsByArticleId(Integer articleId);
+    List<CommentsVO> getCommentsByArticleId(Integer articleId);
 
     void likeComment(Integer commentId);
 

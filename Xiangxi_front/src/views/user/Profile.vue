@@ -86,7 +86,7 @@ const rules = {
 // 获取用户信息
 const getUserInfo = async () => {
   try {
-    const result = await get('/user/getUserInfo')
+    const result = await get('/user/getUserInfoFromEdit')
     if (result.code === 200) {
       const { username, name, phone, email, avatar } = result.data
       Object.assign(userForm, { username, name, phone, email })
