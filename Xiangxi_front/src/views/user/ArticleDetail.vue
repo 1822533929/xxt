@@ -1,6 +1,12 @@
 <template>
   <div class="article-detail">
     <div class="article-container">
+      <div class="goback">
+        <el-button type="default" @click="goBack" round>
+          <el-icon><ArrowLeft /></el-icon>
+          返回列表
+        </el-button>
+      </div>
       <div class="article-header">
         <h1>{{ article.title }}</h1>
 
@@ -21,7 +27,7 @@
               {{ formatDate(article.date) }}
             </span>
             <span class="likes-count">
-              <img src="@/assets/点赞.svg" alt="Like"  class="like-icon" />
+              <img src="@/assets/点赞.svg" alt="Like"  class="header-like-icon" />
               {{ article.likes || 0 }} 点赞
             </span>
           </div>
@@ -46,18 +52,17 @@
               size="large"
               round
           >
-            <el-icon><Star /></el-icon>
+            <img 
+              :src="isLiked ? likedIcon : unlikedIcon"
+              alt="Like" 
+              class="like-icon" 
+            />
             {{ isLiked ? '已点赞' : '点赞' }}
           </el-button>
         </div>
       </div>
       
-      <div class="article-footer">
-        <el-button type="default" @click="goBack" round>
-          <el-icon><ArrowLeft /></el-icon>
-          返回列表
-        </el-button>
-      </div>
+
 
       <!-- 评论区 -->
       <div class="comments-section">
@@ -99,7 +104,11 @@
                       @click="handleCommentLike(comment)"
                       :class="{ 'liked-comment': likedComments.has(comment.id) }"
                     >
-                      <img src="@/assets/未点赞.svg" alt="Like"  class="unlike-icon" />
+                      <img 
+                        :src="likedComments.has(comment.id) ? likedIcon : unlikedIcon"
+                        alt="Like"  
+                        class="like-icon" 
+                      />
                       {{ comment.likes || 0 }}
                     </el-button>
                     <el-button 
@@ -145,7 +154,11 @@
                           @click="handleCommentLike(reply)"
                           :class="{ 'liked-comment': likedComments.has(reply.id) }"
                         >
-                          <img src="@/assets/未点赞.svg" alt="Like"  class="unlike-icon" />
+                          <img 
+                            :src="likedComments.has(reply.id) ? likedIcon : unlikedIcon"
+                            alt="Like"  
+                            class="like-icon" 
+                          />
                           {{ reply.likes || 0 }}
                         </el-button>
                         <el-button 
@@ -172,7 +185,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { get, post } from '@/common'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Star, Calendar, UserFilled, ArrowLeft } from '@element-plus/icons-vue'
-
+import likedIcon from '@/assets/点赞.svg';
+import unlikedIcon from '@/assets/未点赞.svg';
 const route = useRoute()
 const router = useRouter()
 
@@ -649,20 +663,22 @@ const goBack = () => {
 .comment-main.reply {
   padding-right: 16px;
 }
+.header-like-icon{
+  width: 24px;
+  height: 24px;
+  margin-bottom: 3px;
+  vertical-align: middle;
+}
 .like-icon {
   width: 20px;
   height: 20px;
-  fill: #f0ad4e;
-  position: relative;
-  /*vertical-align: middle;*/
-  top: 5px;
-
-}
-.unlike-icon {
-  width: 16px;
-  height: 16px;
-  fill: #f0ad4e;
   vertical-align: middle;
-
+  margin-right: 4px;
+}
+.goback{
+  /**右居中**/
+  text-align: right;
+  margin-right: 10px;
+  /*display: flex;*/
 }
 </style> 

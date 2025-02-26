@@ -74,7 +74,7 @@
             <div class="guide-footer">
               <span class="guide-date">{{ guide.date }}</span>
               <span class="likes">
-                <el-icon><Star /></el-icon>
+               <img src="@/assets/点赞.svg" alt="Like"  class="like-icon" />
                 {{ guide.likes }}
               </span>
             </div>
@@ -687,5 +687,11 @@ onMounted(() => {
 .title-content p {
   font-size: 16px;
   opacity: 0.9;
+}
+.like-icon {
+  width: 20px;
+  height: 20px;
+  fill: #f0ad4e;
+  /*vertical-align: middle;*/
 }
 </style> 

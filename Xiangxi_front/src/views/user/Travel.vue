@@ -28,6 +28,7 @@
       <el-aside width="300px" class="hot-section">
         <div class="section-title">
           <h2>热门推荐</h2>
+          <img src="@/assets/hot.svg" alt="Like"  class="hot-icon" />
         </div>
         <div class="hot-list">
           <el-skeleton :loading="hotLoading" animated :count="3" v-if="hotLoading">
@@ -38,7 +39,7 @@
               </div>
             </template>
           </el-skeleton>
-          
+
           <el-card 
             v-for="item in hotSpots" 
             :key="item.id" 
@@ -48,6 +49,10 @@
             <img :src="getImageUrl(item.cover)" class="hot-image" />
             <div class="hot-info">
               <h3>{{ item.title }}</h3>
+              <div class="hot-count">
+                <img src="@/assets/hot2.svg" alt="Hot" class="hot2-icon" />
+                <span>{{ item.readCount || 0 }}</span>
+              </div>
             </div>
           </el-card>
         </div>
@@ -377,6 +382,21 @@ onMounted(() => {
   color: #303133;
 }
 
+.hot-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: #f56c6c;
+  font-size: 14px;
+}
+
+.hot2-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
+}
+
 .spot-card {
   margin-bottom: 20px;
   transition: all 0.3s;
@@ -467,5 +487,11 @@ onMounted(() => {
 .filter-tags .el-tag:hover {
   transform: translateY(-2px);
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.hot-icon {
+  width: 50px;
+  height: 50px;
+  fill: #f0ad4e;
+  vertical-align: middle;
 }
 </style> 

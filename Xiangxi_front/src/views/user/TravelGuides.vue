@@ -60,7 +60,7 @@
                     <span class="author">By.{{ guide.name }}</span>
                   </span>
                   <span class="likes">
-                    <el-icon><Star /></el-icon>
+                    <img src="@/assets/未点赞.svg" alt="Like"  class="like-icon" />
                     {{ guide.likes || 0 }}
                   </span>
 
@@ -373,5 +373,13 @@ onMounted(() => {
   padding: 40px 0;
   color: #909399;
   font-size: 14px;
+}
+.like-icon {
+  width: 20px;
+  height: 20px;
+  fill: #f0ad4e;
+  vertical-align: middle;
+  position: relative;
+  bottom: 3px;
 }
 </style> 
