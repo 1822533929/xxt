@@ -16,6 +16,7 @@
             <el-dropdown-menu>
               <el-dropdown-item command="profile" >个人资料</el-dropdown-item>
               <el-dropdown-item command="password">修改密码</el-dropdown-item>
+              <el-dropdown-item command="changeuser">用户界面</el-dropdown-item>
               <el-dropdown-item divided command="logout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -178,6 +179,9 @@ const handleCommand = (command) => {
       break
     case 'password':
       passwordDialogVisible.value = true
+      break
+    case 'changeuser':
+      router.push('/user/home')
       break
     case 'logout':
       ElMessageBox.confirm('确定要退出登录吗？', '提示', {

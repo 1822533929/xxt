@@ -1,5 +1,6 @@
 <template>
   <div class="travel-guides">
+    <!-- 搜索栏 -->
     <div class="search-container">
       <el-input
         v-model="searchForm.keyword"
@@ -7,7 +8,7 @@
         class="search-input"
         clearable
       />
-      <el-button type="primary" @click="handleSearch">查询</el-button>
+      <el-button type="primary" @click="handleSearch" style="margin-left: 11px">查询</el-button>
       <el-button @click="resetSearch">重置</el-button>
     </div>
 
@@ -491,10 +492,11 @@ const handleCreated = (editor) => {
 
 .search-container,
 .operation-container {
-  margin-bottom: 20px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .search-input {
@@ -504,7 +506,7 @@ const handleCreated = (editor) => {
 .custom-table {
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .cover-image {
@@ -564,6 +566,7 @@ const handleCreated = (editor) => {
   padding: 15px;
   background-color: #fff;
   border-radius: 8px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .editor-container {

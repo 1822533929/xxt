@@ -83,6 +83,8 @@
               <el-dropdown-item @click="goToMyFeedback">我的反馈</el-dropdown-item>
               <el-dropdown-item @click="goToProfile">个人资料</el-dropdown-item>
               <el-dropdown-item @click="goToChangePassword">修改密码</el-dropdown-item>
+              <!-- 只有管理员才能看到管理界面选项 -->
+              <el-dropdown-item v-if="isAdmin" @click="changeadmin">管理界面</el-dropdown-item>
               <el-dropdown-item divided @click="handleLogout">退出登录</el-dropdown-item>
             </el-dropdown-menu>
           </template>
@@ -135,6 +137,18 @@ const router = useRouter()
 const searchText = ref('')
 const searchResults = ref([])
 const showSearchResults = ref(false)
+const isAdmin = ref(false)
+const getInfo = async () => {
+  try {
+    const result = await get('/user/getUserInfoFromEdit')
+    if (result.code === 200) {
+      console.log(result.data)
+      isAdmin.value = result.data.role === 0
+    }
+  } catch (error) {
+    console.error('获取用户信息失败:', error)
+  }
+}
 
 // 用户信息
 const userInfo = reactive({
@@ -182,6 +196,9 @@ const goToProfile = () => {
 
 const goToChangePassword = () => {
   router.push('/user/change-password')
+}
+const changeadmin = () => {
+  router.push('/admin/dashboard')
 }
 
 const goToMyFeedback = () => {
@@ -231,6 +248,7 @@ const handleClickOutside = (event) => {
 
 onMounted(() => {
   getUserInfo()
+  getInfo()
   document.addEventListener('click', handleClickOutside)
 })
 

@@ -89,16 +89,13 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
     @Transactional
     public boolean updateWithTags(TravelsVO travelsVO) {
         try {
-            // 1. 更新旅游商品基本信息
             boolean updated = this.updateById(travelsVO);
             if (!updated) {
                 return false;
             }
 
-            // 2. 删除原有的标签关联
             travelsMapper.deleteTravelTags(travelsVO.getId());
 
-            // 3. 处理新的标签
             if (travelsVO.getTags() != null && !travelsVO.getTags().isEmpty()) {
                 String[] tagNames = travelsVO.getTags().split(",");
                 List<Integer> tagIds = new ArrayList<>();
@@ -115,7 +112,7 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
                     tagIds.add(tagId);
                 }
 
-                // 4. 保存新的关联关系
+                // 保存新的关联关系
                 if (!tagIds.isEmpty()) {
                     travelsMapper.insertTravelTags(travelsVO.getId(), tagIds);
                 }

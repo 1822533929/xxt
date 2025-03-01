@@ -11,10 +11,12 @@
             class="search-input"
           />
           <el-button type="primary" @click="handleSearch">
-            <el-icon><Search /></el-icon>搜索
+<!--            <el-icon><Search /></el-icon>-->
+            查询
           </el-button>
           <el-button @click="resetSearch">
-            <el-icon><Refresh /></el-icon>重置
+<!--            <el-icon><Refresh /></el-icon>-->
+            重置
           </el-button>
         </div>
       </div>
@@ -24,10 +26,10 @@
     <el-card class="operation-card">
       <div class="operation-buttons">
         <el-button type="primary" @click="handleAdd">
-          <el-icon><Plus /></el-icon>添加资讯
+          添加资讯
         </el-button>
         <el-button type="danger" @click="handleBatchDelete" :disabled="!selectedRows.length">
-          <el-icon><Delete /></el-icon>批量删除
+          批量删除
         </el-button>
       </div>
     </el-card>

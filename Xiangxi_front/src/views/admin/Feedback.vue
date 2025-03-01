@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    <el-table :data="tableData" style="width: 100%" v-loading="loading" :empty-text="loading ? '加载中...' : '暂无数据'">
+    <el-table :data="tableData" style="width: 100%" v-loading="loading" :empty-text="loading ? '加载中...' : '暂无数据'" class="el-table">
       <el-table-column prop="username" label="用户名" width="120" />
       <el-table-column prop="type" label="反馈类型" width="120">
         <template #default="{ row }">
@@ -354,10 +354,11 @@ const handleImageError = () => {
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
 .header-right {
@@ -370,6 +371,11 @@ const handleImageError = () => {
 }
 
 .pagination {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
@@ -427,5 +433,12 @@ const handleImageError = () => {
 .image-error .el-icon {
   font-size: 24px;
   margin-bottom: 8px;
+}
+.el-table{
+  background-color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 </style> 
