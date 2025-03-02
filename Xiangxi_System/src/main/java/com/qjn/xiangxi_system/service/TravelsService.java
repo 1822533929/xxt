@@ -12,7 +12,7 @@ import java.util.List;
 */
 public interface TravelsService extends IService<Travels> {
 
-    List<Travels> selectAllByRead();
+    List<TravelsVO> selectAllByRead();
 
     void deleteBatch(List<Integer> ids);
 
@@ -36,6 +36,8 @@ public interface TravelsService extends IService<Travels> {
      * 减库存
      */
     void reduceInventory(Integer travelId, Integer quantity);
-
+    /***
+     * 释放库存
+     */
     void releaseInventory(Integer travelid, Integer quantity);
 }

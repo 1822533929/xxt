@@ -142,7 +142,6 @@ const getInfo = async () => {
   try {
     const result = await get('/user/getUserInfoFromEdit')
     if (result.code === 200) {
-      console.log(result.data)
       isAdmin.value = result.data.role === 0
     }
   } catch (error) {

@@ -25,6 +25,10 @@
               <el-icon><View /></el-icon>
               <span>{{ detail.readCount || 0 }}</span>
             </div>
+<!--            <span class="likes-count">-->
+<!--              <img src="@/assets/未点赞.svg" alt="Like"  class="header-like-icon" />-->
+<!--              {{ detail.readCount || 0 }} 点赞-->
+<!--            </span>-->
           </div>
           
           <!-- 标签 -->
@@ -95,7 +99,7 @@
           <span class="label">购买数量：</span>
           <el-input-number 
             v-model="orderQuantity" 
-            :min="1" 
+            :min="0"
             :max="Number(detail.inventory)"
             @change="calculateTotal"
           />
@@ -212,12 +216,19 @@ const confirmOrder = async () => {
     params.append('travelId', detail.value.id)
     params.append('quantity', orderQuantity.value)
     params.append('money', detail.value.money)
-    
+    if (detail.value.inventory<=0){
+      ElMessage.error('库存不足')
+      return
+    }
     const result = await post('/orders/createOrder?' + params.toString())
     
     if (result.code === 200) {
-      ElMessage.success('下单成功')
       orderDialogVisible.value = false
+      //直接修改响应式数据以显示实时库存
+      detail.value.inventory-=orderQuantity.value
+      ElMessage.success('下单成功')
+
+
     } else {
       ElMessage.error(result.msg || '下单失败')
     }
@@ -412,5 +423,12 @@ onMounted(() => {
   border-top: 1px solid #ebeef5;
   padding-top: 20px;
   margin-top: 20px;
+}
+.header-like-icon{
+  width: 16px;
+  height: 16px;
+  margin-bottom: 3px;
+  color: #333333;
+  vertical-align: middle;
 }
 </style> 

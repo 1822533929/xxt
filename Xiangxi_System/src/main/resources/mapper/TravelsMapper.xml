@@ -55,7 +55,7 @@
     </delete>
 
     <!-- 按阅读量排序查询所有景点 -->
-    <select id="selectAllByRead" resultType="com.qjn.xiangxi_system.pojo.Travels">
+    <select id="selectAllByRead" resultType="com.qjn.xiangxi_system.pojo.vo.TravelsVO">
         SELECT * FROM travels ORDER BY read_count DESC
     </select>
 

@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class TravelsVO extends Travels {
     private String tags;
+    private Double heat;
 
     public String[] getTagArray() {
         return tags != null ? tags.split(",") : new String[0];

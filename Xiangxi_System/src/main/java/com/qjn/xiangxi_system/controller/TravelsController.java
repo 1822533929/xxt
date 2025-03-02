@@ -38,7 +38,7 @@ public class TravelsController {
      * 根据阅读量从高到低查询旅游信息
      */
     @RequestMapping("/selectAllByRead")
-    public Result<PageInfo<Travels>> selectAllByRead(
+    public Result<PageInfo<TravelsVO>> selectAllByRead(
         @RequestParam(defaultValue = "1") Integer currentPage,
         @RequestParam(defaultValue = "3") Integer pageSize
     ) {
@@ -46,7 +46,7 @@ public class TravelsController {
         query.setCurrentPage(currentPage);
         query.setPageSize(pageSize);
         PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
-        PageInfo<Travels> pageInfo = new PageInfo<>(travelsService.selectAllByRead());
+        PageInfo<TravelsVO> pageInfo = new PageInfo<>(travelsService.selectAllByRead());
         return Result.success(pageInfo);
     }
     /**
