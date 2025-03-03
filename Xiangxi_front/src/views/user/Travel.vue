@@ -51,7 +51,7 @@
               <h3>{{ item.title }}</h3>
               <div class="hot-count">
                 <img src="@/assets/hot2.svg" alt="Hot" class="hot2-icon" />
-                <span>{{ item.readCount || 0 }}</span>
+                <span>{{ Math.ceil(item.heat) || 0 }}</span>
               </div>
             </div>
           </el-card>
@@ -150,7 +150,7 @@ const getImageUrl = (url) => {
 // 获取热门旅游数据
 const getHotSpots = async () => {
   try {
-    const result = await get('/travels/selectAllByRead', {
+    const result = await get('/travels/selectAllByHeat', {
       params: new URLSearchParams({
         currentPage: '1',
         pageSize: '3'

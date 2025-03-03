@@ -98,6 +98,32 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
     />
+
+    <!-- 支付对话框 -->
+    <el-dialog
+      title="订单支付"
+      v-model="payDialogVisible"
+      width="400px"
+      center
+    >
+      <div class="pay-content">
+        <div class="qr-code">
+          <el-image
+            :src=PayCode
+            fit="cover"
+            style="width: 200px; height: 200px"
+          />
+        </div>
+        <div class="pay-info">
+          <div class="pay-amount">支付金额：¥{{ currentOrder?.money * currentOrder?.quantity }}</div>
+          <div class="pay-tip">请使用微信扫码支付</div>
+        </div>
+      </div>
+      <template #footer>
+        <el-button @click="payDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="confirmPay">确认已支付</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -108,6 +134,7 @@ import { Picture } from '@element-plus/icons-vue'
 import { get, post } from '@/common'
 import { API_BASE_URL } from '@/common/constants'
 import { useRouter } from 'vue-router'
+import PayCode from '@/images/icon/支付码.jpg'
 
 const router = useRouter()
 
@@ -121,6 +148,10 @@ const searchForm = reactive({
   title: '',
   orderId: ''
 })
+
+// 添加支付相关的数据
+const payDialogVisible = ref(false)
+const currentOrder = ref(null)
 
 // 获取图片URL
 const getImageUrl = (url) => {
@@ -192,7 +223,25 @@ const handleTitleClick = (travelId) => {
 
 // 处理支付
 const handlePay = (order) => {
-  ElMessage.success('支付功能开发中')
+  currentOrder.value = order
+  payDialogVisible.value = true
+}
+
+// 添加确认支付方法
+const confirmPay = async () => {
+  try {
+    const result = await get('/orders/updateOrder', { id: currentOrder.value.id })
+    if (result.code === 200) {
+      ElMessage.success('支付成功')
+      payDialogVisible.value = false
+      getOrderList() // 刷新订单列表
+    } else {
+      ElMessage.error(result.msg || '支付失败')
+    }
+  } catch (error) {
+    console.error('支付失败:', error)
+    ElMessage.error('支付失败')
+  }
 }
 
 // 处理取消订单
@@ -393,5 +442,32 @@ onMounted(() => {
   height: 24px;
   line-height: 22px;
   font-size: 12px;
+}
+
+.pay-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.qr-code {
+  margin-bottom: 20px;
+}
+
+.pay-info {
+  text-align: center;
+}
+
+.pay-amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: #f56c6c;
+  margin-bottom: 10px;
+}
+
+.pay-tip {
+  color: #909399;
+  font-size: 14px;
 }
 </style> 

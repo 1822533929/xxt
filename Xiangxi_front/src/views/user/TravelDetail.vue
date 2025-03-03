@@ -21,14 +21,16 @@
         <div class="info-section">
           <div class="title-section">
             <h1 class="title">{{ detail.title }}</h1>
+            <div class="icon">
+              <span class="likes-count">
+              <img src="@/assets/未点赞.svg" alt="Like"  class="header-like-icon" />
+              {{ detail.likeCount || 0 }}
+            </span>
             <div class="read-count">
               <el-icon><View /></el-icon>
               <span>{{ detail.readCount || 0 }}</span>
             </div>
-<!--            <span class="likes-count">-->
-<!--              <img src="@/assets/未点赞.svg" alt="Like"  class="header-like-icon" />-->
-<!--              {{ detail.readCount || 0 }} 点赞-->
-<!--            </span>-->
+          </div>
           </div>
           
           <!-- 标签 -->
@@ -77,6 +79,15 @@
           <h2>图文介绍</h2>
         </div>
         <div class="content-body" v-html="detail.content"></div>
+        
+        <!-- 添加点赞部分 -->
+        <div class="like-section">
+          <div class="like-button" @click="handleLike">
+            <img :src="isLiked ? likedIcon : unlikedIcon" alt="Like" class="like-icon" />
+<!--            <span>推荐景点</span>-->
+            {{ isLiked ? '已推荐' : '推荐景点' }}
+          </div>
+        </div>
       </div>
     </div>
 
@@ -125,6 +136,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { get, post } from '@/common'
 import { ElMessage } from 'element-plus'
 import { Picture, View } from '@element-plus/icons-vue'
+import likedIcon from '@/assets/点赞.svg';
+import unlikedIcon from '@/assets/未点赞.svg';
 
 const route = useRoute()
 const router = useRouter()
@@ -136,6 +149,9 @@ const tags = ref([])
 const orderDialogVisible = ref(false)
 const orderQuantity = ref(1)
 const submitting = ref(false)
+
+// 添加点赞相关的状态
+const isLiked = ref(false)
 
 // 计算总价
 const totalPrice = computed(() => {
@@ -240,6 +256,30 @@ const confirmOrder = async () => {
   }
 }
 
+// 处理点赞
+const handleLike = async () => {
+  if (!localStorage.getItem('Sure-Token')) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
+  if (isLiked.value) {
+    ElMessage.warning('您已经推荐过了')
+    return
+  }
+  try {
+    const result = await get(`/travels/like/${route.params.id}`)
+    if (result.code === 200) {
+      isLiked.value = true
+      detail.value.likeCount++
+      ElMessage.success('点赞成功')
+    }
+  } catch (error) {
+    console.error('点赞失败:', error)
+    ElMessage.error('点赞失败')
+  }
+}
+
 onMounted(() => {
   getDetail()
 })
@@ -306,6 +346,7 @@ onMounted(() => {
 
 .read-count .el-icon {
   font-size: 16px;
+  margin-left: 12px;
 }
 
 .tags {
@@ -427,8 +468,51 @@ onMounted(() => {
 .header-like-icon{
   width: 16px;
   height: 16px;
-  margin-bottom: 3px;
-  color: #333333;
   vertical-align: middle;
 }
+.likes-count{
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  color: #909399;
+  font-size: 14px;
+
+}
+.icon{
+  display: flex;
+  justify-content: flex-start;
+  margin-left: auto;
+  margin-right: 0;
+
+}
+
+.like-section {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #ebeef5;
+}
+
+.like-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: #f5f7fa;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.like-button:hover {
+  background-color: #e6e8eb;
+}
+
+.like-icon {
+  width: 24px;
+  height: 24px;
+  vertical-align: middle;
+}
+
 </style> 

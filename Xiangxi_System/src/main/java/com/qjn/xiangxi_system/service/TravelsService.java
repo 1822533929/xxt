@@ -12,7 +12,7 @@ import java.util.List;
 */
 public interface TravelsService extends IService<Travels> {
 
-    List<TravelsVO> selectAllByRead();
+    List<TravelsVO> selectAllByHeat();
 
     void deleteBatch(List<Integer> ids);
 

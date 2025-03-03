@@ -15,6 +15,7 @@
         <result property="startDate" column="start_date" jdbcType="VARCHAR"/>
         <result property="money" column="money" jdbcType="DECIMAL"/>
         <result property="inventory" column="inventory" jdbcType="VARCHAR"/>
+        <result property="likeCount" column="like_count" jdbcType="INTEGER"/>
     </resultMap>
 
     <!-- 查询所有景点及其标签的结果映射 -->
@@ -29,13 +30,15 @@
         <result property="startDate" column="start_date"/>
         <result property="money" column="money"/>
         <result property="inventory" column="inventory"/>
+        <result property="likeCount" column="like_count"/>
+        <result property="heat" column="heat"/>
         <result property="tags" column="tags" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,title,cover,
         descr,content,time,
-        read_count,start_date,money,inventory
+        read_count,start_date,money,inventory,like_count
     </sql>
     <!--减少库存-->
     <update id="reduceInventory">
@@ -54,9 +57,37 @@
         </foreach>
     </delete>
 
-    <!-- 按阅读量排序查询所有景点 -->
-    <select id="selectAllByRead" resultType="com.qjn.xiangxi_system.pojo.vo.TravelsVO">
-        SELECT * FROM travels ORDER BY read_count DESC
+    <!-- 按热度排序查询所有景点 -->
+    <select id="selectAllByHeat" resultType="com.qjn.xiangxi_system.pojo.vo.TravelsVO">
+        SELECT
+            t.id,
+            t.title,
+            t.cover,
+            t.descr,
+            t.content,
+            t.time,
+            t.read_count,
+            t.start_date,
+            t.money,
+            t.inventory,
+            t.like_count,
+            (t.like_count * 0.3 + t.read_count * 0.2 + COALESCE(o.order_count, 0) * 0.5) AS heat
+        FROM
+            travels t
+                LEFT JOIN
+            (SELECT
+                 travelId,
+                 COUNT(*) AS order_count
+             FROM
+                 orders
+             WHERE
+                 `status` = '待支付' OR `status` = '已完成'
+             GROUP BY
+                 travelId) o
+            ON
+                t.id = o.travelId
+        ORDER BY
+            heat DESC
     </select>
 
     <!-- 查询景点的标签 -->

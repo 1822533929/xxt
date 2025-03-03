@@ -25,8 +25,8 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
     private TravelsMapper travelsMapper;
 
     @Override
-    public List<TravelsVO> selectAllByRead() {
-        return travelsMapper.selectAllByRead();
+    public List<TravelsVO> selectAllByHeat() {
+        return travelsMapper.selectAllByHeat();
     }
 
 

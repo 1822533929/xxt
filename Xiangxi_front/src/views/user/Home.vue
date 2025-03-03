@@ -131,7 +131,7 @@ import { useRouter } from 'vue-router'
 import { get, ElMessage } from '@/common'
 import { UserFilled, Search, Picture } from '@element-plus/icons-vue'
 import { ElMessageBox } from 'element-plus'
-import xiangxi from '@/images/icon/湘西.svg'
+import xiangxi from '@/assets/湘西.svg'
 
 const router = useRouter()
 const searchText = ref('')

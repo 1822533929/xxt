@@ -37,7 +37,7 @@ public class TravelsController {
      * 热门景点
      * 根据阅读量从高到低查询旅游信息
      */
-    @RequestMapping("/selectAllByRead")
+    @RequestMapping("/selectAllByHeat")
     public Result<PageInfo<TravelsVO>> selectAllByRead(
         @RequestParam(defaultValue = "1") Integer currentPage,
         @RequestParam(defaultValue = "3") Integer pageSize
@@ -46,7 +46,7 @@ public class TravelsController {
         query.setCurrentPage(currentPage);
         query.setPageSize(pageSize);
         PageHelper.startPage(query.getCurrentPage(), query.getPageSize());
-        PageInfo<TravelsVO> pageInfo = new PageInfo<>(travelsService.selectAllByRead());
+        PageInfo<TravelsVO> pageInfo = new PageInfo<>(travelsService.selectAllByHeat());
         return Result.success(pageInfo);
     }
     /**
@@ -189,6 +189,19 @@ public class TravelsController {
     @RequestMapping("/getAllTags")
     public Result getTags() {
         return Result.success(tagsService.getAllTags());
+    }
+    /**
+     * 点赞功能
+     */
+    @RequestMapping("/like/{id}")
+    public Result like(@PathVariable Integer id) {
+        Travels travels = travelsService.getById(id);
+        if (travels == null) {
+            return Result.error("商品不存在");
+        }
+        travels.setLikeCount(travels.getLikeCount() + 1);
+        travelsService.updateById(travels);
+        return Result.success();
     }
 
 

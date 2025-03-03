@@ -14,7 +14,7 @@ import java.util.Map;
 public interface TravelsMapper extends BaseMapper<Travels> {
 
 
-    List<TravelsVO> selectAllByRead();
+    List<TravelsVO> selectAllByHeat();
 
     void deleteBatch(List<Integer> ids);
 

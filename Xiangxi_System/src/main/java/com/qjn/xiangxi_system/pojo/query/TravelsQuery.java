@@ -1,5 +1,6 @@
 package com.qjn.xiangxi_system.pojo.query;
 
+import com.qjn.xiangxi_system.pojo.Travels;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -50,12 +51,15 @@ public class TravelsQuery extends BaseQuery {
      * 费用
      */
     private BigDecimal money;
+
     /**
      * 库存
      */
     private Integer inventory;
-
-
+    /**
+     * 点赞量
+     */
+    private Integer likeCount;
 
     private static final long serialVersionUID = 1L;
 
@@ -144,14 +148,14 @@ public class TravelsQuery extends BaseQuery {
     }
 
     /**
-     * 阅读量
+     *
      */
     public Integer getReadCount() {
         return readCount;
     }
 
     /**
-     * 阅读量
+     *
      */
     public void setReadCount(Integer readCount) {
         this.readCount = readCount;
@@ -185,8 +189,33 @@ public class TravelsQuery extends BaseQuery {
         this.money = money;
     }
 
+    /**
+     * 库存
+     */
+    public Integer getInventory() {
+        return inventory;
+    }
 
+    /**
+     * 库存
+     */
+    public void setInventory(Integer inventory) {
+        this.inventory = inventory;
+    }
 
+    /**
+     * 点赞量
+     */
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    /**
+     * 点赞量
+     */
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
+    }
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -198,7 +227,7 @@ public class TravelsQuery extends BaseQuery {
         if (getClass() != that.getClass()) {
             return false;
         }
-        com.qjn.xiangxi_system.pojo.Travels other = (com.qjn.xiangxi_system.pojo.Travels) that;
+        Travels other = (Travels) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
                 && (this.getTitle() == null ? other.getTitle() == null : this.getTitle().equals(other.getTitle()))
                 && (this.getCover() == null ? other.getCover() == null : this.getCover().equals(other.getCover()))
@@ -207,7 +236,9 @@ public class TravelsQuery extends BaseQuery {
                 && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()))
                 && (this.getReadCount() == null ? other.getReadCount() == null : this.getReadCount().equals(other.getReadCount()))
                 && (this.getStartDate() == null ? other.getStartDate() == null : this.getStartDate().equals(other.getStartDate()))
-                && (this.getMoney() == null ? other.getMoney() == null : this.getMoney().equals(other.getMoney()));
+                && (this.getMoney() == null ? other.getMoney() == null : this.getMoney().equals(other.getMoney()))
+                && (this.getInventory() == null ? other.getInventory() == null : this.getInventory().equals(other.getInventory())
+                && (this.getLikeCount() == null ? other.getLikeCount() == null : this.getLikeCount().equals(other.getLikeCount())));
     }
 
     @Override
@@ -223,6 +254,8 @@ public class TravelsQuery extends BaseQuery {
         result = prime * result + ((getReadCount() == null) ? 0 : getReadCount().hashCode());
         result = prime * result + ((getStartDate() == null) ? 0 : getStartDate().hashCode());
         result = prime * result + ((getMoney() == null) ? 0 : getMoney().hashCode());
+        result = prime * result + ((getInventory() == null) ? 0 : getInventory().hashCode());
+        result = prime * result + ((getLikeCount() == null) ? 0 : getLikeCount().hashCode());
         return result;
     }
 
@@ -241,6 +274,8 @@ public class TravelsQuery extends BaseQuery {
         sb.append(", readCount=").append(readCount);
         sb.append(", startDate=").append(startDate);
         sb.append(", money=").append(money);
+        sb.append(", inventory=").append(inventory);
+        sb.append(", likeCount=").append(likeCount);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

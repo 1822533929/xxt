@@ -57,6 +57,10 @@ public class Travels implements Serializable {
      * 库存
      */
     private Integer inventory;
+    /**
+     * 点赞量
+     */
+    private Integer likeCount;
 
     private static final long serialVersionUID = 1L;
 
@@ -187,19 +191,32 @@ public class Travels implements Serializable {
     }
 
     /**
-     * 
+     * 库存
      */
     public Integer getInventory() {
         return inventory;
     }
 
     /**
-     * 
+     * 库存
      */
     public void setInventory(Integer inventory) {
         this.inventory = inventory;
     }
 
+    /**
+     * 点赞量
+     */
+    public Integer getLikeCount() {
+        return likeCount;
+    }
+
+    /**
+     * 点赞量
+     */
+    public void setLikeCount(Integer likeCount) {
+        this.likeCount = likeCount;
+    }
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -221,7 +238,8 @@ public class Travels implements Serializable {
             && (this.getReadCount() == null ? other.getReadCount() == null : this.getReadCount().equals(other.getReadCount()))
             && (this.getStartDate() == null ? other.getStartDate() == null : this.getStartDate().equals(other.getStartDate()))
             && (this.getMoney() == null ? other.getMoney() == null : this.getMoney().equals(other.getMoney()))
-            && (this.getInventory() == null ? other.getInventory() == null : this.getInventory().equals(other.getInventory()));
+            && (this.getInventory() == null ? other.getInventory() == null : this.getInventory().equals(other.getInventory())
+                && (this.getLikeCount() == null ? other.getLikeCount() == null : this.getLikeCount().equals(other.getLikeCount())));
     }
 
     @Override
@@ -238,6 +256,7 @@ public class Travels implements Serializable {
         result = prime * result + ((getStartDate() == null) ? 0 : getStartDate().hashCode());
         result = prime * result + ((getMoney() == null) ? 0 : getMoney().hashCode());
         result = prime * result + ((getInventory() == null) ? 0 : getInventory().hashCode());
+        result = prime * result + ((getLikeCount() == null) ? 0 : getLikeCount().hashCode());
         return result;
     }
 
@@ -257,6 +276,7 @@ public class Travels implements Serializable {
         sb.append(", startDate=").append(startDate);
         sb.append(", money=").append(money);
         sb.append(", inventory=").append(inventory);
+        sb.append(", likeCount=").append(likeCount);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();
