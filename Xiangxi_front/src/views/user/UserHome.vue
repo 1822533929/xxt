@@ -116,7 +116,13 @@
               </template>
             </el-image>
             <div class="spot-info">
-              <h3 class="spot-title">{{ spot.title }}</h3>
+              <div class="spot-header">
+                <h3 class="spot-title">{{ spot.title }}</h3>
+                <span class="spot-heat">
+                  <el-icon><Star /></el-icon>
+                  热度: {{Math.ceil( Number(spot.heat).toFixed(1)) }}
+                </span>
+              </div>
               <div class="spot-description">{{ spot.descr }}</div>
             </div>
           </div>
@@ -233,7 +239,7 @@ const getLatestNews = async () => {
 
 const getHotSpots = async () => {
   try {
-    const result = await get('/travels/selectAllByRead?currentPage=1&pageSize=3')
+    const result = await get('/travels/selectAllByHeat?currentPage=1&pageSize=3')
     if (result.code === 200) {
       hotSpots.value = result.data.list
     }
@@ -494,10 +500,33 @@ onMounted(() => {
   transition: transform 0.3s ease;
 }
 
+.spot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.spot-heat {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #f0ad4e;
+  font-size: 14px;
+}
+
+.spot-heat .el-icon {
+  font-size: 16px;
+}
+
 .spot-title {
   margin: 0;
   font-size: 18px;
-  margin-bottom: 10px;
+  flex: 1;
+  margin-right: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .spot-description {

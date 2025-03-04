@@ -1,7 +1,7 @@
 <template>
   <div class="login-container">
     <div class="login-box">
-      <div class="title">旅游管理系统</div>
+      <div class="title">湘西旅游系统</div>
       <!-- 用户登录表单 -->
       <el-form v-if="!isAdminLogin && !isRegister" ref="userLoginFormRef" :model="userLoginForm" :rules="loginRules" class="login-form">
         <el-form-item prop="username">
@@ -88,6 +88,7 @@ import { ElMessage } from 'element-plus'
 import axios from 'axios'
 import {setLocalToken} from "@/common/index.js";
 import {LOCAL_TOKEN} from "@/common/constants.js";
+import background from "@/images/background/login.jpg"
 
 const router = useRouter()
 const loading = ref(false)
@@ -316,18 +317,21 @@ const adminLogin = () => {
 .login-container {
   width: 100%;
   height: 100vh;
-  background-color: #2d3a4b;
+  background: url('@/images/background/login.jpg') no-repeat center center;
+  background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
+/* 为了确保登录框内容清晰可见，可以增加一些透明度和模糊效果 */
 .login-box {
   width: 400px;
   padding: 40px;
-  background: white;
+  background: rgba(255, 255, 255, 0.95);  /* 略微透明的白色背景 */
   border-radius: 4px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);  /* 增强阴影效果 */
+  /*backdrop-filter: blur(5px);  !* 背景模糊效果 *!*/
 }
 
 .title {
