@@ -120,6 +120,7 @@ public class TravelsController {
             if (image != null && !image.isEmpty() && image.getSize() > 0) {
                 cover = fileUploadUtil.uploadImage(image, "travelCover");
             }
+            travelsVO.setTime(DateTimeUtil.getDateTime());
             travelsVO.setCover(cover);
             if (travelsService.saveWithTags(travelsVO)) {
                 return Result.success("添加成功");

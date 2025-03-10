@@ -106,13 +106,15 @@
         <!-- 分页 -->
         <div class="pagination">
           <el-pagination
-            v-model:current-page="currentPage"
-            v-model:page-size="pageSize"
+            :current-page="currentPage"
+            :page-size="pageSize"
             :page-sizes="[6, 12, 24]"
             :total="total"
             layout="total, sizes, prev, pager, next"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
+            @update:current-page="currentPage = $event"
+            @update:page-size="pageSize = $event"
           />
         </div>
       </el-main>
@@ -183,29 +185,20 @@ const getAllSpots = async () => {
   try {
     const params = new URLSearchParams({
       currentPage: currentPage.value.toString(),
-      pageSize: pageSize.value.toString()
+      pageSize: pageSize.value.toString(),
+      keyword: searchQuery.value
     })
     
     const result = await get('/travels/selectAll', { params })
     if (result.code === 200) {
-      const spots = result.data.list
-      let filteredSpots = spots
-      if (searchQuery.value) {
-        const keyword = searchQuery.value.toLowerCase()
-        filteredSpots = spots.filter(spot => 
-          spot.title.toLowerCase().includes(keyword) || 
-          spot.descr?.toLowerCase().includes(keyword)
-        )
-      }
+      allSpots.value = result.data.list
+      total.value = result.data.total
       
       if (activeTag.value !== '全部') {
-        allSpots.value = filteredSpots.filter(spot => 
+        allSpots.value = allSpots.value.filter(spot => 
           spot.tags?.split(',').map(t => t.trim()).includes(activeTag.value)
         )
         total.value = allSpots.value.length
-      } else {
-        allSpots.value = filteredSpots
-        total.value = filteredSpots.length
       }
     }
   } catch (error) {
@@ -217,6 +210,7 @@ const getAllSpots = async () => {
 // 分页处理
 const handleSizeChange = (val) => {
   pageSize.value = val
+  currentPage.value = 1
   getAllSpots()
 }
 

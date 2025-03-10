@@ -69,6 +69,7 @@ public class ConfigBean {
         props.setProperty("kaptcha.textproducer.char.length", "4");
         props.setProperty("kaptcha.image.width","120");
         props.setProperty("kaptcha.image.height","45");
+        props.setProperty("kaptcha.textproducer.font.color", "0,0,255");//蓝色
         // 更多配置项...
 
         Config config = new Config(props);

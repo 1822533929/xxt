@@ -91,7 +91,26 @@ const mode = 'default'
 const toolbarConfig = {}
 const editorConfig = {
   placeholder: '请输入攻略内容...',
-  MENU_CONF: {}
+  MENU_CONF: {
+    uploadImage: {
+      // 自定义图片上传
+      customUpload: async (file, insertFn) => {
+        try {
+          // 将文件转换为 base64
+          const reader = new FileReader()
+          reader.onload = (e) => {
+            const base64 = e.target.result
+            // 插入图片到编辑器，使用 base64
+            insertFn(base64)
+          }
+          reader.readAsDataURL(file)
+        } catch (error) {
+          console.error('图片处理失败:', error)
+          ElMessage.error('图片处理失败')
+        }
+      }
+    }
+  }
 }
 
 // 表单数据
@@ -109,10 +128,59 @@ const handleCoverChange = (file) => {
   form.coverPreview = URL.createObjectURL(file.raw)
 }
 
-// 处理内容中的图片上传
+// 修改处理内容中的图片上传方法
 const processContent = async (content) => {
-  // 这里可以处理富文本内容中的图片
-  return content
+  try {
+    // 创建临时容器
+    const div = document.createElement('div')
+    div.innerHTML = content
+    
+    // 获取所有图片
+    const images = div.getElementsByTagName('img')
+    
+    // 转换为数组以避免实时更新的问题
+    const imageArray = Array.from(images)
+    
+    // 处理每个图片
+    for (const img of imageArray) {
+      const src = img.getAttribute('src')
+      if (src && src.startsWith('data:image')) {
+        try {
+          // 将 base64 转换为文件
+          const arr = src.split(',')
+          const mime = arr[0].match(/:(.*?);/)[1]
+          const bstr = atob(arr[1])
+          let n = bstr.length
+          const u8arr = new Uint8Array(n)
+          while (n--) {
+            u8arr[n] = bstr.charCodeAt(n)
+          }
+          const file = new File([u8arr], 'image.png', { type: mime })
+
+          // 上传文件
+          const formData = new FormData()
+          formData.append('image', file)
+          formData.append('path', 'articleContent')
+          const result = await post('/upload/image', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          })
+          
+          if (result.code === 200 && result.data) {
+            img.setAttribute('src', result.data)
+          } else {
+            console.error('图片上传失败:', result.msg)
+          }
+        } catch (error) {
+          console.error('处理图片失败:', error)
+        }
+      }
+    }
+    
+    return div.innerHTML
+  } catch (error) {
+    console.error('处理内容中的图片失败:', error)
+    throw error
+  }
 }
 
 // 提交表单

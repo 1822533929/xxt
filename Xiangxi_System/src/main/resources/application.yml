@@ -6,17 +6,14 @@ spring:
     url: jdbc:mysql://localhost:3306/xxtweb?serverTimezone=GMT%2B8
     username: root
     password: 123456
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 1024MB
   mvc:
     servlet:
-      path: /xxt/api
-      multipart:
-        #单个文件设置大小
-        max-file-size: 500MB
-        #总文件限制大小
-        max-request-size: 1024MB
-server:
-  tomcat:
-    max-swallow-size: -1
+      path: /xxt/api  #接口路径前缀
+
 # 10mb
 #  main:
 #    allow-bean-definition-overriding=true:#server:

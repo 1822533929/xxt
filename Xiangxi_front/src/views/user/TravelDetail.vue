@@ -49,7 +49,7 @@
 
           <!-- 简介 -->
           <div class="description">
-            {{ detail.descr }}
+            <pre>{{ detail.descr }}</pre>
           </div>
 
           <!-- 价格和库存 -->
@@ -369,6 +369,13 @@ onMounted(() => {
   font-size: 14px;
 }
 
+.description pre {
+  white-space: pre-wrap;       /* 保留空格和换行符 */
+  word-wrap: break-word;       /* 允许长单词换行 */
+  font-family: inherit;        /* 使用与父元素相同的字体 */
+  margin: 0;                   /* 移除默认边距 */
+}
+
 .price-stock {
   background-color: #f7f8fa;
   padding: 15px;
@@ -416,7 +423,7 @@ onMounted(() => {
 
 .content-body {
   line-height: 1.8;
-  color: #606266;
+  /*color: #606266;*/
 }
 
 .image-slot {

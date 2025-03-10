@@ -275,16 +275,16 @@ const handleTagsChange = (value) => {
 // 上传相关方法
 const beforeUpload = (file) => {
   const isImage = file.type.startsWith('image/')
-  const isLt2M = file.size / 1024 / 1024 < 2
+  const isLt2M = file.size / 1024 / 1024 < 50000
 
   if (!isImage) {
     ElMessage.error('只能上传图片文件!')
     return false
   }
-  if (!isLt2M) {
-    ElMessage.error('图片大小不能超过 2MB!')
-    return false
-  }
+  // if (!isLt2M) {
+  //   ElMessage.error('图片大小不能超过 2MB!')
+  //   return false
+  // }
   return true
 }
 

@@ -387,7 +387,7 @@ onUnmounted(() => {
 }
 
 .weather-widget iframe {
-  margin-top: 10px;
+  margin-top: 25px;
 }
 
 .search-results {
