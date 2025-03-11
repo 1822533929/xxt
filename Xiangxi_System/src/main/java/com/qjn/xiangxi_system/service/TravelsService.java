@@ -29,6 +29,10 @@ public interface TravelsService extends IService<Travels> {
      */
     List<TravelsVO> selectAllWithTags(String keyword);
     /**
+     * 模糊查询所有旅游商品及其标签
+     */
+    List<TravelsVO> selectAllTravel(String keykord,String tag);
+    /**
      * 判断库存是否充足
      */
     boolean checkInventory(Integer travelId, Integer quantity);

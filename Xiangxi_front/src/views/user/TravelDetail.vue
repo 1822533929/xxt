@@ -321,7 +321,7 @@ onMounted(() => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  /*gap: 20px;*/
 }
 
 .title-section {
@@ -353,7 +353,7 @@ onMounted(() => {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  margin: 5px 0;
+  margin: 10px 0;
 }
 
 .tag {

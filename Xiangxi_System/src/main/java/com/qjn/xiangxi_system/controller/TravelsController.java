@@ -56,7 +56,7 @@ public class TravelsController {
     @RequestMapping("/selectAll")
     public Result<PageInfo<TravelsVO>> selectAll(
         @RequestParam(defaultValue = "1") Integer currentPage,
-        @RequestParam(defaultValue = "6") Integer pageSize,
+        @RequestParam(defaultValue = "100") Integer pageSize,
         @RequestParam(required = false) String keyword
     ) {
         PageHelper.startPage(currentPage, pageSize);

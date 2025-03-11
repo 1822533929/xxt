@@ -26,35 +26,37 @@
     <el-container>
       <!-- 左侧热门推荐 -->
       <el-aside width="300px" class="hot-section">
-        <div class="section-title">
-          <h2>热门推荐</h2>
-          <img src="@/assets/hot.svg" alt="Like"  class="hot-icon" />
-        </div>
-        <div class="hot-list">
-          <el-skeleton :loading="hotLoading" animated :count="3" v-if="hotLoading">
-            <template #template>
-              <div class="hot-item-skeleton">
-                <el-skeleton-item variant="image" style="width: 100%; height: 150px" />
-                <el-skeleton-item variant="text" style="width: 60%" />
-              </div>
-            </template>
-          </el-skeleton>
+        <div class="hot-wrapper">
+          <div class="section-title">
+            <h2>热门推荐</h2>
+            <img src="@/assets/hot.svg" alt="Like" class="hot-icon" />
+          </div>
+          <div class="hot-list">
+            <el-skeleton :loading="hotLoading" animated :count="3" v-if="hotLoading">
+              <template #template>
+                <div class="hot-item-skeleton">
+                  <el-skeleton-item variant="image" style="width: 100%; height: 150px" />
+                  <el-skeleton-item variant="text" style="width: 60%" />
+                </div>
+              </template>
+            </el-skeleton>
 
-          <el-card 
-            v-for="item in hotSpots" 
-            :key="item.id" 
-            class="hot-item"
-            @click="goToDetail(item.id)"
-          >
-            <img :src="getImageUrl(item.cover)" class="hot-image" />
-            <div class="hot-info">
-              <h3>{{ item.title }}</h3>
-              <div class="hot-count">
-                <img src="@/assets/hot2.svg" alt="Hot" class="hot2-icon" />
-                <span>{{ Math.ceil(item.heat) || 0 }}</span>
+            <el-card 
+              v-for="item in hotSpots" 
+              :key="item.id" 
+              class="hot-item"
+              @click="goToDetail(item.id)"
+            >
+              <img :src="getImageUrl(item.cover)" class="hot-image" />
+              <div class="hot-info">
+                <h3>{{ item.title }}</h3>
+                <div class="hot-count">
+                  <img src="@/assets/hot2.svg" alt="Hot" class="hot2-icon" />
+                  <span>{{ Math.ceil(item.heat) || 0 }}</span>
+                </div>
               </div>
-            </div>
-          </el-card>
+            </el-card>
+          </div>
         </div>
       </el-aside>
 
@@ -83,7 +85,13 @@
             >
               <img :src="getImageUrl(item.cover)" class="spot-image" />
               <div class="spot-info">
-                <h3>{{ item.title }}</h3>
+                <div class="title-row">
+                  <h3>{{ item.title }}</h3>
+                  <span class="likes-count">
+                    <img src="@/assets/未点赞.svg" alt="Like" class="header-like-icon" />
+                    {{ item.likeCount || 0 }}
+                  </span>
+                </div>
                 <div class="spot-tags">
                   <el-tag 
                     v-for="tag in item.tags?.split(',')" 
@@ -103,20 +111,12 @@
           </el-col>
         </el-row>
 
-        <!-- 分页 -->
-        <div class="pagination">
-          <el-pagination
-            :current-page="currentPage"
-            :page-size="pageSize"
-            :page-sizes="[6, 12, 24]"
-            :total="total"
-            layout="total, sizes, prev, pager, next"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            @update:current-page="currentPage = $event"
-            @update:page-size="pageSize = $event"
-          />
-        </div>
+<!--        &lt;!&ndash; 分页 &ndash;&gt;-->
+<!--        <div class="pagination">-->
+<!--          <el-pagination background-->
+<!--              :current-page="currentPage" :page-size="100"-->
+<!--              :total="total" layout="total, prev, pager, next" @current-change="handleCurrentChange" />-->
+<!--        </div>-->
       </el-main>
     </el-container>
   </div>
@@ -136,7 +136,7 @@ const hotSpots = ref([])
 const allSpots = ref([])
 const hotLoading = ref(true)
 const currentPage = ref(1)
-const pageSize = ref(6)
+const pageSize = ref(100)
 const total = ref(0)
 const searchQuery = ref('')
 const activeTag = ref('全部')
@@ -331,19 +331,16 @@ onMounted(() => {
 }
 
 .hot-section {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
+  position: relative;
   margin-right: 20px;
   margin-left: 20px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.main-section {
+.hot-wrapper {
+  position: sticky;
   background-color: #fff;
   padding: 20px;
   border-radius: 8px;
-  margin-right: 20px;
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
@@ -412,13 +409,36 @@ onMounted(() => {
   padding: 15px;
 }
 
-.spot-info h3 {
-  margin: 0 0 10px 0;
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.title-row h3 {
+  margin: 0;
+  flex: 1;
   font-size: 16px;
   color: #303133;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.likes-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #909399;
+  font-size: 14px;
+  margin-left: 10px;
+}
+
+.header-like-icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: middle;
 }
 
 .spot-footer {
@@ -487,5 +507,14 @@ onMounted(() => {
   height: 50px;
   fill: #f0ad4e;
   vertical-align: middle;
+}
+
+/* 添加右侧主要内容区域的样式 */
+.main-section {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  margin-right: 20px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 </style> 

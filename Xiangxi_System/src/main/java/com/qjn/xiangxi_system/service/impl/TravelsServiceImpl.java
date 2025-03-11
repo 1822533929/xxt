@@ -161,6 +161,11 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
     }
 
     @Override
+    public List<TravelsVO> selectAllTravel(String keyword,String tag) {
+        return travelsMapper.selectAllTravel(keyword,tag);
+    }
+
+    @Override
     public boolean checkInventory(Integer travelId, Integer quantity) {
         Integer inventory = travelsMapper.getInventory(travelId);
         if(inventory<=0||inventory<quantity){//库存不足

@@ -36,6 +36,10 @@ public interface TravelsMapper extends BaseMapper<Travels> {
      * 模糊查询所有旅游商品及其标签
      */
     List<TravelsVO> selectAllWithTags(@Param("keyword") String keyword);
+    /**
+     * 模糊查询所有旅游商品及其标签
+     */
+    List<TravelsVO> selectAllTravel(@Param("keyword") String keyword, @Param("tag") String tag);
 
     Integer getInventory(Integer travelId);
 
