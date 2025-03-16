@@ -171,28 +171,6 @@
     <select id="getInventory" resultType="java.lang.Integer">
         SELECT inventory FROM travels WHERE id = #{travelId}
     </select>
-    <select id="selectAllTravel" resultType="com.qjn.xiangxi_system.pojo.vo.TravelsVO">
-        SELECT
-        t.*,
-        GROUP_CONCAT(tag.tag_name) as tags
-        FROM
-        travels t
-        LEFT JOIN
-        travels_tags tt ON t.id = tt.travel_id
-        LEFT JOIN
-        tags tag ON tt.tag_id = tag.tag_id
-        <where>
-            <if test="keyword != null and keyword != ''">
-                AND (
-                t.title LIKE CONCAT('%', #{keyword}, '%')
-                OR t.descr LIKE CONCAT('%', #{keyword}, '%')
-                )
-            </if>
-        </where>
-        GROUP BY
-        t.id
-        ORDER BY
-        t.id DESC
-    </select>
+
 
 </mapper>

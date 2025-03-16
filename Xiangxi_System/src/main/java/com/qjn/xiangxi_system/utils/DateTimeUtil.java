@@ -13,6 +13,7 @@ public class DateTimeUtil {
     public static String getDateTime() {
         return LocalDateTime.now().format(DATE_TIME_FORMATTER);
     }
+
     /**
      * 获取当前日期字符串
      * @return 格式化的日期字符串 (yyyy-MM-dd)
@@ -20,4 +21,13 @@ public class DateTimeUtil {
     public static String getDate() {
         return LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     }
+    /**
+     * 获取订单过期时间
+     * @return 格式化的日期时间字符串 (yyyy-MM-dd HH:mm:ss)
+     */
+    public static String getExpiryDateTime(int minutesToAdd) {
+        LocalDateTime expiryTime = LocalDateTime.now().plusMinutes(minutesToAdd);
+        return expiryTime.format(DATE_TIME_FORMATTER);
+    }
+
 }

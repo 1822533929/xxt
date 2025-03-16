@@ -25,7 +25,12 @@
       <div class="order-item" v-for="order in orderList" :key="order.id">
         <div class="order-header">
           <span class="order-number">订单编号：{{ order.id }}</span>
-          <el-tag :type="getStatusType(order.status)">{{ order.status }}</el-tag>
+          <div class="order-status">
+            <el-tag :type="getStatusType(order.status)">{{ order.status }}</el-tag>
+            <span v-if="order.status === '待支付'" class="remaining-time" :class="{ 'expiring': isExpiring(order) }">
+              剩余：{{ getRemainingTime(order) }}
+            </span>
+          </div>
         </div>
         
         <div class="order-content">
@@ -128,7 +133,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, onBeforeUnmount } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Picture } from '@element-plus/icons-vue'
 import { get, post } from '@/common'
@@ -152,6 +157,9 @@ const searchForm = reactive({
 // 添加支付相关的数据
 const payDialogVisible = ref(false)
 const currentOrder = ref(null)
+
+// 添加定时器引用
+const timer = ref(null)
 
 // 获取图片URL
 const getImageUrl = (url) => {
@@ -264,8 +272,65 @@ const handleCancel = (order) => {
   })
 }
 
+// 计算剩余时间
+const getRemainingTime = (order) => {
+  if (order.status !== '待支付' || !order.expireTime) return ''
+  
+  const expireTime = new Date(order.expireTime.replace(/-/g, '/'))
+  const now = new Date()
+  const diff = expireTime - now
+
+  if (diff <= 0) return '已过期'
+
+  const minutes = Math.floor(diff / 1000 / 60)
+  const seconds = Math.floor((diff / 1000) % 60)
+  return `${minutes}分${seconds}秒`
+}
+
+// 判断是否即将过期（小于5分钟）
+const isExpiring = (order) => {
+  if (order.status !== '待支付' || !order.expireTime) return false
+  
+  const expireTime = new Date(order.expireTime.replace(/-/g, '/'))
+  const now = new Date()
+  const diff = expireTime - now
+  
+  return diff > 0 && diff <= 5 * 60 * 1000
+}
+
+// 检查订单是否过期
+const checkOrderExpiry = async (orderId) => {
+  try {
+    const result = await get('/orders/checkOrderExpiry', { orderId })
+    if (result.code === 200 && result.data === '订单已过期') {
+      getOrderList() // 刷新订单列表
+    }
+  } catch (error) {
+    console.error('检查订单过期失败:', error)
+  }
+}
+
+// 启动定时器，定期检查订单状态和更新剩余时间
+const startTimer = () => {
+  timer.value = setInterval(() => {
+    orderList.value.forEach(order => {
+      if (order.status === '待支付') {
+        checkOrderExpiry(order.id)
+      }
+    })
+  }, 1000) // 每秒更新一次
+}
+
 onMounted(() => {
   getOrderList()
+  startTimer()
+})
+
+// 组件卸载前清除定时器
+onBeforeUnmount(() => {
+  if (timer.value) {
+    clearInterval(timer.value)
+  }
 })
 </script>
 
@@ -469,5 +534,27 @@ onMounted(() => {
 .pay-tip {
   color: #909399;
   font-size: 14px;
+}
+
+.order-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.remaining-time {
+  font-size: 14px;
+  color: #909399;
+}
+
+.remaining-time.expiring {
+  color: #f56c6c;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
 }
 </style> 

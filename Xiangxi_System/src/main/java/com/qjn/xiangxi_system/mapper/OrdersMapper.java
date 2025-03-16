@@ -44,6 +44,10 @@ public interface OrdersMapper extends BaseMapper<Orders> {
     void deleteByTravelId(Integer id);
 
     void deleteByUserId(Integer id);
+    /**
+     * 释放库存
+     */
+    void releaseInventory(Integer travelid, Integer quantity);
 }
 
 

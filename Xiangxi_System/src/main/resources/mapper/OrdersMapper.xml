@@ -12,12 +12,16 @@
             <result property="status" column="status" jdbcType="VARCHAR"/>
             <result property="totalprice" column="totalPrice" jdbcType="DECIMAL"/>
             <result property="quantity" column="quantity" jdbcType="INTEGER"/>
+            <result property="expiretime" column="expiretime" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,userId,travelId,orderDate,
-        status,totalPrice,quantity
+        status,totalPrice,quantity,expiretime
     </sql>
+    <update id="releaseInventory">
+        UPDATE travels SET inventory = inventory + #{quantity} WHERE id = #{travelid}
+    </update>
     <!-- 批量删除 -->
     <delete id="deleteBatch">
         DELETE FROM orders WHERE id IN

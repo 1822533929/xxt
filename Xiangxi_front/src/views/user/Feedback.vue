@@ -1,7 +1,7 @@
 <template>
   <div class="feedback">
     <div class="page-header">
-      <h2>问题反馈</h2>
+      <h2 style="text-align: center;margin: 10px">😊期待您的声音</h2>
     </div>
 
     <div class="feedback-content">

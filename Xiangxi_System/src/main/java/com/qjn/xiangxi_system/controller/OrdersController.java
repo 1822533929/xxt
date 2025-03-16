@@ -50,6 +50,8 @@ public class OrdersController {
             order.setQuantity(quantity);
             order.setTotalprice(money.multiply(new BigDecimal(quantity)));
             order.setStatus("待支付");
+            //设置订单过期时间为30min
+            order.setExpireTime(DateTimeUtil.getExpiryDateTime(30));
             order.setOrderdate(DateTimeUtil.getDateTime());
             //库存减少
             travelsService.reduceInventory(travelId, quantity);
@@ -136,5 +138,38 @@ public class OrdersController {
         orderService.deleteBatch(ids);
         return Result.success("批量删除成功");
     }
-
+    /**
+     * 检查订单过期
+     */
+    @RequestMapping("/checkOrderExpiry")
+    public Result checkOrderExpiry(@RequestParam Integer orderId) {
+        try {
+            Orders order = orderService.getById(orderId);
+            if (order == null) {
+                return Result.error("订单不存在");
+            }
+            
+            // 只检查待支付的订单
+            if ("待支付".equals(order.getStatus())) {
+                String expireTime = order.getExpireTime();
+                String currentTime = DateTimeUtil.getDateTime();
+                
+                // 如果当前时间超过过期时间
+                if (currentTime.compareTo(expireTime) > 0) {
+                    order.setStatus("已取消");
+                    orderService.updateById(order);
+                    // 释放库存
+                    travelsService.increaseInventory(order.getTravelid(), order.getQuantity());
+                    return Result.success("订单已过期");
+                }
+                
+                return Result.success("订单未过期");
+            }
+            
+            return Result.success("非待支付订单");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Result.error("检查订单过期失败：" + e.getMessage());
+        }
+    }
 }

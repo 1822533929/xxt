@@ -22,4 +22,7 @@
             #{id}
         </foreach>
     </delete>
+    <select id="Search" resultType="com.qjn.xiangxi_system.pojo.Notice">
+        SELECT * FROM notice WHERE title LIKE concat('%',#{keyword},'%')
+    </select>
 </mapper>

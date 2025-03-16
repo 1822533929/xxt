@@ -277,6 +277,7 @@ onMounted(() => {
 <style scoped>
 .users {
   padding: 20px;
+  background-color: #f5f7fa;
 }
 
 .search-bar,

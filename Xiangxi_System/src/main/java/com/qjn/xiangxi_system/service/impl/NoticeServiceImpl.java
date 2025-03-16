@@ -24,6 +24,11 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice>
     public void deleteBatch(List<Integer> ids) {
         noticeMapper.deleteBatch(ids);
     }
+
+    @Override
+    public List<Notice> Search(String keyword) {
+        return noticeMapper.Search(keyword);
+    }
 }
 
 

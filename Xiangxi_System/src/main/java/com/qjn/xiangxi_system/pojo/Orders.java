@@ -43,6 +43,10 @@ public class Orders implements Serializable {
      * 购买的旅行套餐数量
      */
     private Integer quantity;
+    /**
+     * 过期时间
+     */
+    private String expiretime;
 
     private static final long serialVersionUID = 1L;
 
@@ -146,6 +150,19 @@ public class Orders implements Serializable {
         this.quantity = quantity;
     }
 
+    /**
+     * 过期时间
+     */
+    public String getExpireTime() {
+        return expiretime;
+    }
+    /**
+     * 过期时间
+     */
+    public void setExpireTime(String expireTime) {
+        this.expiretime = expireTime;
+    }
+
     @Override
     public boolean equals(Object that) {
         if (this == that) {
@@ -164,7 +181,8 @@ public class Orders implements Serializable {
             && (this.getOrderdate() == null ? other.getOrderdate() == null : this.getOrderdate().equals(other.getOrderdate()))
             && (this.getStatus() == null ? other.getStatus() == null : this.getStatus().equals(other.getStatus()))
             && (this.getTotalprice() == null ? other.getTotalprice() == null : this.getTotalprice().equals(other.getTotalprice()))
-            && (this.getQuantity() == null ? other.getQuantity() == null : this.getQuantity().equals(other.getQuantity()));
+            && (this.getQuantity() == null ? other.getQuantity() == null : this.getQuantity().equals(other.getQuantity()))
+            && (this.getExpireTime() == null ? other.getExpireTime() == null : this.getExpireTime().equals(other.getExpireTime()));
     }
 
     @Override
@@ -178,6 +196,7 @@ public class Orders implements Serializable {
         result = prime * result + ((getStatus() == null) ? 0 : getStatus().hashCode());
         result = prime * result + ((getTotalprice() == null) ? 0 : getTotalprice().hashCode());
         result = prime * result + ((getQuantity() == null) ? 0 : getQuantity().hashCode());
+        result = prime * result + ((getExpireTime() == null) ? 0 : getExpireTime().hashCode());
         return result;
     }
 
@@ -195,6 +214,7 @@ public class Orders implements Serializable {
         sb.append(", totalprice=").append(totalprice);
         sb.append(", quantity=").append(quantity);
         sb.append(", serialVersionUID=").append(serialVersionUID);
+        sb.append(", expireTime=").append(expiretime);
         sb.append("]");
         return sb.toString();
     }

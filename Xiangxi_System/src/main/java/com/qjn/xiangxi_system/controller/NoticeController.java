@@ -1,13 +1,18 @@
 package com.qjn.xiangxi_system.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.qjn.xiangxi_system.pojo.Article;
 import com.qjn.xiangxi_system.pojo.Notice;
 import com.qjn.xiangxi_system.service.NoticeService;
+import com.qjn.xiangxi_system.utils.DateTimeUtil;
 import com.qjn.xiangxi_system.utils.Result;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -17,52 +22,53 @@ import java.util.List;
 public class NoticeController {
     @Resource
     private NoticeService noticeService;
+
     @RequestMapping("/add")
-    public Result add(Notice notice){
+    public Result add(@RequestBody Notice notice) {
+        notice.setTime(DateTimeUtil.getDateTime());
         noticeService.save(notice);
         return Result.success();
     }
 
     @RequestMapping("/update")
-    public Result update(Notice notice)
-    {
+    public Result update(@RequestBody Notice notice) {
         noticeService.updateById(notice);
         return Result.success();
     }
-    /**
-     单个删除
-     */
-    @RequestMapping("/delete/{id}")
-    public Result delete(Integer id)
-    {
+
+    @RequestMapping("/delete")
+    public Result delete(@RequestParam Integer id) {
         noticeService.removeById(id);
         return Result.success();
     }
-    /**
-     批量删除
-     */
-    @DeleteMapping("/delete/batch")
-    public Result batchDelete(List<Integer> ids)
-    {
+
+    @RequestMapping("/delete/batch")
+    public Result batchDelete(@RequestBody List<Integer> ids) {
         noticeService.deleteBatch(ids);
         return Result.success();
     }
-    /**
-     * 单个查询
-     */
-    @RequestMapping("/selectById/{id}")
-    public Result selectById(Integer id)
-    {
+
+    @RequestMapping("/selectById")
+    public Result selectById(@RequestParam Integer id) {
         Notice notice = noticeService.getById(id);
         return Result.success(notice);
     }
-    /**
-     * 全部查询
-     */
+
     @GetMapping("/selectAll")
-    public Result selectAll()
-    {
-        List<Notice> noticeList = noticeService.list();
-        return Result.success(noticeList);
+    public Result<PageInfo<Notice>> selectAll(
+        @RequestParam(defaultValue = "1") Integer currentPage,
+        @RequestParam(defaultValue = "10") Integer pageSize
+    ) {
+        PageHelper.startPage(currentPage, pageSize);
+        PageInfo<Notice> pageInfo = new PageInfo<>(noticeService.list());
+        return Result.success(pageInfo);
+    }
+    /**
+     * 模糊查询
+     */
+    @RequestMapping("/search")
+    public Result search(@RequestParam String keyword) {
+        List<Notice> list = noticeService.Search(keyword);
+        return Result.success(list);
     }
 }

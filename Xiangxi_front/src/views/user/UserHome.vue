@@ -1,15 +1,19 @@
 <template>
   <div class="user-home">
-    <!-- 轮播图 -->
-    <el-carousel height="400px" class="carousel">
-      <el-carousel-item v-for="item in carouselItems" :key="item.id">
-        <img :src="item.imageUrl" :alt="item.title" class="carousel-image">
-        <div class="carousel-caption">
-          <h3>{{ item.title }}</h3>
-          <p>{{ item.description }}</p>
-        </div>
-      </el-carousel-item>
-    </el-carousel>
+    <!-- 修改轮播图部分 -->
+    <div class="carousel-wrapper">
+      <el-carousel height="400px" class="carousel">
+        <el-carousel-item v-for="item in carouselItems" :key="item.id">
+          <div class="carousel-item">
+            <img :src="item.imageUrl" :alt="item.title" class="carousel-image">
+            <div class="carousel-caption">
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.description }}</p>
+            </div>
+          </div>
+        </el-carousel-item>
+      </el-carousel>
+    </div>
 
     <!-- 最新动态区域 -->
     <div class="news-section">
@@ -18,6 +22,26 @@
         <router-link to="/user/news" class="more-link">
           更多<el-icon><ArrowRight /></el-icon>
         </router-link>
+      </div>
+      
+      <!-- 系统公告轮播 -->
+      <div class="notice-carousel">
+        <el-carousel 
+          class="notice-carousel-inner"
+          height="40px"
+          direction="vertical"
+          :autoplay="true"
+          :interval="3000"
+          indicator-position="none"
+        >
+          <el-carousel-item v-for="notice in notices" :key="notice.id">
+            <div class="notice-item">
+              <el-icon><Bell /></el-icon>
+              <span class="notice-title">{{ notice.content }}</span>
+              <span class="notice-time">{{ notice.time }}</span>
+            </div>
+          </el-carousel-item>
+        </el-carousel>
       </div>
       
       <div class="news-grid">
@@ -186,7 +210,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { get } from '@/common'
-import { ArrowRight, Picture, Star, Location } from '@element-plus/icons-vue'
+import { ArrowRight, Picture, Star, Location, Bell } from '@element-plus/icons-vue'
 import fenghuangImage from '@/images/carousel/fenghuang.jpg'
 import dehangImage from '@/images/carousel/dehang.jpg'
 import zhangjiajieImage from '@/images/carousel/zhangjiajie.jpg'
@@ -198,6 +222,7 @@ const latestNews = ref([])
 const hotSpots = ref([])
 const hotGuides = ref([])
 const hotRoutes = ref([])
+const notices = ref([])
 
 const carouselItems = [
   {
@@ -270,6 +295,17 @@ const getHotRoutes = async () => {
   }
 }
 
+const getNotices = async () => {
+  try {
+    const result = await get('/notice/selectAll')
+    if (result.code === 200) {
+      notices.value = result.data.list
+    }
+  } catch (error) {
+    console.error('获取公告失败:', error)
+  }
+}
+
 const viewNews = (news) => {
   router.push(`/user/news-detail/${news.id}`)
 }
@@ -291,23 +327,39 @@ onMounted(() => {
   getHotSpots()
   getHotGuides()
   getHotRoutes()
+  getNotices()
 })
 </script>
 
 <style scoped>
 .user-home {
-  padding: 0;  /* 移除内边距使轮播图占满宽度 */
+  padding: 0;
+}
+
+/* 添加轮播包装器 */
+.carousel-wrapper {
+  width: 100%;
+  height: 400px;
+  overflow: hidden;
+  position: relative;
 }
 
 .carousel {
   width: 100%;
-  margin-bottom: 20px;
+  height: 100%;
+}
+
+.carousel-item {
+  width: 100%;
+  height: 100%;
+  position: relative;
 }
 
 .carousel-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .carousel-caption {
@@ -316,6 +368,7 @@ onMounted(() => {
   left: 20px;
   color: white;
   text-shadow: 0 1px 2px rgba(0,0,0,0.6);
+  z-index: 2;
 }
 
 .carousel-caption h3 {
@@ -328,20 +381,13 @@ onMounted(() => {
   margin: 0;
 }
 
-/* 优化轮播图指示器样式 */
-:deep(.el-carousel__indicators) {
-  transform: translateY(-24px);
+/* 顶部轮播图样式 */
+.carousel :deep(.el-carousel__container) {
+  height: 100% !important;
 }
 
-:deep(.el-carousel__button) {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.7);
-}
-
-:deep(.el-carousel__indicator.is-active .el-carousel__button) {
-  background-color: #fff;
+.carousel :deep(.el-carousel__item) {
+  height: 100% !important;
 }
 
 .news-section {
@@ -351,6 +397,8 @@ onMounted(() => {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  position: relative; /* 添加相对定位 */
+  z-index: 1; /* 确保正确的层级 */
 }
 
 .section-header {
@@ -722,5 +770,48 @@ onMounted(() => {
   height: 20px;
   fill: #f0ad4e;
   /*vertical-align: middle;*/
+}
+
+/* 公告轮播样式 */
+.notice-carousel {
+  margin: 0 0 20px 0;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  padding: 0 15px;
+}
+
+.notice-carousel :deep(.el-carousel__container) {
+  height: 40px !important;
+}
+
+.notice-carousel :deep(.el-carousel__item) {
+  height: 40px !important;
+  padding: 0;
+}
+
+.notice-item {
+  display: flex;
+  align-items: center;
+  height: 40px;
+  color: #606266;
+  font-size: 14px;
+}
+
+.notice-item .el-icon {
+  color: #409EFF;
+  margin-right: 8px;
+}
+
+.notice-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-right: 15px;
+}
+
+.notice-time {
+  color: #909399;
+  font-size: 12px;
 }
 </style> 

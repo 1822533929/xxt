@@ -160,10 +160,6 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
         return travelsMapper.selectAllWithTags(keyword);
     }
 
-    @Override
-    public List<TravelsVO> selectAllTravel(String keyword,String tag) {
-        return travelsMapper.selectAllTravel(keyword,tag);
-    }
 
     @Override
     public boolean checkInventory(Integer travelId, Integer quantity) {
@@ -181,6 +177,11 @@ public class TravelsServiceImpl extends ServiceImpl<TravelsMapper, Travels>
 
     @Override
     public void releaseInventory(Integer travelid, Integer quantity) {
+        travelsMapper.releaseInventory(travelid,quantity);
+    }
+
+    @Override
+    public void increaseInventory(Integer travelid, Integer quantity) {
         travelsMapper.releaseInventory(travelid,quantity);
     }
 

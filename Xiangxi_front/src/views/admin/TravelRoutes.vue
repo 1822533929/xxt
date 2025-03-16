@@ -396,6 +396,7 @@ onMounted(() => {
 <style scoped>
 .travel-routes {
   padding: 20px;
+  background-color: #f5f7fa;
 }
 
 .search-bar {

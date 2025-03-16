@@ -272,6 +272,7 @@ onMounted(() => {
 
 <style scoped>
 .admin-users {
+  background-color: #f5f7fa;
   padding: 20px;
 }
 

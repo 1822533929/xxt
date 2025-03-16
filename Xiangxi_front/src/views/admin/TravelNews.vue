@@ -375,8 +375,9 @@ getNewsList()
 
 <style scoped>
 .travel-news {
+  background-color: #f5f7fa;
   padding: 20px;
-  background-color: #f0f2f5;
+  /*background-color: #f0f2f5;*/
   min-height: calc(100vh - 60px);
 }
 

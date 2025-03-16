@@ -12,4 +12,6 @@ import java.util.List;
 */
 public interface NoticeService extends IService<Notice> {
     void deleteBatch(List<Integer> ids);
+
+    List<Notice> Search(String keyword);
 }

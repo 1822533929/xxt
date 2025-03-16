@@ -350,6 +350,7 @@ const handleImageError = () => {
 .feedback-container {
   padding: 24px;/*24*/
   height: 100%;
+  background-color: #f5f7fa;
   box-sizing: border-box;
 }
 
