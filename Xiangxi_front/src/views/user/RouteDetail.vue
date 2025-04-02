@@ -47,8 +47,7 @@
         <!-- 路线内容 -->
         <div class="route-content">
           <h2>行程详情</h2>
-          <pre>
-          <div class="content" v-html="routeData.content"></div></pre>
+          <div class="content-text">{{ routeData.content }}</div>
         </div>
 
         <!-- 地理位置 -->
@@ -161,13 +160,6 @@ onMounted(() => {
   height: 400px;
   display: block;
 }
-.description pre {
-  white-space: pre-wrap;       /* 保留空格和换行符 */
-  word-wrap: break-word;       /* 允许长单词换行 */
-  /*font-family: inherit;        !* 使用与父元素相同的字体 *!*/
-  margin: 0;                   /* 移除默认边距 */
-}
-
 
 .image-error {
   height: 400px;
@@ -200,10 +192,30 @@ onMounted(() => {
   margin-bottom: 40px;
 }
 
-.content {
+.content-text {
+  white-space: pre-wrap;       /* 保留空格和换行符 */
+  word-wrap: break-word;       /* 允许长单词换行 */
+  word-break: break-all;       /* 允许在任意字符间换行 */
   line-height: 1.8;
-  /*color: #606266;*/
-  color: black;
+  color: #303133;
+  font-size: 16px;
+  padding: 20px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: inset 0 0 6px rgba(0,0,0,0.1);
+}
+
+.description pre {
+  display: none;
+}
+
+.content {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  word-break: break-all;
+  line-height: 1.8;
+  color: #303133;
+  font-size: 16px;
 }
 
 .location-section {

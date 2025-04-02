@@ -110,11 +110,12 @@
           <span class="label">购买数量：</span>
           <el-input-number 
             v-model="orderQuantity" 
-            :min="0"
-            :max="Number(detail.inventory)"
-            @change="calculateTotal"
+            :min="1"
+            :max="4"
+            @change="handleQuantityChange"
           />
         </div>
+        <span class="label">注意：单次购买量不得超过4张</span>
         <div class="order-item total">
           <span class="label">商品总价：</span>
           <span class="value price">¥{{ totalPrice }}</span>
@@ -223,30 +224,50 @@ const calculateTotal = () => {
   // 由computed属性totalPrice自动计算
 }
 
-// 确认下单
+// 添加数量变化处理函数
+const handleQuantityChange = (value) => {
+  if (value > 4) {
+    ElMessage.warning('单次最多购买4张门票')
+    orderQuantity.value = 4
+    return
+  }
+  if (value > detail.value.inventory) {
+    ElMessage.warning(`当前库存仅剩${detail.value.inventory}张`)
+    orderQuantity.value = detail.value.inventory
+    return
+  }
+  calculateTotal()
+}
+
+// 修改确认下单方法
 const confirmOrder = async () => {
   try {
     submitting.value = true
-    // 使用 URLSearchParams 格式化参数
+    
+    // 添加数量检查
+    if (orderQuantity.value > 4) {
+      ElMessage.warning('单次最多购买4张门票')
+      return
+    }
+    if (detail.value.inventory <= 0) {
+      ElMessage.error('库存不足')
+      return
+    }
+    if (orderQuantity.value > detail.value.inventory) {
+      ElMessage.warning(`当前库存仅剩${detail.value.inventory}张`)
+      return
+    }
+
     const params = new URLSearchParams()
     params.append('travelId', detail.value.id)
     params.append('quantity', orderQuantity.value)
     params.append('money', detail.value.money)
-    if (detail.value.inventory<=0){
-      ElMessage.error('库存不足')
-      return
-    }
+    
     const result = await post('/orders/createOrder?' + params.toString())
     
     if (result.code === 200) {
       orderDialogVisible.value = false
-      //直接修改响应式数据以显示实时库存
-      detail.value.inventory-=orderQuantity.value
       ElMessage.success('下单成功')
-
-
-    } else {
-      ElMessage.error(result.msg || '下单失败')
     }
   } catch (error) {
     console.error('下单失败:', error)

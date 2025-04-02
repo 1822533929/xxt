@@ -430,9 +430,12 @@ onBeforeUnmount(() => {
   cursor: pointer;
   font-weight: 500;
   margin-bottom: 4px;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.4;
+  max-height: 2.8em;
 }
 
 .product-title:hover {
@@ -556,5 +559,26 @@ onBeforeUnmount(() => {
   0% { opacity: 1; }
   50% { opacity: 0.5; }
   100% { opacity: 1; }
+}
+
+.notice-title {
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-right: 15px;
+}
+
+.content-preview {
+  white-space: pre-wrap;
+  word-break: break-all;
+  word-wrap: break-word;
+  line-height: 1.6;
+  padding: 16px;
+  background-color: #f5f7fa;
+  border-radius: 4px;
+  max-height: 400px;
+  overflow-y: auto;
 }
 </style> 

@@ -317,14 +317,14 @@ const adminLogin = () => {
 .login-container {
   width: 100%;
   height: 100vh;
-  background: url('@/images/background/login.jpg') no-repeat center center;
+  background: url('@/images/background/login4.jpg') no-repeat center center;
   background-size: cover;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* 为了确保登录框内容清晰可见，可以增加一些透明度和模糊效果 */
+
 .login-box {
   width: 400px;
   padding: 40px;

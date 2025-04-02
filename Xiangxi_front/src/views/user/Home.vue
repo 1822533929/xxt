@@ -7,7 +7,7 @@
         <el-image :src="xiangxi" fit="cover" style=" position: relative;
   top: 6px;"></el-image>神秘湘西，探寻自然之美与民族文化的完美融合之地。</div>
       <div class="weather-widget">
-        <iframe scrolling="no" src="https://widget.tianqiapi.com/?style=tg&skin=pitaya" frameborder="0" width="470" height="60" allowtransparency="true"></iframe>
+        <iframe scrolling="no" src="https://widget.tianqiapi.com/?style=tg&skin=pitaya&cityid=101251509" frameborder="0" width="470" height="60" allowtransparency="true"></iframe>
       </div>
     </div>
     <!-- 导航栏 -->
