@@ -6,20 +6,20 @@
         <h1>湘西特色旅游</h1>
         <p>探索最迷人的湘西山水，感受浓郁的民族风情</p>
         <!-- 搜索框 -->
-        <div class="search-box">
-          <el-input
-            v-model="searchQuery"
-            placeholder="搜索心仪的旅游景点..."
-            class="search-input"
-            clearable
-            @keyup.enter="handleSearch"
-          >
-            <template #prefix>
-              <el-icon><Search /></el-icon>
-            </template>
-          </el-input>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-        </div>
+<!--        <div class="search-box">-->
+<!--          <el-input-->
+<!--            v-model="searchQuery"-->
+<!--            placeholder="搜索心仪的旅游景点..."-->
+<!--            class="search-input"-->
+<!--            clearable-->
+<!--            @keyup.enter="handleSearch"-->
+<!--          >-->
+<!--            <template #prefix>-->
+<!--              <el-icon><Search /></el-icon>-->
+<!--            </template>-->
+<!--          </el-input>-->
+<!--          <el-button type="primary" @click="handleSearch">搜索</el-button>-->
+<!--        </div>-->
       </div>
     </div>
 

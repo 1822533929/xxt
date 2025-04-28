@@ -45,7 +45,7 @@
       </div>
       
       <div class="news-grid">
-        <div v-for="news in latestNews" :key="news.id" class="news-item" @click="viewNews(news)">
+        <div v-for="news in latestNews.slice(0, 4)" :key="news.id" class="news-item" @click="viewNews(news)">
           <el-image 
             :src="getImageUrl(news.cover)" 
             class="news-image"
@@ -432,6 +432,7 @@ onMounted(() => {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+  margin-top: 20px;
 }
 
 .news-item {

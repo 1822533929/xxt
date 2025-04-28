@@ -12,7 +12,6 @@
         <result property="content" column="content" jdbcType="VARCHAR"/>
         <result property="time" column="time" jdbcType="VARCHAR"/>
         <result property="readCount" column="read_count" jdbcType="INTEGER"/>
-        <result property="startDate" column="start_date" jdbcType="VARCHAR"/>
         <result property="money" column="money" jdbcType="DECIMAL"/>
         <result property="inventory" column="inventory" jdbcType="VARCHAR"/>
         <result property="likeCount" column="like_count" jdbcType="INTEGER"/>
@@ -27,7 +26,6 @@
         <result property="content" column="content"/>
         <result property="time" column="time"/>
         <result property="readCount" column="read_count"/>
-        <result property="startDate" column="start_date"/>
         <result property="money" column="money"/>
         <result property="inventory" column="inventory"/>
         <result property="likeCount" column="like_count"/>
@@ -38,7 +36,7 @@
     <sql id="Base_Column_List">
         id,title,cover,
         descr,content,time,
-        read_count,start_date,money,inventory,like_count
+        read_count,money,inventory,like_count
     </sql>
     <!--减少库存-->
     <update id="reduceInventory">
@@ -67,7 +65,6 @@
             t.content,
             t.time,
             t.read_count,
-            t.start_date,
             t.money,
             t.inventory,
             t.like_count,

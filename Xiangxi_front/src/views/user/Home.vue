@@ -7,7 +7,7 @@
         <el-image :src="xiangxi" fit="cover" style=" position: relative;
   top: 6px;"></el-image>神秘湘西，探寻自然之美与民族文化的完美融合之地。</div>
       <div class="weather-widget">
-        <iframe scrolling="no" src="https://widget.tianqiapi.com/?style=tg&skin=pitaya&cityid=101251509" frameborder="0" width="470" height="60" allowtransparency="true"></iframe>
+        <iframe scrolling="no" src="https://widget.tianqiapi.com/?style=tg&skin=pitaya&cityid=101251509" frameborder="0" width="470" height="70" allowtransparency="true"></iframe>
       </div>
     </div>
     <!-- 导航栏 -->
@@ -276,13 +276,16 @@ onUnmounted(() => {
 }
 
 .nav-bar {
-  height: 60px;
+  height: 70px;
   background-color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .nav-menu {
@@ -292,12 +295,33 @@ onUnmounted(() => {
 .menu-items {
   display: flex;
   justify-content: center;
+  border-bottom: none;
+}
+
+:deep(.el-menu-item) {
+  font-size: 16px;
+  font-weight: 500;
+  height: 70px;
+  line-height: 70px;
+  padding: 0 25px;
+  transition: all 0.3s ease;
+}
+
+:deep(.el-menu-item.is-active) {
+  color: #1890ff !important;
+  border-bottom: 3px solid #1890ff !important;
+  background-color: rgba(24, 144, 255, 0.1);
+}
+
+:deep(.el-menu-item:hover) {
+  color: #1890ff !important;
+  background-color: rgba(24, 144, 255, 0.05);
 }
 
 .nav-right {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
 }
 
 .search-container {
@@ -313,19 +337,22 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 0 8px;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  background-color: #f5f7fa;
 }
 
 .user-info:hover {
-  background-color: #f5f7fa;
+  background-color: #e6f7ff;
+  transform: translateY(-2px);
 }
 
 .username {
   margin: 0 8px;
-  font-size: 14px;
+  font-size: 15px;
   color: #333;
+  font-weight: 500;
 }
 
 .main-content {
@@ -457,7 +484,14 @@ onUnmounted(() => {
 
 :deep(.el-input__wrapper) {
   border-radius: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
+
+:deep(.el-input__wrapper:hover) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 .background-container {
   background-image: url('@/images/background/mainbg.png');
   background-repeat: no-repeat;

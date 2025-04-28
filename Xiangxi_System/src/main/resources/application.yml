@@ -19,7 +19,7 @@ server:
     # 解除请求体限制
     max-swallow-size: -1
 #    # 增大响应缓冲区
-    max-http-response-size: 20MB   # 20MB
+    max-http-response-size: 20MB
     max-http-header-size: 64KB
     max-http-form-post-size: 1024MB
 

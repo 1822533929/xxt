@@ -32,7 +32,7 @@ public interface OrdersMapper extends BaseMapper<Orders> {
     @Select("SELECT DATE_FORMAT(orderdate, '%Y-%m-%d') as date, COUNT(*) as count " +
             "FROM orders " +
             "WHERE orderdate >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) " +
-            "GROUP BY date")
+            "GROUP BY date "+"ORDER BY date")
     List<Map<String, Object>> getWeeklyOrders();
 
     @Select("SELECT DATE_FORMAT(orderdate, '%Y-%m') as month, COUNT(*) as count " +

@@ -156,6 +156,7 @@ onMounted(() => {
 .content-section {
   line-height: 1.8;
   color: #606266;
+  white-space: pre-wrap;
 }
 
 :deep(img) {

@@ -42,10 +42,6 @@ public class TravelsQuery extends BaseQuery {
      */
     private Integer readCount;
 
-    /**
-     * 出行日期
-     */
-    private String startDate;
 
     /**
      * 费用
@@ -161,19 +157,6 @@ public class TravelsQuery extends BaseQuery {
         this.readCount = readCount;
     }
 
-    /**
-     * 出行日期
-     */
-    public String getStartDate() {
-        return startDate;
-    }
-
-    /**
-     * 出行日期
-     */
-    public void setStartDate(String startDate) {
-        this.startDate = startDate;
-    }
 
     /**
      * 费用
@@ -235,7 +218,6 @@ public class TravelsQuery extends BaseQuery {
                 && (this.getContent() == null ? other.getContent() == null : this.getContent().equals(other.getContent()))
                 && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()))
                 && (this.getReadCount() == null ? other.getReadCount() == null : this.getReadCount().equals(other.getReadCount()))
-                && (this.getStartDate() == null ? other.getStartDate() == null : this.getStartDate().equals(other.getStartDate()))
                 && (this.getMoney() == null ? other.getMoney() == null : this.getMoney().equals(other.getMoney()))
                 && (this.getInventory() == null ? other.getInventory() == null : this.getInventory().equals(other.getInventory())
                 && (this.getLikeCount() == null ? other.getLikeCount() == null : this.getLikeCount().equals(other.getLikeCount())));
@@ -252,7 +234,6 @@ public class TravelsQuery extends BaseQuery {
         result = prime * result + ((getContent() == null) ? 0 : getContent().hashCode());
         result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
         result = prime * result + ((getReadCount() == null) ? 0 : getReadCount().hashCode());
-        result = prime * result + ((getStartDate() == null) ? 0 : getStartDate().hashCode());
         result = prime * result + ((getMoney() == null) ? 0 : getMoney().hashCode());
         result = prime * result + ((getInventory() == null) ? 0 : getInventory().hashCode());
         result = prime * result + ((getLikeCount() == null) ? 0 : getLikeCount().hashCode());
@@ -272,7 +253,6 @@ public class TravelsQuery extends BaseQuery {
         sb.append(", content=").append(content);
         sb.append(", time=").append(time);
         sb.append(", readCount=").append(readCount);
-        sb.append(", startDate=").append(startDate);
         sb.append(", money=").append(money);
         sb.append(", inventory=").append(inventory);
         sb.append(", likeCount=").append(likeCount);
